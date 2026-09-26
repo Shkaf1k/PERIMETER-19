@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PERIMETER 19 // DEV HUB</title>
+    <style>
+        :root {
+            --bg-black: #050505;
+            --panel-bg: #0d0000;
+            --border-red: #880000;
+            --border-bright: #ff0000;
+            --text-red: #ff2a2a;
+            --text-muted: #992222;
+            --text-dim: #551111;
+            --hover-red: #ff4d4d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-red);
+            line-height: 1.5;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 2px solid var(--border-red);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: var(--text-red);
+            text-transform: uppercase;
+        }
+
+        .sub-header {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-red);
+            color: var(--text-red);
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background: var(--border-red);
+            color: #000;
+            border-color: var(--border-bright);
+        }
+
+        .btn-primary {
+            background: var(--border-red);
+            color: #000;
+            border-color: var(--border-bright);
+            font-size: 1.1rem;
+            padding: 15px 25px;
+        }
+
+        .btn-primary:hover {
+            background: var(--text-red);
+            color: #000;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            border: 1px solid var(--border-red);
+            background: var(--panel-bg);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--border-red);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-red);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            border: 1px solid var(--border-red);
+            padding: 15px;
+            background: rgba(10, 0, 0, 0.5);
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-red);
+            border-bottom: 1px dashed var(--text-dim);
+            padding-bottom: 5px;
+        }
+
+        .card-body {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .card-body p {
+            margin-bottom: 10px;
+        }
+
+        .spec-list {
+            list-style: none;
+            font-size: 0.85rem;
+        }
+
+        .spec-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px dotted var(--text-dim);
+        }
+
+        .spec-label {
+            color: var(--text-muted);
+        }
+
+        .spec-value {
+            color: var(--text-red);
+            font-weight: bold;
+        }
+
+        .devlog-entry {
+            border-left: 2px solid var(--border-red);
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .devlog-date {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+        }
+
+        .devlog-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text-red);
+            margin-bottom: 5px;
+        }
+
+        .devlog-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        footer {
+            border-top: 1px solid var(--border-red);
+            padding-top: 20px;
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .social-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        .social-links a:hover {
+            color: var(--text-red);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <div class="logo">PERIMETER 19</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">ANOMALY SURVIVAL SIMULATOR</div>
+        </div>
+        <div class="sub-header">
+            ENGINE: ROBLOX / LUAU<br>
+            STATUS: IN DEVELOPMENT
+        </div>
+    </header>
+
+    <div class="nav-buttons">
+        <a href="https://www.roblox.com" target="_blank" class="btn btn-primary">► ИГРАТЬ В ROBLOX</a>
+        <a href="#about" class="btn">ОБ ИГРЕ</a>
+        <a href="#devlog" class="btn">ДНЕВНИК РАЗРАБОТКИ</a>
+        <a href="#links" class="btn">СООБЩЕСТВО</a>
+    </div>
+
+    <div id="about" class="section">
+        <div class="section-title">
+            <span>01 // СПЕЦИФИКАЦИЯ И ОПИСАНИЕ</span>
+            <span>[PROJECT_INFO]</span>
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+            Мрачный хоррор-симулятор выживания в зоне отчуждения. Исследуй заброшенные сектора, избегай смертельных аномалий, соревнуйся с другими сталкерами и переживай выбросы радиации.
+        </p>
+        
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">ХАРАКТЕРИСТИКИ</div>
+                <ul class="spec-list">
+                    <li><span class="spec-label">Платформа:</span> <span class="spec-value">Roblox</span></li>
+                    <li><span class="spec-label">Жанр:</span> <span class="spec-value">Survival / Action</span></li>
+                    <li><span class="spec-label">Вид:</span> <span class="spec-value">First Person (FPS)</span></li>
+                    <li><span class="spec-label">Атмосфера:</span> <span class="spec-value">Post-Apocalyptic</span></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">ОСНОВНЫЕ МЕХАНИКИ</div>
+                <div class="card-body">
+                    <p>• Поиск уникальных артефактов в аномалиях.</p>
+                    <p>• Кастомизация оружия и снаряжения.</p>
+                    <p>• Динамическая система выбросов и радиации.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="devlog" class="section">
+        <div class="section-title">
+            <span>02 // ДНЕВНИК РАЗРАБОТКИ</span>
+            <span>[DEVLOGS]</span>
+        </div>
+
+        <div class="devlog-entry">
+            <div class="devlog-date">2026.09.26 // LOG_003</div>
+            <div class="devlog-title">ПЕРЕРАБОТКА СИСТЕМЫ АНОМАЛИЙИ РАДИАЦИИ</div>
+            <div class="devlog-text">
+                Переписали скрипты детектора. Добавлены новые звуковые эффекты для счетчика Гейгера и улучшена оптимизация взаимодействия игроков с аномальными зонами.
+            </div>
+        </div>
+
+        <div class="devlog-entry">
+            <div class="devlog-date">2026.09.15 // LOG_002</div>
+            <div class="devlog-title">ТЕСТ ОРУЖЕЙНОГО ПАКЕТА И БАЛАНСА</div>
+            <div class="devlog-text">
+                Завершили базвую имплементацию баллистики и отдачи. Добавлены первые модели автоматов и пистолетов.
+            </div>
+        </div>
+
+        <div class="devlog-entry">
+            <div class="devlog-date">2026.09.01 // LOG_001</div>
+            <div class="devlog-title">СТАРТ ПРОЕКТА PERIMETER 19</div>
+            <div class="devlog-text">
+                Официальный запуск разработки. Сформирована карта первого сектора, заложен фундамент интерфейса и основных механик выживания.
+            </div>
+        </div>
+    </div>
+
+    <footer id="links">
+        <div>PERIMETER 19 © ALL RIGHTS RESERVED</div>
+        <div class="social-links">
+            <a href="#">[DISCORD]</a>
+            <a href="#">[ROBLOX GROUP]</a>
+            <a href="#">[VKONTAKTE]</a>
+        </div>
+    </footer>
+
+</body>
+</html>
