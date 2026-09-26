@@ -28,9 +28,10 @@
             background-color: var(--bg-black);
             color: var(--text-red);
             line-height: 1.5;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            padding: 30px 40px;
+            width: 100vw;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         header {
@@ -40,10 +41,11 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            width: 100%;
         }
 
         .logo {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: bold;
             letter-spacing: 4px;
             color: var(--text-red);
@@ -51,7 +53,7 @@
         }
 
         .sub-header {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             text-align: right;
         }
@@ -60,8 +62,8 @@
             background: var(--panel-bg);
             border: 1px solid var(--border-red);
             color: var(--text-red);
-            padding: 12px 20px;
-            font-size: 0.9rem;
+            padding: 12px 24px;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
@@ -82,7 +84,7 @@
             color: #000;
             border-color: var(--border-bright);
             font-size: 1.1rem;
-            padding: 15px 25px;
+            padding: 15px 30px;
         }
 
         .btn-primary:hover {
@@ -95,20 +97,22 @@
             gap: 15px;
             margin-bottom: 40px;
             flex-wrap: wrap;
+            width: 100%;
         }
 
         .section {
             border: 1px solid var(--border-red);
             background: var(--panel-bg);
-            padding: 25px;
+            padding: 30px;
             margin-bottom: 30px;
+            width: 100%;
         }
 
         .section-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             border-bottom: 1px solid var(--border-red);
-            padding-bottom: 8px;
-            margin-bottom: 20px;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--text-red);
@@ -118,26 +122,28 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            width: 100%;
         }
 
         .card {
             border: 1px solid var(--border-red);
-            padding: 15px;
+            padding: 20px;
             background: rgba(10, 0, 0, 0.5);
         }
 
         .card-title {
             font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
             color: var(--text-red);
             border-bottom: 1px dashed var(--text-dim);
-            padding-bottom: 5px;
+            padding-bottom: 6px;
         }
 
         .card-body {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
         }
 
@@ -147,13 +153,13 @@
 
         .spec-list {
             list-style: none;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
         }
 
         .spec-list li {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
+            padding: 6px 0;
             border-bottom: 1px dotted var(--text-dim);
         }
 
@@ -167,26 +173,26 @@
         }
 
         .devlog-entry {
-            border-left: 2px solid var(--border-red);
-            padding-left: 15px;
-            margin-bottom: 20px;
+            border-left: 3px solid var(--border-red);
+            padding-left: 20px;
+            margin-bottom: 25px;
         }
 
         .devlog-date {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-dim);
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .devlog-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: var(--text-red);
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .devlog-text {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
         }
 
@@ -194,18 +200,19 @@
             border-top: 1px solid var(--border-red);
             padding-top: 20px;
             margin-top: 50px;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--text-dim);
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
+            width: 100%;
         }
 
         .social-links a {
             color: var(--text-muted);
             text-decoration: none;
-            margin-left: 15px;
+            margin-left: 20px;
         }
 
         .social-links a:hover {
@@ -218,7 +225,7 @@
     <header>
         <div>
             <div class="logo">PERIMETER 19</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">ANOMALY SURVIVAL SIMULATOR</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">ANOMALY SURVIVAL SIMULATOR</div>
         </div>
         <div class="sub-header">
             ENGINE: ROBLOX / LUAU<br>
@@ -238,7 +245,7 @@
             <span>01 // СПЕЦИФИКАЦИЯ И ОПИСАНИЕ</span>
             <span>[PROJECT_INFO]</span>
         </div>
-        <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">
+        <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1rem;">
             Мрачный хоррор-симулятор выживания в зоне отчуждения. Исследуй заброшенные сектора, избегай смертельных аномалий, соревнуйся с другими сталкерами и переживай выбросы радиации.
         </p>
         
@@ -272,7 +279,7 @@
 
         <div class="devlog-entry">
             <div class="devlog-date">2026.09.26 // LOG_003</div>
-            <div class="devlog-title">ПЕРЕРАБОТКА СИСТЕМЫ АНОМАЛИЙИ РАДИАЦИИ</div>
+            <div class="devlog-title">ПЕРЕРАБОТКА СИСТЕМЫ АНОМАЛИЙ И РАДИАЦИИ</div>
             <div class="devlog-text">
                 Переписали скрипты детектора. Добавлены новые звуковые эффекты для счетчика Гейгера и улучшена оптимизация взаимодействия игроков с аномальными зонами.
             </div>
@@ -282,7 +289,7 @@
             <div class="devlog-date">2026.09.15 // LOG_002</div>
             <div class="devlog-title">ТЕСТ ОРУЖЕЙНОГО ПАКЕТА И БАЛАНСА</div>
             <div class="devlog-text">
-                Завершили базвую имплементацию баллистики и отдачи. Добавлены первые модели автоматов и пистолетов.
+                Завершили базовую имплементацию баллистики и отдачи. Добавлены первые модели автоматов и пистолетов.
             </div>
         </div>
 
