@@ -3,40 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PERIMETER 19 // DEV HUB</title>
+    <title>PERIMETER 19 // OFFICIAL HUB</title>
     <style>
         :root {
-            --bg-black: #050505;
-            --panel-bg: #0d0000;
-            --border-red: #880000;
-            --border-bright: #ff0000;
-            --text-red: #ff2a2a;
-            --text-muted: #992222;
-            --text-dim: #551111;
-            --hover-red: #ff4d4d;
+            --bg-dark: #080a0f;
+            --panel-bg: rgba(16, 22, 32, 0.85);
+            --border-color: #1e293b;
+            --accent-cyan: #00f0ff;
+            --accent-amber: #ffb000;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
         body {
-            background-color: var(--bg-black);
-            color: var(--text-red);
-            line-height: 1.5;
-            padding: 30px 40px;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 30px;
             width: 100vw;
             min-height: 100vh;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(0, 240, 255, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(255, 176, 0, 0.03) 0%, transparent 40%);
         }
 
         header {
-            border-bottom: 2px solid var(--border-red);
-            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
@@ -46,121 +49,142 @@
 
         .logo {
             font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 4px;
-            color: var(--text-red);
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #fff;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo span {
+            color: var(--accent-cyan);
         }
 
         .sub-header {
-            font-size: 0.9rem;
+            font-family: monospace;
+            font-size: 0.85rem;
             color: var(--text-muted);
             text-align: right;
+            border-left: 2px solid var(--accent-cyan);
+            padding-left: 12px;
         }
 
         .btn {
             background: var(--panel-bg);
-            border: 1px solid var(--border-red);
-            color: var(--text-red);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
             padding: 12px 24px;
             font-size: 0.95rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
-            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            border-radius: 4px;
         }
 
         .btn:hover {
-            background: var(--border-red);
-            color: #000;
-            border-color: var(--border-bright);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateY(-2px);
         }
 
         .btn-primary {
-            background: var(--border-red);
+            background: var(--accent-cyan);
             color: #000;
-            border-color: var(--border-bright);
-            font-size: 1.1rem;
-            padding: 15px 30px;
+            border-color: var(--accent-cyan);
+            font-size: 1.05rem;
+            padding: 14px 28px;
+            font-weight: 700;
         }
 
         .btn-primary:hover {
-            background: var(--text-red);
+            background: #33f3ff;
             color: #000;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
         }
 
         .nav-buttons {
             display: flex;
             gap: 15px;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             flex-wrap: wrap;
             width: 100%;
         }
 
-        .section {
-            border: 1px solid var(--border-red);
-            background: var(--panel-bg);
-            padding: 30px;
-            margin-bottom: 30px;
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
             width: 100%;
         }
 
+        @media (max-width: 900px) {
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            border: 1px solid var(--border-color);
+            background: var(--panel-bg);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+        }
+
         .section-title {
-            font-size: 1.3rem;
-            border-bottom: 1px solid var(--border-red);
+            font-family: monospace;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-red);
+            letter-spacing: 1.5px;
+            color: var(--accent-cyan);
             display: flex;
             justify-content: space-between;
         }
 
-        .grid {
+        .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .card {
-            border: 1px solid var(--border-red);
-            padding: 20px;
-            background: rgba(10, 0, 0, 0.5);
+            border: 1px solid var(--border-color);
+            padding: 18px;
+            background: rgba(8, 10, 15, 0.6);
+            border-radius: 4px;
         }
 
         .card-title {
-            font-weight: bold;
-            font-size: 1.05rem;
+            font-weight: 700;
+            font-size: 1rem;
             margin-bottom: 12px;
-            color: var(--text-red);
-            border-bottom: 1px dashed var(--text-dim);
+            color: #fff;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 6px;
-        }
-
-        .card-body {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-
-        .card-body p {
-            margin-bottom: 10px;
         }
 
         .spec-list {
             list-style: none;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .spec-list li {
             display: flex;
             justify-content: space-between;
             padding: 6px 0;
-            border-bottom: 1px dotted var(--text-dim);
+            border-bottom: 1px dashed var(--border-color);
         }
 
         .spec-label {
@@ -168,44 +192,57 @@
         }
 
         .spec-value {
-            color: var(--text-red);
-            font-weight: bold;
+            color: var(--accent-amber);
+            font-weight: 600;
+            font-family: monospace;
         }
 
         .devlog-entry {
-            border-left: 3px solid var(--border-red);
-            padding-left: 20px;
-            margin-bottom: 25px;
+            border-left: 3px solid var(--accent-cyan);
+            padding-left: 18px;
+            margin-bottom: 22px;
         }
 
         .devlog-date {
+            font-family: monospace;
             font-size: 0.8rem;
-            color: var(--text-dim);
-            margin-bottom: 6px;
+            color: var(--accent-amber);
+            margin-bottom: 4px;
         }
 
         .devlog-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--text-red);
-            margin-bottom: 8px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
         }
 
         .devlog-text {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--text-muted);
         }
 
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-family: monospace;
+        }
+
         footer {
-            border-top: 1px solid var(--border-red);
-            padding-top: 20px;
-            margin-top: 50px;
-            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 25px;
+            margin-top: 40px;
+            font-size: 0.85rem;
             color: var(--text-dim);
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             width: 100%;
         }
 
@@ -213,10 +250,12 @@
             color: var(--text-muted);
             text-decoration: none;
             margin-left: 20px;
+            font-family: monospace;
+            transition: color 0.2s;
         }
 
         .social-links a:hover {
-            color: var(--text-red);
+            color: var(--accent-cyan);
         }
     </style>
 </head>
@@ -224,8 +263,8 @@
 
     <header>
         <div>
-            <div class="logo">PERIMETER 19</div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">ANOMALY SURVIVAL SIMULATOR</div>
+            <div class="logo">PERIMETER <span>19</span></div>
+            <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px;">ANOMALY SURVIVAL SIMULATOR</div>
         </div>
         <div class="sub-header">
             ENGINE: ROBLOX / LUAU<br>
@@ -234,72 +273,91 @@
     </header>
 
     <div class="nav-buttons">
-        <a href="https://www.roblox.com" target="_blank" class="btn btn-primary">► ИГРАТЬ В ROBLOX</a>
+        <a href="https://www.roblox.com" target="_blank" class="btn btn-primary">► ЗАПУСТИТЬ В ROBLOX</a>
         <a href="#about" class="btn">ОБ ИГРЕ</a>
         <a href="#devlog" class="btn">ДНЕВНИК РАЗРАБОТКИ</a>
         <a href="#links" class="btn">СООБЩЕСТВО</a>
     </div>
 
-    <div id="about" class="section">
-        <div class="section-title">
-            <span>01 // СПЕЦИФИКАЦИЯ И ОПИСАНИЕ</span>
-            <span>[PROJECT_INFO]</span>
-        </div>
-        <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1rem;">
-            Мрачный хоррор-симулятор выживания в зоне отчуждения. Исследуй заброшенные сектора, избегай смертельных аномалий, соревнуйся с другими сталкерами и переживай выбросы радиации.
-        </p>
-        
-        <div class="grid">
-            <div class="card">
-                <div class="card-title">ХАРАКТЕРИСТИКИ</div>
+    <div class="layout-grid">
+        <main>
+            <div id="about" class="section">
+                <div class="section-title">
+                    <span>01 // ОБ ОБЪЕКТЕ</span>
+                    <span class="status-badge">SECTOR_19</span>
+                </div>
+                <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem;">
+                    Атмосферный симулятор выживания в исследовательской зоне отчуждения. Исследуй заброшенные объекты, фарми редкие артефакты в опасных аномалиях, кастомизируй снаряжение и прячься от смертоносных выбросов.
+                </p>
+                
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-title">ТЕХНИЧЕСКИЕ ДАННЫЕ</div>
+                        <ul class="spec-list">
+                            <li><span class="spec-label">Платформа:</span> <span class="spec-value">Roblox</span></li>
+                            <li><span class="spec-label">Жанр:</span> <span class="spec-value">Survival / FPS</span></li>
+                            <li><span class="spec-label">Движок:</span> <span class="spec-value">Luau</span></li>
+                            <li><span class="spec-label">Режим:</span> <span class="spec-value">PvPvE</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">КЛЮЧЕВЫЕ МЕХАНИКИ</div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">
+                            <p style="margin-bottom: 8px;">• Поиск артефактов с детектором.</p>
+                            <p style="margin-bottom: 8px;">• Баллистика и кастомизация оружия.</p>
+                            <p>• Динамическая радиация и выбросы.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="devlog" class="section">
+                <div class="section-title">
+                    <span>02 // ДНЕВНИК РАЗРАБОТКИ</span>
+                    <span class="status-badge">UPDATES</span>
+                </div>
+
+                <div class="devlog-entry">
+                    <div class="devlog-date">2026.09.26 // LOG_003</div>
+                    <div class="devlog-title">ПЕРЕРАБОТКА ДЕТЕКТОРОВ И РАДИАЦИИ</div>
+                    <div class="devlog-text">
+                        Обновлена механика работы счетчика Гейгера. Добавлен новый интерфес детектора артефактов и улучшена оптимизация зоны аномалий.
+                    </div>
+                </div>
+
+                <div class="devlog-entry">
+                    <div class="devlog-date">2026.09.15 // LOG_002</div>
+                    <div class="devlog-title">ТЕСТИРОВАНИЕ ОРУЖЕЙНОГО ПАКЕТА</div>
+                    <div class="devlog-text">
+                        Настроена система отдачи, модулей и звуков выстрелов. Добавлены первые образцы вооружения для открытого теста.
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside>
+            <div class="section">
+                <div class="section-title">
+                    <span>СТАТУС СЕРВЕРА</span>
+                </div>
                 <ul class="spec-list">
-                    <li><span class="spec-label">Платформа:</span> <span class="spec-value">Roblox</span></li>
-                    <li><span class="spec-label">Жанр:</span> <span class="spec-value">Survival / Action</span></li>
-                    <li><span class="spec-label">Вид:</span> <span class="spec-value">First Person (FPS)</span></li>
-                    <li><span class="spec-label">Атмосфера:</span> <span class="spec-value">Post-Apocalyptic</span></li>
+                    <li><span class="spec-label">Версия:</span> <span class="spec-value">v0.1.4_alpha</span></li>
+                    <li><span class="spec-label">Сервера:</span> <span class="spec-value" style="color: #10b981;">ONLINE</span></li>
+                    <li><span class="spec-label">Выброс через:</span> <span class="spec-value">14m 22s</span></li>
                 </ul>
             </div>
 
-            <div class="card">
-                <div class="card-title">ОСНОВНЫЕ МЕХАНИКИ</div>
-                <div class="card-body">
-                    <p>• Поиск уникальных артефактов в аномалиях.</p>
-                    <p>• Кастомизация оружия и снаряжения.</p>
-                    <p>• Динамическая система выбросов и радиации.</p>
+            <div class="section">
+                <div class="section-title">
+                    <span>СООБЩЕСТВО</span>
                 </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                    Присоединяйся к нашему дискорду, чтобы следить за тестированием и общаться с разработчиком.
+                </p>
+                <a href="#" class="btn" style="width: 100%; justify-content: center;">JOIN DISCORD</a>
             </div>
-        </div>
-    </div>
-
-    <div id="devlog" class="section">
-        <div class="section-title">
-            <span>02 // ДНЕВНИК РАЗРАБОТКИ</span>
-            <span>[DEVLOGS]</span>
-        </div>
-
-        <div class="devlog-entry">
-            <div class="devlog-date">2026.09.26 // LOG_003</div>
-            <div class="devlog-title">ПЕРЕРАБОТКА СИСТЕМЫ АНОМАЛИЙ И РАДИАЦИИ</div>
-            <div class="devlog-text">
-                Переписали скрипты детектора. Добавлены новые звуковые эффекты для счетчика Гейгера и улучшена оптимизация взаимодействия игроков с аномальными зонами.
-            </div>
-        </div>
-
-        <div class="devlog-entry">
-            <div class="devlog-date">2026.09.15 // LOG_002</div>
-            <div class="devlog-title">ТЕСТ ОРУЖЕЙНОГО ПАКЕТА И БАЛАНСА</div>
-            <div class="devlog-text">
-                Завершили базовую имплементацию баллистики и отдачи. Добавлены первые модели автоматов и пистолетов.
-            </div>
-        </div>
-
-        <div class="devlog-entry">
-            <div class="devlog-date">2026.09.01 // LOG_001</div>
-            <div class="devlog-title">СТАРТ ПРОЕКТА PERIMETER 19</div>
-            <div class="devlog-text">
-                Официальный запуск разработки. Сформирована карта первого сектора, заложен фундамент интерфейса и основных механик выживания.
-            </div>
-        </div>
+        </aside>
     </div>
 
     <footer id="links">
@@ -307,7 +365,7 @@
         <div class="social-links">
             <a href="#">[DISCORD]</a>
             <a href="#">[ROBLOX GROUP]</a>
-            <a href="#">[VKONTAKTE]</a>
+            <a href="#">[VK]</a>
         </div>
     </footer>
 
