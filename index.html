@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT // ECHO-8</title>
+    <title>CHRONICLES OF ASHES</title>
     <style>
         :root {
-            --bg: #030305;
-            --card-bg: rgba(18, 16, 26, 0.6);
-            --accent-cyan: #00f0ff;
-            --accent-magenta: #ff0055;
-            --accent-violet: #7000ff;
-            --text-main: #e2e8f0;
-            --text-dim: #64748b;
-            --font-mono: 'JetBrains Mono', monospace, sans-serif;
-            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --bg-color: #0b0a0a;
+            --accent-gold: #c9a050;
+            --accent-red: #8b0000;
+            --text-main: #dcd0c0;
+            --text-dim: #70685c;
+            --font-serif: 'Cinzel', 'Georgia', serif;
         }
 
         * {
@@ -24,430 +21,178 @@
         }
 
         body {
-            background-color: var(--bg);
+            background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: var(--font-sans);
+            font-family: var(--font-serif);
             overflow-x: hidden;
-            cursor: default;
         }
 
-        /* --- Canvas Background --- */
-        #bgCanvas {
+        canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -2;
+            z-index: -1;
             pointer-events: none;
         }
 
-        .scanlines {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px;
-            z-index: 99;
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        /* --- Header --- */
         header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 24px 8%;
+            padding: 30px 8%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(201, 160, 80, 0.2);
+            background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
         }
 
-        .brand {
-            font-family: var(--font-mono);
-            font-weight: 900;
-            font-size: 1.2rem;
-            letter-spacing: 3px;
-            color: #fff;
+        .logo {
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            color: var(--accent-gold);
             text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .brand span {
-            color: var(--accent-cyan);
-        }
-
-        nav {
-            display: flex;
-            gap: 32px;
+            text-shadow: 0 0 10px rgba(201, 160, 80, 0.3);
         }
 
         nav a {
             color: var(--text-dim);
             text-decoration: none;
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            letter-spacing: 1px;
-            transition: color 0.3s;
+            margin-left: 30px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: color 0.3s;
         }
 
         nav a:hover {
-            color: var(--accent-cyan);
-            text-shadow: 0 0 8px var(--accent-cyan);
+            color: var(--accent-gold);
         }
 
-        /* --- Hero Section --- */
         .hero {
-            min-height: 100vh;
-            padding: 0 8%;
+            min-height: 85vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            position: relative;
+            align-items: center;
+            text-align: center;
+            padding: 0 10%;
         }
 
-        .tag {
-            font-family: var(--font-mono);
-            color: var(--accent-cyan);
-            font-size: 0.85rem;
+        .subtitle {
+            color: var(--accent-gold);
+            letter-spacing: 6px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 7vw, 6rem);
+            font-weight: 400;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(139, 0, 0, 0.6);
+            margin-bottom: 25px;
+        }
+
+        p {
+            max-width: 600px;
+            color: var(--text-dim);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        .btn-gothic {
+            padding: 18px 40px;
+            background: transparent;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
             letter-spacing: 4px;
             text-transform: uppercase;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .tag::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--accent-cyan);
-            box-shadow: 0 0 10px var(--accent-cyan);
-        }
-
-        /* Glitch Title */
-        .glitch-title {
-            font-size: clamp(3.5rem, 8vw, 7.5rem);
-            font-weight: 900;
-            line-height: 0.95;
-            letter-spacing: -2px;
-            text-transform: uppercase;
-            position: relative;
-            color: #fff;
-        }
-
-        .glitch-title::before,
-        .glitch-title::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            clip: rect(0, 0, 0, 0);
-        }
-
-        .glitch-title:hover::before {
-            left: 3px;
-            text-shadow: -2px 0 var(--accent-magenta);
-            clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim 2s infinite linear alternate-reverse;
-        }
-
-        .glitch-title:hover::after {
-            left: -3px;
-            text-shadow: -2px 0 var(--accent-cyan);
-            clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch-anim {
-            0% { clip: rect(12px, 9999px, 52px, 0); }
-            20% { clip: rect(80px, 9999px, 102px, 0); }
-            40% { clip: rect(35px, 9999px, 12px, 0); }
-            60% { clip: rect(90px, 9999px, 130px, 0); }
-            80% { clip: rect(15px, 9999px, 60px, 0); }
-            100% { clip: rect(55px, 9999px, 85px, 0); }
-        }
-
-        @keyframes glitch-anim2 {
-            0% { clip: rect(65px, 9999px, 115px, 0); }
-            20% { clip: rect(10px, 9999px, 40px, 0); }
-            40% { clip: rect(95px, 9999px, 120px, 0); }
-            60% { clip: rect(25px, 9999px, 70px, 0); }
-            80% { clip: rect(110px, 9999px, 20px, 0); }
-            100% { clip: rect(40px, 9999px, 90px, 0); }
-        }
-
-        .description {
-            max-width: 580px;
-            margin-top: 28px;
-            color: var(--text-dim);
-            font-size: 1.1rem;
-            line-height: 1.7;
-        }
-
-        .actions {
-            margin-top: 40px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .btn-cyber {
-            position: relative;
-            padding: 16px 36px;
-            background: transparent;
-            color: #fff;
-            font-family: var(--font-mono);
-            font-weight: 700;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border: 1px solid var(--accent-cyan);
             cursor: pointer;
-            overflow: hidden;
-            transition: all 0.3s;
-        }
-
-        .btn-cyber::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--accent-cyan);
-            transition: left 0.3s cubic-bezier(0.77, 0, 0.175, 1);
-            z-index: -1;
-        }
-
-        .btn-cyber:hover {
-            color: #000;
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
-        }
-
-        .btn-cyber:hover::before {
-            left: 0;
-        }
-
-        /* --- Terminal / Features --- */
-        .section {
-            padding: 100px 8%;
-        }
-
-        .section-header {
-            margin-bottom: 60px;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-
-        .cyber-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 32px;
+            transition: all 0.4s;
             position: relative;
-            backdrop-filter: blur(10px);
+        }
+
+        .btn-gothic:hover {
+            background: var(--accent-red);
+            border-color: var(--accent-red);
+            color: #fff;
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.8);
+        }
+
+        .classes-section {
+            padding: 80px 8%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            border: 1px solid rgba(201, 160, 80, 0.15);
+            background: rgba(15, 12, 12, 0.8);
+            padding: 40px 30px;
+            text-align: center;
             transition: transform 0.3s, border-color 0.3s;
         }
 
-        .cyber-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-violet);
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-gold);
         }
 
-        .cyber-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 12px;
-            height: 12px;
-            border-right: 2px solid var(--accent-cyan);
-            border-bottom: 2px solid var(--accent-cyan);
+        .card h3 {
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
         }
 
-        .card-num {
-            font-family: var(--font-mono);
-            color: var(--accent-cyan);
-            font-size: 0.8rem;
-            margin-bottom: 16px;
-        }
-
-        .card-title {
-            font-size: 1.4rem;
-            margin-bottom: 12px;
-        }
-
-        .card-desc {
-            color: var(--text-dim);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* --- Terminal Widget --- */
-        .terminal-box {
-            background: #08080c;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            border-radius: 6px;
-            font-family: var(--font-mono);
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-
-        .terminal-bar {
-            background: #101018;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .dot-red { background: #ff5f56; }
-        .dot-yellow { background: #ffbd2e; }
-        .dot-green { background: #27c93f; }
-
-        .terminal-content {
-            padding: 24px;
-            min-height: 200px;
-            color: var(--accent-cyan);
+        .card p {
             font-size: 0.9rem;
-            line-height: 1.8;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 15px;
-            background: var(--accent-cyan);
-            margin-left: 4px;
-            animation: blink 0.8s infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        /* --- Footer --- */
-        footer {
-            padding: 40px 8%;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: space-between;
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            color: var(--text-dim);
-        }
-
-        @media (max-width: 768px) {
-            nav { display: none; }
-            .hero { padding-top: 100px; }
-            footer { flex-direction: column; gap: 16px; }
+            margin-bottom: 0;
         }
     </style>
 </head>
 <body>
-
-    <canvas id="bgCanvas"></canvas>
-    <div class="scanlines"></div>
+    <canvas id="emberCanvas"></canvas>
 
     <header>
-        <div class="brand">SYS<span>//</span>ECHO</div>
+        <div class="logo">ASHES // RPG</div>
         <nav>
-            <a href="#about">Протокол</a>
-            <a href="#features">Модули</a>
-            <a href="#terminal">Консоль</a>
+            <a href="#">Лор</a>
+            <a href="#">Классы</a>
+            <a href="#">Обновления</a>
         </nav>
     </header>
 
-    <main>
-        <section class="hero">
-            <div class="tag">Статус: Симуляция Активна</div>
-            <h1 class="glitch-title" data-text="ECHO-8">ECHO-8</h1>
-            <p class="description">
-                Нейро-симмулятор нового поколения. Исследуйте процедурно генерируемые цифровые пространства в условиях нестабильного ядра ИИ.
-            </p>
-            <div class="actions">
-                <button class="btn-cyber" onclick="runDiagnostics()">Инициализация</button>
-            </div>
-        </section>
+    <section class="hero">
+        <div class="subtitle">Пепел и Кровь</div>
+        <h1>CHRONICLES</h1>
+        <p>Мрачное царство, где угас свет древних богов. Сразитесь с порождениями Бездны и найдите трон павшего королевства.</p>
+        <button class="btn-gothic">Начать Путь</button>
+    </section>
 
-        <section class="section" id="features">
-            <div class="section-header">
-                <div class="tag">Архитектура</div>
-                <h2 class="section-title">Системные модули</h2>
-            </div>
-            <div class="grid">
-                <div class="cyber-card">
-                    <div class="card-num">MODULE_01</div>
-                    <h3 class="card-title">Нейросетевой Ландшафт</h3>
-                    <p class="card-desc">Генерация виртуального мира в реальном времени, адаптирующаяся под стиль прохождения пользователя.</p>
-                </div>
-                <div class="cyber-card">
-                    <div class="card-num">MODULE_02</div>
-                    <h3 class="card-title">Динамический Глитч</h3>
-                    <p class="card-desc">Механика искажения реальности, открывающая доступ к скрытым слоям данных и системным файлам.</p>
-                </div>
-                <div class="cyber-card">
-                    <div class="card-num">MODULE_03</div>
-                    <h3 class="card-title">Автономный ИИ</h3>
-                    <p class="card-desc">Противники, обучающиеся на ваших ошибках и меняющие тактику в процессе каждого контакта.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="section" id="terminal">
-            <div class="section-header">
-                <div class="tag">Интерфейс</div>
-                <h2 class="section-title">Системный журнал</h2>
-            </div>
-            <div class="terminal-box">
-                <div class="terminal-bar">
-                    <div class="dot dot-red"></div>
-                    <div class="dot dot-yellow"></div>
-                    <div class="dot dot-green"></div>
-                    <span style="font-size: 0.75rem; color: var(--text-dim); margin-left: 10px;">console.sh</span>
-                </div>
-                <div class="terminal-content" id="termOutput">
-                    > Подключение к серверу ECHO-8... OK<br>
-                    > Проверка целостности данных... 100%<br>
-                    > Готов к приему команд.<br>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div>SYSTEM STATUS: ONLINE</div>
-        <div>© 2026 SYS//ECHO PROTOCOL</div>
-    </footer>
+    <section class="classes-section">
+        <div class="card">
+            <h3>Рыцарь Пепла</h3>
+            <p>Непреклонный воин в сокрушительных доспехах, владеющий магией тлеющего пламени.</p>
+        </div>
+        <div class="card">
+            <h3>Ткач Тей</h3>
+            <p>Маг, манипулирующий затерянными душами и создающий проклятые заклинания.</p>
+        </div>
+        <div class="card">
+            <h3>Охотник Бездны</h3>
+            <p>Быстрый следопыт, бьющий из тени с помощью отравленных клинков и арбалетов.</p>
+        </div>
+    </section>
 
     <script>
-        // Background Matrix/Particle Effect
-        const canvas = document.getElementById('bgCanvas');
+        const canvas = document.getElementById('emberCanvas');
         const ctx = canvas.getContext('2d');
 
         function resize() {
@@ -457,70 +202,32 @@
         resize();
         window.addEventListener('resize', resize);
 
-        const particles = Array.from({ length: 60 }, () => ({
+        const embers = Array.from({ length: 70 }, () => ({
             x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2 + 0.5,
-            speedX: (Math.random() - 0.5) * 0.5,
-            speedY: (Math.random() - 0.5) * 0.5,
-            opacity: Math.random() * 0.5 + 0.2
+            y: Math.random() * canvas.height + canvas.height,
+            size: Math.random() * 3 + 1,
+            speedY: Math.random() * 1.5 + 0.5,
+            speedX: (Math.random() - 0.5) * 0.8,
+            opacity: Math.random() * 0.8 + 0.2
         }));
 
-        function draw() {
+        function drawEmbers() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Subtle grid
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
-            ctx.lineWidth = 1;
-            const gridSize = 50;
-            for(let x = 0; x < canvas.width; x += gridSize) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for(let y = 0; y < canvas.height; y += gridSize) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
-
-            // Particles
-            particles.forEach(p => {
-                p.x += p.speedX;
-                p.y += p.speedY;
-
-                if (p.x < 0) p.x = canvas.width;
-                if (p.x > canvas.width) p.x = 0;
-                if (p.y < 0) p.y = canvas.height;
-                if (p.y > canvas.height) p.y = 0;
-
-                ctx.fillStyle = `rgba(0, 240, 255, ${p.opacity})`;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
-            });
-
-            requestAnimationFrame(draw);
-        }
-        draw();
-
-        // Terminal Interaction
-        function runDiagnostics() {
-            const out = document.getElementById('termOutput');
-            const lines = [
-                "> Запуск диагностики...",
-                "> Сканирование секторов...",
-                "> [WARN] Обнаружены аномалии в ядре.",
-                "> Перераспределение ресурсов...",
-                "> Успешно. Система стабильна."
-            ];
-            
-            out.innerHTML = "";
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < lines.length) {
-                    out.innerHTML += lines[i] + "<br>";
-                    i++;
-                } else {
-                    out.innerHTML += '> <span class="cursor"></span>';
-                    clearInterval(interval);
+            embers.forEach(e => {
+                e.y -= e.speedY;
+                e.x += e.speedX;
+                if (e.y < -10) {
+                    e.y = canvas.height + 10;
+                    e.x = Math.random() * canvas.width;
                 }
-            }, 400);
+                ctx.fillStyle = `rgba(201, 100, 30, ${e.opacity})`;
+                ctx.beginPath();
+                ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawEmbers);
         }
+        drawEmbers();
     </script>
 </body>
 </html>
