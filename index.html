@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VALLEY // COZY ADVENTURE</title>
+    <title>VANGUARD // TAKTICAL SHOOTER</title>
     <style>
         :root {
-            --bg-color: #f6f0ea;
-            --card-bg: #ffffff;
-            --accent-green: #6b8e23;
-            --accent-warm: #e07a5f;
-            --text-dark: #3d405b;
-            --text-muted: #8d99ae;
+            --bg-color: #2b2522;
+            --card-bg: #1c1a19;
+            --accent-orange: #b84828;
+            --badge-bg: rgba(184, 72, 40, 0.2);
+            --badge-text: #e86338;
+            --text-dark: #f0ece9;
+            --text-muted: #a39b95;
         }
 
         * {
@@ -37,8 +38,11 @@
         .logo {
             font-size: 1.3rem;
             font-weight: 800;
-            color: var(--accent-warm);
+            color: var(--accent-orange);
             letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         nav a {
@@ -51,7 +55,7 @@
         }
 
         nav a:hover {
-            color: var(--accent-green);
+            color: var(--accent-orange);
         }
 
         .hero {
@@ -63,14 +67,14 @@
         }
 
         .hero-text {
-            max-width: 500px;
+            max-width: 550px;
         }
 
         .badge {
             display: inline-block;
             padding: 6px 14px;
-            background: rgba(107, 142, 35, 0.15);
-            color: var(--accent-green);
+            background: var(--badge-bg);
+            color: var(--badge-text);
             border-radius: 20px;
             font-weight: 700;
             font-size: 0.8rem;
@@ -92,22 +96,22 @@
             margin-bottom: 35px;
         }
 
-        .btn-cozy {
+        .btn-action {
             padding: 16px 36px;
-            background: var(--accent-warm);
+            background: var(--accent-orange);
             color: #fff;
             border: none;
             border-radius: 30px;
             font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(224, 122, 95, 0.3);
+            box-shadow: 0 10px 25px rgba(184, 72, 40, 0.3);
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .btn-cozy:hover {
+        .btn-action:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(224, 122, 95, 0.4);
+            box-shadow: 0 15px 30px rgba(184, 72, 40, 0.4);
         }
 
         .hero-visual {
@@ -121,14 +125,14 @@
             background: var(--card-bg);
             border-radius: 24px;
             padding: 24px;
-            box-shadow: 0 20px 40px rgba(61, 64, 91, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             animation: float 4s ease-in-out infinite;
         }
 
         .card-1 {
             top: 0;
             left: 0;
-            width: 200px;
+            width: 210px;
         }
 
         .card-2 {
@@ -152,6 +156,7 @@
             font-weight: 700;
             font-size: 1rem;
             margin-bottom: 5px;
+            color: var(--text-dark);
         }
 
         .card-sub {
@@ -167,7 +172,7 @@
 </head>
 <body>
     <header>
-        <div class="logo">🌿 WHISPER VALLEY</div>
+        <div class="logo">🎯 VANGUARD PROTOCOL</div>
         <nav>
             <a href="#">Об игре</a>
             <a href="#">Галерея</a>
@@ -177,22 +182,22 @@
 
     <section class="hero">
         <div class="hero-text">
-            <span class="badge">Уютное Приключение</span>
-            <h1>Найдите покой в исследовании долины</h1>
-            <p>Исследуйте волшебный остров, обустраивайте свой уголок, заводите друзей среди лесных духов и наслаждайтесь неторопливым ритмом природы.</p>
-            <button class="btn-cozy">Играть в Demo</button>
+            <span class="badge">Тактический Шутер</span>
+            <h1>Достигайте победы в командных сражениях</h1>
+            <p>Исследуйте зоны боевых действий, подбирайте экипировку под свой стиль игры, объединяйтесь с отрядом и доминируйте на динамичных аренах.</p>
+            <button class="btn-action">Играть в Demo</button>
         </div>
 
         <div class="hero-visual">
             <div class="floating-card card-1">
-                <div class="card-icon">🏡</div>
-                <div class="card-title">Строительство</div>
-                <div class="card-sub">Создайте свой уютный дом</div>
+                <div class="card-icon">🪖</div>
+                <div class="card-title">Классы и Навыки</div>
+                <div class="card-sub">Настройте своего бойца</div>
             </div>
             <div class="floating-card card-2">
-                <div class="card-icon">🦊</div>
-                <div class="card-title">Лесные Духи</div>
-                <div class="card-sub">Найдите 40+ спутников</div>
+                <div class="card-icon">🌐</div>
+                <div class="card-title">Рейтинговые Сезоны</div>
+                <div class="card-sub">Соревнуйтесь с 50k+ игроков</div>
             </div>
         </div>
     </section>
