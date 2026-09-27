@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,9 +12,10 @@
     >
 
     <style>
-        /* =========================
+
+        /* =====================================================
            RESET
-        ========================= */
+        ===================================================== */
 
         * {
             margin: 0;
@@ -34,6 +34,10 @@
             overflow-x: hidden;
         }
 
+        body.modal-open {
+            overflow: hidden;
+        }
+
         a {
             color: inherit;
             text-decoration: none;
@@ -43,9 +47,15 @@
             font: inherit;
         }
 
-        /* =========================
+        ::selection {
+            background: #8b5cf6;
+            color: white;
+        }
+
+
+        /* =====================================================
            SCROLLBAR
-        ========================= */
+        ===================================================== */
 
         ::-webkit-scrollbar {
             width: 8px;
@@ -57,12 +67,13 @@
 
         ::-webkit-scrollbar-thumb {
             background: #8b5cf6;
-            border-radius: 10px;
+            border-radius: 20px;
         }
 
-        /* =========================
-           BACKGROUND EFFECT
-        ========================= */
+
+        /* =====================================================
+           GRID BACKGROUND
+        ===================================================== */
 
         body::before {
             content: "";
@@ -70,36 +81,56 @@
             inset: 0;
             pointer-events: none;
             z-index: 999;
-            opacity: 0.035;
+
+            opacity: .035;
+
             background-image:
-                linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
+                linear-gradient(
+                    rgba(255,255,255,.5) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.5) 1px,
+                    transparent 1px
+                );
+
             background-size: 50px 50px;
         }
 
-        /* =========================
+
+        /* =====================================================
            HEADER
-        ========================= */
+        ===================================================== */
 
         header {
             position: fixed;
             top: 0;
             left: 0;
+
             width: 100%;
             height: 76px;
+
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             padding: 0 7%;
+
             z-index: 100;
-            background: rgba(5, 5, 9, 0.55);
-            backdrop-filter: blur(15px);
+
+            background: rgba(5,5,9,.58);
+
+            backdrop-filter: blur(16px);
+
             border-bottom: 1px solid rgba(255,255,255,.06);
         }
+
 
         .logo {
             font-size: 24px;
             font-weight: 900;
+
             letter-spacing: 4px;
         }
 
@@ -107,266 +138,921 @@
             color: #9b5cff;
         }
 
+
         nav {
             display: flex;
             gap: 32px;
         }
 
         nav a {
-            color: #aaa;
+            color: #888;
+
             font-size: 14px;
-            transition: .25s;
+
+            transition:
+                color .25s ease,
+                transform .25s ease;
         }
 
         nav a:hover {
             color: #fff;
+            transform: translateY(-1px);
         }
+
 
         .menu-btn {
             display: none;
+
             border: 0;
             background: transparent;
+
             color: white;
+
             font-size: 28px;
+
             cursor: pointer;
         }
 
-        /* =========================
+
+        /* =====================================================
            HERO
-        ========================= */
+        ===================================================== */
 
         .hero {
             min-height: 100vh;
+
             position: relative;
+
             display: flex;
             align-items: center;
-            padding: 130px 7% 80px;
+
+            padding:
+                130px
+                7%
+                80px;
+
             overflow: hidden;
 
             background:
                 radial-gradient(
-                    circle at 70% 45%,
-                    rgba(130, 70, 255, .22),
+                    circle at 75% 45%,
+                    rgba(130,70,255,.22),
                     transparent 35%
                 ),
+
                 radial-gradient(
                     circle at 20% 80%,
-                    rgba(0, 180, 255, .08),
+                    rgba(0,180,255,.08),
                     transparent 30%
                 ),
+
                 #050509;
         }
 
+
         .hero::after {
             content: "";
+
             position: absolute;
+
             width: 500px;
             height: 500px;
+
             right: -150px;
             top: 20%;
+
             background: #7c3aed;
+
             filter: blur(180px);
+
             opacity: .18;
+
             border-radius: 50%;
+
+            pointer-events: none;
         }
+
 
         .hero-content {
             max-width: 750px;
+
             position: relative;
-            z-index: 2;
+
+            z-index: 5;
+
+            transition:
+                transform .2s ease-out;
         }
+
 
         .eyebrow {
             display: inline-block;
+
             margin-bottom: 22px;
+
             color: #b994ff;
+
             font-size: 13px;
+
             letter-spacing: 5px;
+
             text-transform: uppercase;
         }
 
+
         .hero h1 {
-            font-size: clamp(65px, 12vw, 150px);
+            font-size: clamp(
+                65px,
+                12vw,
+                150px
+            );
+
             line-height: .82;
+
             letter-spacing: -8px;
+
             font-weight: 1000;
+
             text-transform: uppercase;
         }
+
 
         .hero h1 span {
             color: transparent;
-            -webkit-text-stroke: 1px rgba(255,255,255,.45);
+
+            -webkit-text-stroke:
+                1px rgba(255,255,255,.45);
         }
+
 
         .hero p {
             max-width: 600px;
+
             margin-top: 35px;
+
             color: #aaa;
+
             line-height: 1.8;
+
             font-size: 17px;
         }
 
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
         .hero-buttons {
             display: flex;
+
             gap: 15px;
+
             margin-top: 35px;
+
             flex-wrap: wrap;
         }
 
+
         .btn {
             border: 0;
-            padding: 16px 27px;
+
+            padding:
+                16px
+                27px;
+
             border-radius: 8px;
+
             cursor: pointer;
+
             font-weight: 800;
-            transition: .3s;
+
+            transition:
+                transform .3s ease,
+                background .3s ease,
+                box-shadow .3s ease;
         }
+
 
         .btn-primary {
             background: #8b5cf6;
+
             color: white;
-            box-shadow: 0 0 30px rgba(139,92,246,.25);
+
+            box-shadow:
+                0 0 30px
+                rgba(139,92,246,.25);
         }
+
 
         .btn-primary:hover {
             transform: translateY(-3px);
+
             background: #9d6cff;
-            box-shadow: 0 0 45px rgba(139,92,246,.45);
+
+            box-shadow:
+                0 0 45px
+                rgba(139,92,246,.45);
         }
+
 
         .btn-secondary {
             color: white;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.12);
+
+            background:
+                rgba(255,255,255,.06);
+
+            border:
+                1px solid
+                rgba(255,255,255,.12);
         }
 
+
         .btn-secondary:hover {
-            background: rgba(255,255,255,.1);
+            background:
+                rgba(255,255,255,.11);
+
+            transform: translateY(-2px);
         }
+
+
+        /* =====================================================
+           HERO STATS
+        ===================================================== */
 
         .hero-stats {
             display: flex;
+
             gap: 50px;
+
             margin-top: 60px;
         }
 
+
         .stat strong {
             display: block;
+
             font-size: 24px;
         }
 
+
         .stat span {
             color: #777;
+
             font-size: 12px;
+
             text-transform: uppercase;
+
             letter-spacing: 2px;
         }
 
-        /* =========================
-           SECTIONS
-        ========================= */
 
-        section {
-            padding: 110px 7%;
+        /* =====================================================
+           HERO SCENE
+        ===================================================== */
+
+        .hero-scene {
+            position: absolute;
+
+            right: 0;
+            top: 76px;
+
+            width: 58%;
+            height: calc(100% - 76px);
+
+            overflow: hidden;
+
+            pointer-events: none;
+
+            transition:
+                transform .15s ease-out;
+        }
+
+
+        .hero-scene::before {
+            content: "";
+
+            position: absolute;
+
+            width: 500px;
+            height: 500px;
+
+            right: 5%;
+            top: 15%;
+
+            background: #7c3aed;
+
+            filter: blur(150px);
+
+            opacity: .18;
+        }
+
+
+        /* =====================================================
+           MOON
+        ===================================================== */
+
+        .moon {
+            position: absolute;
+
+            width: 230px;
+            height: 230px;
+
+            right: 18%;
+            top: 16%;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 35% 30%,
+                    #ffffff,
+                    #d9c9ff 45%,
+                    #9171c7 100%
+                );
+
+            box-shadow:
+                0 0 30px
+                rgba(180,140,255,.5),
+
+                0 0 100px
+                rgba(139,92,246,.35);
+
+            animation:
+                moonFloat 6s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes moonFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+        }
+
+
+        /* =====================================================
+           FOG
+        ===================================================== */
+
+        .fog {
+            position: absolute;
+
+            width: 700px;
+            height: 120px;
+
+            left: 0;
+
+            border-radius: 50%;
+
+            background:
+                rgba(130,100,255,.08);
+
+            filter: blur(35px);
+        }
+
+
+        .fog-1 {
+            bottom: 28%;
+
+            animation:
+                fogMove 12s
+                linear
+                infinite;
+        }
+
+
+        .fog-2 {
+            bottom: 20%;
+
+            opacity: .5;
+
+            animation:
+                fogMove 17s
+                linear
+                infinite
+                reverse;
+        }
+
+
+        @keyframes fogMove {
+
+            0% {
+                transform:
+                    translateX(-20%);
+            }
+
+            50% {
+                transform:
+                    translateX(15%);
+            }
+
+            100% {
+                transform:
+                    translateX(-20%);
+            }
+
+        }
+
+
+        /* =====================================================
+           CITY
+        ===================================================== */
+
+        .city {
+            position: absolute;
+
+            bottom: 0;
+            left: 0;
+
+            width: 100%;
+            height: 42%;
+
+            display: flex;
+            align-items: flex-end;
+
+            gap: 5px;
+
+            opacity: .9;
+        }
+
+
+        .city span {
+            display: block;
+
+            width: 11%;
+
+            height: var(--h);
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #07070b,
+                    #11101b
+                );
+
+            border-top:
+                1px solid
+                rgba(160,120,255,.18);
+
             position: relative;
         }
 
+
+        .city span::before {
+            content: "";
+
+            position: absolute;
+
+            inset: 12px 7px;
+
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0 12px,
+                    rgba(180,130,255,.25)
+                    13px 15px
+                ),
+
+                repeating-linear-gradient(
+                    90deg,
+                    transparent 0 10px,
+                    rgba(180,130,255,.18)
+                    11px 13px
+                );
+
+            opacity: .45;
+        }
+
+
+        /* =====================================================
+           CHARACTER
+        ===================================================== */
+
+        .character {
+            position: absolute;
+
+            bottom: 11%;
+            right: 34%;
+
+            width: 120px;
+            height: 330px;
+
+            filter:
+                drop-shadow(
+                    0 0 20px
+                    rgba(120,70,255,.3)
+                );
+
+            animation:
+                characterFloat 4s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes characterFloat {
+
+            0%,
+            100% {
+                transform:
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    translateY(-5px);
+            }
+
+        }
+
+
+        .character .head {
+            position: absolute;
+
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+
+            background: #09090d;
+
+            left: 31px;
+            top: 0;
+        }
+
+
+        .character .body {
+            position: absolute;
+
+            width: 85px;
+            height: 190px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #050509,
+                    #171421,
+                    #050509
+                );
+
+            left: 17px;
+            top: 48px;
+
+            clip-path:
+                polygon(
+                    25% 0,
+                    75% 0,
+                    100% 100%,
+                    0 100%
+                );
+        }
+
+
+        .character .arm {
+            position: absolute;
+
+            width: 22px;
+            height: 145px;
+
+            background: #08080c;
+
+            top: 60px;
+
+            border-radius: 20px;
+        }
+
+
+        .character .arm.left {
+            left: 3px;
+
+            transform:
+                rotate(10deg);
+        }
+
+
+        .character .arm.right {
+            right: 3px;
+
+            transform:
+                rotate(-10deg);
+        }
+
+
+        /* =====================================================
+           PARTICLES
+        ===================================================== */
+
+        .particles i {
+            position: absolute;
+
+            width: 3px;
+            height: 3px;
+
+            border-radius: 50%;
+
+            background: #b994ff;
+
+            box-shadow:
+                0 0 8px
+                #9b6cff;
+
+            animation:
+                particleFloat
+                5s
+                linear
+                infinite;
+        }
+
+
+        .particles i:nth-child(1) {
+            left: 10%;
+            top: 30%;
+            animation-delay: 0s;
+        }
+
+        .particles i:nth-child(2) {
+            left: 25%;
+            top: 65%;
+            animation-delay: 1s;
+        }
+
+        .particles i:nth-child(3) {
+            left: 45%;
+            top: 25%;
+            animation-delay: 2s;
+        }
+
+        .particles i:nth-child(4) {
+            left: 60%;
+            top: 55%;
+            animation-delay: 3s;
+        }
+
+        .particles i:nth-child(5) {
+            left: 80%;
+            top: 35%;
+            animation-delay: 1.5s;
+        }
+
+        .particles i:nth-child(6) {
+            left: 90%;
+            top: 70%;
+            animation-delay: 2.5s;
+        }
+
+        .particles i:nth-child(7) {
+            left: 15%;
+            top: 80%;
+            animation-delay: 3.5s;
+        }
+
+        .particles i:nth-child(8) {
+            left: 35%;
+            top: 45%;
+            animation-delay: 4s;
+        }
+
+        .particles i:nth-child(9) {
+            left: 70%;
+            top: 20%;
+            animation-delay: 1s;
+        }
+
+        .particles i:nth-child(10) {
+            left: 50%;
+            top: 75%;
+            animation-delay: 2s;
+        }
+
+        .particles i:nth-child(11) {
+            left: 5%;
+            top: 55%;
+            animation-delay: 3s;
+        }
+
+        .particles i:nth-child(12) {
+            left: 75%;
+            top: 60%;
+            animation-delay: 4s;
+        }
+
+        .particles i:nth-child(13) {
+            left: 40%;
+            top: 15%;
+            animation-delay: 1s;
+        }
+
+        .particles i:nth-child(14) {
+            left: 85%;
+            top: 45%;
+            animation-delay: 2s;
+        }
+
+        .particles i:nth-child(15) {
+            left: 30%;
+            top: 85%;
+            animation-delay: 3s;
+        }
+
+
+        @keyframes particleFloat {
+
+            0% {
+                transform:
+                    translateY(30px);
+
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            80% {
+                opacity: 1;
+            }
+
+            100% {
+                transform:
+                    translateY(-100px);
+
+                opacity: 0;
+            }
+
+        }
+
+
+        /* =====================================================
+           SECTIONS
+        ===================================================== */
+
+        section {
+            padding:
+                110px 7%;
+
+            position: relative;
+        }
+
+
         .section-title {
             max-width: 750px;
+
             margin-bottom: 55px;
         }
 
+
         .section-title small {
             color: #9b6cff;
+
             letter-spacing: 4px;
+
             text-transform: uppercase;
         }
 
+
         .section-title h2 {
             margin-top: 12px;
-            font-size: clamp(35px, 5vw, 65px);
+
+            font-size:
+                clamp(
+                    35px,
+                    5vw,
+                    65px
+                );
+
             line-height: 1;
         }
 
+
         .section-title p {
             color: #888;
+
             line-height: 1.8;
+
             margin-top: 20px;
         }
 
-        /* =========================
+
+        /* =====================================================
            FEATURES
-        ========================= */
+        ===================================================== */
 
         .features {
             background: #08080e;
         }
 
+
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
             gap: 18px;
         }
 
+
         .feature {
             padding: 35px;
+
             min-height: 280px;
-            background: linear-gradient(
-                145deg,
-                rgba(255,255,255,.07),
-                rgba(255,255,255,.025)
-            );
-            border: 1px solid rgba(255,255,255,.08);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.07),
+                    rgba(255,255,255,.025)
+                );
+
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+
             border-radius: 15px;
-            transition: .35s;
+
+            transition:
+                transform .35s ease,
+                border-color .35s ease;
+
             position: relative;
+
             overflow: hidden;
         }
 
+
         .feature::before {
             content: "";
+
             position: absolute;
+
             width: 130px;
             height: 130px;
+
             background: #8b5cf6;
+
             filter: blur(80px);
+
             opacity: 0;
+
             right: -50px;
             top: -50px;
+
             transition: .35s;
         }
 
+
         .feature:hover {
-            transform: translateY(-8px);
-            border-color: rgba(155,92,246,.4);
+            transform:
+                translateY(-8px);
+
+            border-color:
+                rgba(155,92,246,.4);
         }
+
 
         .feature:hover::before {
             opacity: .35;
         }
 
+
         .feature-icon {
             font-size: 40px;
+
             margin-bottom: 30px;
         }
 
+
         .feature h3 {
             font-size: 22px;
+
             margin-bottom: 14px;
         }
 
+
         .feature p {
             color: #888;
+
             line-height: 1.7;
         }
 
-        /* =========================
+
+        /* =====================================================
            TRAILER
-        ========================= */
+        ===================================================== */
 
         .trailer {
             min-height: 600px;
+
             display: flex;
+
             align-items: center;
             justify-content: center;
 
@@ -375,6 +1061,7 @@
                     rgba(5,5,9,.4),
                     rgba(5,5,9,.9)
                 ),
+
                 radial-gradient(
                     circle at center,
                     #28134e,
@@ -382,157 +1069,288 @@
                 );
         }
 
+
         .trailer-card {
-            width: min(1000px, 100%);
-            aspect-ratio: 16 / 9;
+            width:
+                min(1000px, 100%);
+
+            aspect-ratio:
+                16 / 9;
+
             border-radius: 18px;
-            border: 1px solid rgba(255,255,255,.12);
+
+            border:
+                1px solid
+                rgba(255,255,255,.12);
+
             display: flex;
+
             align-items: center;
             justify-content: center;
+
             position: relative;
+
             overflow: hidden;
+
             background:
                 radial-gradient(
                     circle,
                     rgba(139,92,246,.3),
                     transparent 40%
                 ),
+
                 #08080d;
         }
 
+
         .trailer-card::before {
-            content: "NIGHTFALL";
+            content:
+                "NIGHTFALL";
+
             position: absolute;
-            font-size: clamp(50px, 10vw, 130px);
+
+            font-size:
+                clamp(
+                    50px,
+                    10vw,
+                    130px
+                );
+
             font-weight: 1000;
-            color: rgba(255,255,255,.025);
+
+            color:
+                rgba(255,255,255,.025);
+
             letter-spacing: -5px;
         }
 
+
         .play-button {
             position: relative;
+
             z-index: 2;
+
             width: 90px;
             height: 90px;
+
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,.3);
-            background: rgba(255,255,255,.08);
+
+            border:
+                1px solid
+                rgba(255,255,255,.3);
+
+            background:
+                rgba(255,255,255,.08);
+
             backdrop-filter: blur(10px);
+
             color: white;
+
             font-size: 28px;
+
             cursor: pointer;
+
             transition: .3s;
         }
 
+
         .play-button:hover {
-            transform: scale(1.12);
-            background: #8b5cf6;
-            box-shadow: 0 0 50px rgba(139,92,246,.6);
+            transform:
+                scale(1.12);
+
+            background:
+                #8b5cf6;
+
+            box-shadow:
+                0 0 50px
+                rgba(139,92,246,.6);
         }
 
-        /* =========================
+
+        /* =====================================================
            STORY
-        ========================= */
+        ===================================================== */
 
         .story-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+
+            grid-template-columns:
+                1fr 1fr;
+
             gap: 70px;
+
             align-items: center;
         }
 
+
         .story-image {
             min-height: 500px;
+
             border-radius: 18px;
+
             background:
                 linear-gradient(
                     135deg,
                     rgba(139,92,246,.35),
                     transparent
                 ),
+
                 radial-gradient(
                     circle at 70% 30%,
                     #5524a0,
                     transparent 30%
                 ),
+
                 #09090f;
-            border: 1px solid rgba(255,255,255,.08);
+
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+
             position: relative;
+
             overflow: hidden;
         }
 
-        .story-image::after {
-            content: "01";
+
+        .story-image::before {
+            content: "";
+
             position: absolute;
-            bottom: -40px;
-            right: 20px;
-            font-size: 220px;
-            font-weight: 1000;
-            color: rgba(255,255,255,.025);
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            background:
+                #d8caff;
+
+            right: 18%;
+            top: 16%;
+
+            box-shadow:
+                0 0 70px
+                rgba(180,150,255,.4);
         }
 
+
+        .story-image::after {
+            content: "01";
+
+            position: absolute;
+
+            bottom: -40px;
+            right: 20px;
+
+            font-size: 220px;
+
+            font-weight: 1000;
+
+            color:
+                rgba(255,255,255,.025);
+        }
+
+
         .story-content h2 {
-            font-size: clamp(40px, 5vw, 70px);
+            font-size:
+                clamp(
+                    40px,
+                    5vw,
+                    70px
+                );
+
             line-height: .95;
+
             margin-bottom: 25px;
         }
 
+
         .story-content p {
             color: #8e8e98;
+
             line-height: 1.9;
+
             margin-bottom: 18px;
         }
 
-        /* =========================
+
+        /* =====================================================
            REQUIREMENTS
-        ========================= */
+        ===================================================== */
 
         .requirements {
             background: #08080e;
         }
 
+
         .requirements-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+
+            grid-template-columns:
+                1fr 1fr;
+
             gap: 20px;
         }
 
+
         .requirements-box {
             padding: 35px;
-            background: rgba(255,255,255,.035);
-            border: 1px solid rgba(255,255,255,.08);
+
+            background:
+                rgba(255,255,255,.035);
+
+            border:
+                1px solid
+                rgba(255,255,255,.08);
+
             border-radius: 14px;
         }
 
+
         .requirements-box h3 {
             margin-bottom: 25px;
+
             color: #b990ff;
         }
 
+
         .requirement {
             display: flex;
-            justify-content: space-between;
+
+            justify-content:
+                space-between;
+
             gap: 30px;
+
             padding: 15px 0;
-            border-bottom: 1px solid rgba(255,255,255,.07);
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,.07);
         }
+
 
         .requirement:last-child {
             border-bottom: 0;
         }
 
+
         .requirement span:first-child {
             color: #777;
         }
 
-        /* =========================
+
+        /* =====================================================
            CTA
-        ========================= */
+        ===================================================== */
 
         .cta {
             text-align: center;
-            padding: 150px 7%;
+
+            padding:
+                150px 7%;
+
             background:
                 radial-gradient(
                     circle at center,
@@ -541,173 +1359,303 @@
                 );
         }
 
+
         .cta h2 {
-            font-size: clamp(45px, 8vw, 100px);
+            font-size:
+                clamp(
+                    45px,
+                    8vw,
+                    100px
+                );
+
             line-height: .9;
+
             margin-bottom: 25px;
         }
 
+
         .cta p {
             color: #888;
+
             margin-bottom: 35px;
         }
 
-        /* =========================
+
+        /* =====================================================
            FOOTER
-        ========================= */
+        ===================================================== */
 
         footer {
-            padding: 35px 7%;
+            padding:
+                35px 7%;
+
             display: flex;
-            justify-content: space-between;
+
+            justify-content:
+                space-between;
+
             align-items: center;
-            border-top: 1px solid rgba(255,255,255,.07);
+
+            border-top:
+                1px solid
+                rgba(255,255,255,.07);
+
             color: #666;
+
             font-size: 13px;
         }
 
+
         .socials {
             display: flex;
+
             gap: 20px;
         }
+
 
         .socials a {
             transition: .25s;
         }
 
+
         .socials a:hover {
             color: white;
         }
 
-        /* =========================
+
+        /* =====================================================
            MODAL
-        ========================= */
+        ===================================================== */
 
         .modal {
             position: fixed;
+
             inset: 0;
-            background: rgba(0,0,0,.8);
-            backdrop-filter: blur(10px);
+
+            background:
+                rgba(0,0,0,.82);
+
+            backdrop-filter:
+                blur(12px);
+
             display: flex;
+
             align-items: center;
             justify-content: center;
+
             z-index: 500;
+
             opacity: 0;
+
             pointer-events: none;
+
             transition: .3s;
+
             padding: 20px;
         }
 
+
         .modal.active {
             opacity: 1;
+
             pointer-events: auto;
         }
 
+
         .modal-content {
-            width: min(700px, 100%);
+            width:
+                min(700px, 100%);
+
             padding: 40px;
+
             background: #101017;
-            border: 1px solid rgba(255,255,255,.1);
+
+            border:
+                1px solid
+                rgba(255,255,255,.1);
+
             border-radius: 18px;
+
             position: relative;
-            transform: translateY(20px);
+
+            transform:
+                translateY(20px);
+
             transition: .3s;
         }
 
-        .modal.active .modal-content {
-            transform: translateY(0);
+
+        .modal.active
+        .modal-content {
+            transform:
+                translateY(0);
         }
+
 
         .modal-close {
             position: absolute;
+
             top: 15px;
             right: 18px;
-            background: transparent;
+
+            background:
+                transparent;
+
             border: 0;
+
             color: #888;
+
             font-size: 25px;
+
             cursor: pointer;
         }
+
+
+        .modal-close:hover {
+            color: white;
+        }
+
 
         .modal-content h2 {
             margin-bottom: 15px;
         }
 
+
         .modal-content p {
             color: #888;
+
             line-height: 1.7;
         }
 
-        /* =========================
-           REVEAL ANIMATION
-        ========================= */
+
+        /* =====================================================
+           REVEAL
+        ===================================================== */
 
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: 0.8s ease;
+
+            transform:
+                translateY(30px);
+
+            transition:
+                opacity .8s ease,
+                transform .8s ease;
         }
+
 
         .reveal.visible {
             opacity: 1;
-            transform: translateY(0);
+
+            transform:
+                translateY(0);
         }
 
-        /* =========================
+
+        /* =====================================================
            RESPONSIVE
-        ========================= */
+        ===================================================== */
 
         @media (max-width: 850px) {
 
             nav {
                 position: absolute;
+
                 top: 76px;
                 right: 0;
+
                 width: 100%;
+
                 padding: 25px;
+
                 flex-direction: column;
-                background: rgba(5,5,9,.96);
+
+                background:
+                    rgba(5,5,9,.96);
+
                 display: none;
             }
+
 
             nav.active {
                 display: flex;
             }
 
+
             .menu-btn {
                 display: block;
             }
 
+
             .feature-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    1fr;
             }
+
 
             .story-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    1fr;
             }
 
+
             .requirements-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    1fr;
             }
+
 
             .story-image {
                 min-height: 350px;
             }
 
+
             .hero h1 {
                 letter-spacing: -4px;
             }
 
+
             .hero-stats {
                 gap: 25px;
+
                 flex-wrap: wrap;
             }
 
+
+            .hero-scene {
+                width: 100%;
+
+                opacity: .3;
+            }
+
+
+            .moon {
+                width: 160px;
+                height: 160px;
+
+                right: 5%;
+                top: 12%;
+            }
+
+
+            .character {
+                right: 25%;
+
+                transform:
+                    scale(.75);
+
+                transform-origin:
+                    bottom;
+            }
+
+
             footer {
                 flex-direction: column;
+
                 gap: 20px;
             }
         }
+
 
         @media (max-width: 500px) {
 
@@ -715,45 +1663,73 @@
                 padding: 0 5%;
             }
 
+
             section,
             .hero {
                 padding-left: 5%;
                 padding-right: 5%;
             }
 
+
             .hero {
                 padding-top: 120px;
             }
+
 
             .hero h1 {
                 font-size: 62px;
             }
 
+
             .hero p {
                 font-size: 15px;
             }
+
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
 
             .btn {
                 width: 100%;
             }
 
+
             .feature {
                 min-height: auto;
             }
 
+
             .requirement {
                 flex-direction: column;
+
                 gap: 5px;
             }
+
+
+            .hero-scene {
+                opacity: .18;
+            }
+
+
+            .moon {
+                width: 120px;
+                height: 120px;
+            }
+
         }
+
     </style>
 </head>
 
+
 <body>
 
-    <!-- =========================
+
+    <!-- =====================================================
          HEADER
-    ========================= -->
+    ===================================================== -->
 
     <header>
 
@@ -761,27 +1737,56 @@
             NIGHT<span>FALL</span>
         </a>
 
+
         <nav id="nav">
-            <a href="#home">Главная</a>
-            <a href="#features">Особенности</a>
-            <a href="#story">История</a>
-            <a href="#requirements">Система</a>
+
+            <a href="#home">
+                Главная
+            </a>
+
+            <a href="#features">
+                Особенности
+            </a>
+
+            <a href="#story">
+                История
+            </a>
+
+            <a href="#requirements">
+                Система
+            </a>
+
         </nav>
 
-        <button class="menu-btn" id="menuBtn">
+
+        <button
+            class="menu-btn"
+            id="menuBtn"
+            aria-label="Открыть меню"
+        >
             ☰
         </button>
 
     </header>
 
 
-    <!-- =========================
-         HERO
-    ========================= -->
+
+    <!-- =====================================================
+         MAIN
+    ===================================================== -->
 
     <main>
 
-        <section class="hero" id="home">
+
+        <!-- =================================================
+             HERO
+        ================================================== -->
+
+        <section
+            class="hero"
+            id="home"
+        >
+
 
             <div class="hero-content reveal">
 
@@ -789,45 +1794,165 @@
                     Новая игра • 2026
                 </span>
 
+
                 <h1>
-                    Night<br>
-                    <span>Fall</span>
+
+                    NIGHT
+                    <br>
+
+                    <span>FALL</span>
+
                 </h1>
 
+
                 <p>
-                    Ночь изменилась. Город больше не принадлежит людям.
-                    Исследуй заброшенные улицы, раскрывай тайны прошлого
-                    и решай, кому можно доверять, когда свет погаснет.
+                    Ночь изменилась.
+                    Город больше не принадлежит людям.
+                    Исследуй заброшенные улицы,
+                    раскрывай тайны прошлого и решай,
+                    кому можно доверять,
+                    когда свет погаснет.
                 </p>
+
 
                 <div class="hero-buttons">
 
-                    <button class="btn btn-primary" id="downloadBtn">
+                    <button
+                        class="btn btn-primary"
+                        id="downloadBtn"
+                    >
                         Играть сейчас
                     </button>
 
-                    <a href="#trailer" class="btn btn-secondary">
+
+                    <a
+                        href="#trailer"
+                        class="btn btn-secondary"
+                    >
                         Смотреть трейлер
                     </a>
 
                 </div>
 
+
                 <div class="hero-stats">
 
                     <div class="stat">
-                        <strong>16+</strong>
-                        <span>Возраст</span>
+
+                        <strong>
+                            16+
+                        </strong>
+
+                        <span>
+                            Возраст
+                        </span>
+
                     </div>
 
-                    <div class="stat">
-                        <strong>PC</strong>
-                        <span>Платформа</span>
-                    </div>
 
                     <div class="stat">
-                        <strong>2026</strong>
-                        <span>Релиз</span>
+
+                        <strong>
+                            PC
+                        </strong>
+
+                        <span>
+                            Платформа
+                        </span>
+
                     </div>
+
+
+                    <div class="stat">
+
+                        <strong>
+                            2026
+                        </strong>
+
+                        <span>
+                            Релиз
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 GAME SCENE
+            ============================================== -->
+
+            <div
+                class="hero-scene"
+                id="heroScene"
+            >
+
+                <div class="moon"></div>
+
+
+                <div class="fog fog-1"></div>
+
+                <div class="fog fog-2"></div>
+
+
+                <div class="city">
+
+                    <span style="--h: 90px"></span>
+
+                    <span style="--h: 150px"></span>
+
+                    <span style="--h: 110px"></span>
+
+                    <span style="--h: 190px"></span>
+
+                    <span style="--h: 130px"></span>
+
+                    <span style="--h: 220px"></span>
+
+                    <span style="--h: 160px"></span>
+
+                    <span style="--h: 100px"></span>
+
+                    <span style="--h: 180px"></span>
+
+                </div>
+
+
+                <div class="character">
+
+                    <div class="head"></div>
+
+                    <div class="body"></div>
+
+                    <div class="arm left"></div>
+
+                    <div class="arm right"></div>
+
+                </div>
+
+
+                <div class="particles">
+
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
 
                 </div>
 
@@ -836,25 +1961,34 @@
         </section>
 
 
-        <!-- =========================
-             FEATURES
-        ========================= -->
 
-        <section class="features" id="features">
+        <!-- =================================================
+             FEATURES
+        ================================================== -->
+
+        <section
+            class="features"
+            id="features"
+        >
 
             <div class="section-title reveal">
 
-                <small>Особенности</small>
+                <small>
+                    Особенности
+                </small>
+
 
                 <h2>
-                    Игра, которая<br>
+                    Игра, которая
+                    <br>
                     не отпускает.
                 </h2>
 
+
                 <p>
                     Каждый шаг меняет мир вокруг тебя.
-                    Исследуй, принимай решения и будь готов
-                    к последствиям.
+                    Исследуй, принимай решения
+                    и будь готов к последствиям.
                 </p>
 
             </div>
@@ -862,45 +1996,69 @@
 
             <div class="feature-grid">
 
+
                 <article class="feature reveal">
 
-                    <div class="feature-icon">🌑</div>
+                    <div class="feature-icon">
+                        🌑
+                    </div>
 
-                    <h3>Живой мир</h3>
+
+                    <h3>
+                        Живой мир
+                    </h3>
+
 
                     <p>
-                        Город продолжает существовать даже тогда,
-                        когда ты его не видишь. Персонажи меняют
-                        свои действия в зависимости от твоих решений.
+                        Город продолжает существовать
+                        даже тогда, когда ты его не видишь.
+                        Персонажи меняют свои действия
+                        в зависимости от твоих решений.
                     </p>
 
                 </article>
 
 
+
                 <article class="feature reveal">
 
-                    <div class="feature-icon">👁️</div>
+                    <div class="feature-icon">
+                        👁️
+                    </div>
 
-                    <h3>Невидимый враг</h3>
+
+                    <h3>
+                        Невидимый враг
+                    </h3>
+
 
                     <p>
-                        Не всё, что происходит ночью, можно объяснить.
-                        Иногда лучше спрятаться, чем пытаться узнать правду.
+                        Не всё, что происходит ночью,
+                        можно объяснить.
+                        Иногда лучше спрятаться,
+                        чем пытаться узнать правду.
                     </p>
 
                 </article>
 
 
+
                 <article class="feature reveal">
 
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon">
+                        ⚡
+                    </div>
 
-                    <h3>Твои решения</h3>
+
+                    <h3>
+                        Твои решения
+                    </h3>
+
 
                     <p>
                         Здесь нет одного правильного пути.
-                        Твои действия меняют отношения между персонажами
-                        и развитие истории.
+                        Твои действия меняют отношения
+                        между персонажами и развитие истории.
                     </p>
 
                 </article>
@@ -910,15 +2068,23 @@
         </section>
 
 
-        <!-- =========================
-             TRAILER
-        ========================= -->
 
-        <section class="trailer" id="trailer">
+        <!-- =================================================
+             TRAILER
+        ================================================== -->
+
+        <section
+            class="trailer"
+            id="trailer"
+        >
 
             <div class="trailer-card reveal">
 
-                <button class="play-button" id="playBtn">
+                <button
+                    class="play-button"
+                    id="playBtn"
+                    aria-label="Запустить трейлер"
+                >
                     ▶
                 </button>
 
@@ -927,15 +2093,18 @@
         </section>
 
 
-        <!-- =========================
+
+        <!-- =================================================
              STORY
-        ========================= -->
+        ================================================== -->
 
         <section id="story">
 
             <div class="story-grid">
 
+
                 <div class="story-image reveal"></div>
+
 
                 <div class="story-content reveal">
 
@@ -943,26 +2112,37 @@
                         История
                     </span>
 
+
                     <h2>
-                        Город,<br>
-                        который забыл солнце.
+                        Город,
+                        <br>
+                        который
+                        <br>
+                        забыл солнце.
                     </h2>
 
+
                     <p>
-                        После неизвестного события ночь накрыла город
+                        После неизвестного события
+                        ночь накрыла город
                         и не собирается уходить.
                     </p>
 
+
                     <p>
-                        Ты играешь за человека, который возвращается
-                        домой спустя семь лет. Но место, которое он
-                        помнил, больше не существует.
+                        Ты играешь за человека,
+                        который возвращается домой
+                        спустя семь лет.
+                        Но место, которое он помнил,
+                        больше не существует.
                     </p>
+
 
                     <p>
                         В каждом районе скрыта часть истории.
                         И чем ближе ты подходишь к разгадке,
-                        тем меньше понимаешь, кому можно доверять.
+                        тем меньше понимаешь,
+                        кому можно доверять.
                     </p>
 
                 </div>
@@ -972,15 +2152,22 @@
         </section>
 
 
-        <!-- =========================
-             REQUIREMENTS
-        ========================= -->
 
-        <section class="requirements" id="requirements">
+        <!-- =================================================
+             REQUIREMENTS
+        ================================================== -->
+
+        <section
+            class="requirements"
+            id="requirements"
+        >
 
             <div class="section-title reveal">
 
-                <small>Системные требования</small>
+                <small>
+                    Системные требования
+                </small>
+
 
                 <h2>
                     Готов встретить ночь?
@@ -991,65 +2178,151 @@
 
             <div class="requirements-grid">
 
+
                 <div class="requirements-box reveal">
 
-                    <h3>Минимальные</h3>
+                    <h3>
+                        Минимальные
+                    </h3>
+
 
                     <div class="requirement">
-                        <span>ОС</span>
-                        <strong>Windows 10</strong>
+
+                        <span>
+                            ОС
+                        </span>
+
+                        <strong>
+                            Windows 10
+                        </strong>
+
                     </div>
 
-                    <div class="requirement">
-                        <span>Процессор</span>
-                        <strong>Intel Core i5</strong>
-                    </div>
 
                     <div class="requirement">
-                        <span>ОЗУ</span>
-                        <strong>8 GB</strong>
+
+                        <span>
+                            Процессор
+                        </span>
+
+                        <strong>
+                            Intel Core i5
+                        </strong>
+
                     </div>
 
-                    <div class="requirement">
-                        <span>Видеокарта</span>
-                        <strong>GTX 1060</strong>
-                    </div>
 
                     <div class="requirement">
-                        <span>Место</span>
-                        <strong>35 GB</strong>
+
+                        <span>
+                            ОЗУ
+                        </span>
+
+                        <strong>
+                            8 GB
+                        </strong>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <span>
+                            Видеокарта
+                        </span>
+
+                        <strong>
+                            GTX 1060
+                        </strong>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <span>
+                            Место
+                        </span>
+
+                        <strong>
+                            35 GB
+                        </strong>
+
                     </div>
 
                 </div>
 
 
+
                 <div class="requirements-box reveal">
 
-                    <h3>Рекомендуемые</h3>
+                    <h3>
+                        Рекомендуемые
+                    </h3>
+
 
                     <div class="requirement">
-                        <span>ОС</span>
-                        <strong>Windows 11</strong>
+
+                        <span>
+                            ОС
+                        </span>
+
+                        <strong>
+                            Windows 11
+                        </strong>
+
                     </div>
 
-                    <div class="requirement">
-                        <span>Процессор</span>
-                        <strong>Intel Core i7</strong>
-                    </div>
 
                     <div class="requirement">
-                        <span>ОЗУ</span>
-                        <strong>16 GB</strong>
+
+                        <span>
+                            Процессор
+                        </span>
+
+                        <strong>
+                            Intel Core i7
+                        </strong>
+
                     </div>
 
-                    <div class="requirement">
-                        <span>Видеокарта</span>
-                        <strong>RTX 3060</strong>
-                    </div>
 
                     <div class="requirement">
-                        <span>Место</span>
-                        <strong>35 GB SSD</strong>
+
+                        <span>
+                            ОЗУ
+                        </span>
+
+                        <strong>
+                            16 GB
+                        </strong>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <span>
+                            Видеокарта
+                        </span>
+
+                        <strong>
+                            RTX 3060
+                        </strong>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <span>
+                            Место
+                        </span>
+
+                        <strong>
+                            35 GB SSD
+                        </strong>
+
                     </div>
 
                 </div>
@@ -1059,9 +2332,10 @@
         </section>
 
 
-        <!-- =========================
+
+        <!-- =================================================
              CTA
-        ========================= -->
+        ================================================== -->
 
         <section class="cta">
 
@@ -1071,16 +2345,23 @@
                     Ночь уже здесь
                 </span>
 
+
                 <h2>
-                    НЕ<br>
+                    НЕ
+                    <br>
                     ОГЛЯДЫВАЙСЯ.
                 </h2>
+
 
                 <p>
                     NIGHTFALL — скоро на PC.
                 </p>
 
-                <button class="btn btn-primary" id="notifyBtn">
+
+                <button
+                    class="btn btn-primary"
+                    id="notifyBtn"
+                >
                     Узнать о релизе
                 </button>
 
@@ -1091,40 +2372,63 @@
     </main>
 
 
-    <!-- =========================
+
+    <!-- =====================================================
          FOOTER
-    ========================= -->
+    ===================================================== -->
 
     <footer>
 
         <div>
-            © 2026 NIGHTFALL. Все права защищены.
+            © 2026 NIGHTFALL.
+            Все права защищены.
         </div>
 
+
         <div class="socials">
-            <a href="#">Discord</a>
-            <a href="#">YouTube</a>
-            <a href="#">Steam</a>
+
+            <a href="#">
+                Discord
+            </a>
+
+            <a href="#">
+                YouTube
+            </a>
+
+            <a href="#">
+                Steam
+            </a>
+
         </div>
 
     </footer>
 
 
-    <!-- =========================
-         MODAL
-    ========================= -->
 
-    <div class="modal" id="modal">
+    <!-- =====================================================
+         MODAL
+    ===================================================== -->
+
+    <div
+        class="modal"
+        id="modal"
+    >
 
         <div class="modal-content">
 
-            <button class="modal-close" id="modalClose">
+            <button
+                class="modal-close"
+                id="modalClose"
+                aria-label="Закрыть"
+            >
                 ×
             </button>
+
 
             <h2 id="modalTitle">
                 NIGHTFALL
             </h2>
+
 
             <p id="modalText">
                 Здесь появится информация.
@@ -1135,253 +2439,431 @@
     </div>
 
 
-    <!-- =========================
+
+    <!-- =====================================================
          JAVASCRIPT
-    ========================= -->
+    ===================================================== -->
 
     <script>
 
-        /* =========================
+        /* =================================================
+           ELEMENTS
+        ================================================= */
+
+        const menuBtn =
+            document.getElementById("menuBtn");
+
+        const nav =
+            document.getElementById("nav");
+
+        const modal =
+            document.getElementById("modal");
+
+        const modalTitle =
+            document.getElementById("modalTitle");
+
+        const modalText =
+            document.getElementById("modalText");
+
+        const modalClose =
+            document.getElementById("modalClose");
+
+        const heroScene =
+            document.getElementById("heroScene");
+
+        const heroContent =
+            document.querySelector(".hero-content");
+
+
+        /* =================================================
            MOBILE MENU
-        ========================= */
+        ================================================= */
 
-        const menuBtn = document.getElementById("menuBtn");
-        const nav = document.getElementById("nav");
+        menuBtn.addEventListener(
+            "click",
+            () => {
 
-        menuBtn.addEventListener("click", () => {
-            nav.classList.toggle("active");
-        });
+                nav.classList.toggle("active");
+
+            }
+        );
 
 
-        /* =========================
-           CLOSE MOBILE MENU
-        ========================= */
+        document
+            .querySelectorAll("nav a")
+            .forEach(link => {
 
-        document.querySelectorAll("nav a").forEach(link => {
+                link.addEventListener(
+                    "click",
+                    () => {
 
-            link.addEventListener("click", () => {
-                nav.classList.remove("active");
+                        nav.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
             });
 
-        });
 
-
-        /* =========================
+        /* =================================================
            MODAL
-        ========================= */
+        ================================================= */
 
-        const modal = document.getElementById("modal");
-        const modalTitle = document.getElementById("modalTitle");
-        const modalText = document.getElementById("modalText");
-        const modalClose = document.getElementById("modalClose");
+        function openModal(
+            title,
+            text
+        ) {
 
+            modalTitle.textContent =
+                title;
 
-        function openModal(title, text) {
+            modalText.textContent =
+                text;
 
-            modalTitle.textContent = title;
-            modalText.textContent = text;
+            modal.classList.add(
+                "active"
+            );
 
-            modal.classList.add("active");
-
+            document.body.classList.add(
+                "modal-open"
+            );
         }
 
 
         function closeModal() {
-            modal.classList.remove("active");
+
+            modal.classList.remove(
+                "active"
+            );
+
+            document.body.classList.remove(
+                "modal-open"
+            );
         }
 
 
-        modalClose.addEventListener("click", closeModal);
-
-
-        modal.addEventListener("click", (event) => {
-
-            if (event.target === modal) {
-                closeModal();
-            }
-
-        });
-
-
-        document.addEventListener("keydown", (event) => {
-
-            if (event.key === "Escape") {
-                closeModal();
-            }
-
-        });
-
-
-        /* =========================
-           PLAY TRAILER
-        ========================= */
-
-        const playBtn = document.getElementById("playBtn");
-
-        playBtn.addEventListener("click", () => {
-
-            openModal(
-                "Трейлер NIGHTFALL",
-                "Здесь можно разместить YouTube-видео, трейлер игры или собственный видеоплеер."
-            );
-
-        });
-
-
-        /* =========================
-           DOWNLOAD BUTTON
-        ========================= */
-
-        const downloadBtn = document.getElementById("downloadBtn");
-
-        downloadBtn.addEventListener("click", () => {
-
-            openModal(
-                "Ранний доступ",
-                "Игра пока находится в разработке. Скоро здесь появится кнопка скачивания NIGHTFALL."
-            );
-
-        });
-
-
-        /* =========================
-           NOTIFY BUTTON
-        ========================= */
-
-        const notifyBtn = document.getElementById("notifyBtn");
-
-        notifyBtn.addEventListener("click", () => {
-
-            openModal(
-                "Спасибо!",
-                "Когда релиз будет близко, здесь можно подключить форму подписки или Discord-сообщество."
-            );
-
-        });
-
-
-        /* =========================
-           SCROLL REVEAL
-        ========================= */
-
-        const revealElements =
-            document.querySelectorAll(".reveal");
-
-
-        const observer = new IntersectionObserver(
-
-            (entries) => {
-
-                entries.forEach(entry => {
-
-                    if (entry.isIntersecting) {
-
-                        entry.target.classList.add("visible");
-
-                        observer.unobserve(entry.target);
-
-                    }
-
-                });
-
-            },
-
-            {
-                threshold: 0.12
-            }
-
+        modalClose.addEventListener(
+            "click",
+            closeModal
         );
 
 
-        revealElements.forEach(element => {
-            observer.observe(element);
-        });
-
-
-        /* =========================
-           PARALLAX HERO
-        ========================= */
-
-        const hero = document.querySelector(".hero");
-        const heroContent = document.querySelector(".hero-content");
-
-
-        window.addEventListener("mousemove", (event) => {
-
-            if (window.innerWidth < 900) return;
-
-            const x =
-                (event.clientX / window.innerWidth - 0.5) * 10;
-
-            const y =
-                (event.clientY / window.innerHeight - 0.5) * 10;
-
-            heroContent.style.transform =
-                `translate(${x}px, ${y}px)`;
-
-        });
-
-
-        /* =========================
-           ACTIVE NAVIGATION
-        ========================= */
-
-        const sections =
-            document.querySelectorAll("section[id]");
-
-        const navLinks =
-            document.querySelectorAll("nav a");
-
-
-        window.addEventListener("scroll", () => {
-
-            let current = "";
-
-            sections.forEach(section => {
-
-                const sectionTop =
-                    section.offsetTop - 150;
-
-                if (window.scrollY >= sectionTop) {
-                    current = section.getAttribute("id");
-                }
-
-            });
-
-
-            navLinks.forEach(link => {
-
-                link.style.color = "#aaa";
+        modal.addEventListener(
+            "click",
+            event => {
 
                 if (
-                    link.getAttribute("href") === "#" + current
+                    event.target === modal
                 ) {
-                    link.style.color = "#fff";
+                    closeModal();
                 }
 
-            });
+            }
+        );
 
-        });
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Escape"
+                ) {
+                    closeModal();
+                }
+
+            }
+        );
 
 
-        /* =========================
+        /* =================================================
+           TRAILER
+        ================================================= */
+
+        document
+            .getElementById("playBtn")
+            .addEventListener(
+                "click",
+                () => {
+
+                    openModal(
+                        "Трейлер NIGHTFALL",
+
+                        "Здесь можно разместить настоящий трейлер игры. Например, YouTube-видео или собственный MP4-файл."
+                    );
+
+                }
+            );
+
+
+        /* =================================================
+           DOWNLOAD
+        ================================================= */
+
+        document
+            .getElementById("downloadBtn")
+            .addEventListener(
+                "click",
+                () => {
+
+                    openModal(
+                        "Ранний доступ",
+
+                        "Игра пока находится в разработке. Когда у тебя появится файл игры, сюда можно поставить настоящую кнопку скачивания."
+                    );
+
+                }
+            );
+
+
+        /* =================================================
+           NOTIFY
+        ================================================= */
+
+        document
+            .getElementById("notifyBtn")
+            .addEventListener(
+                "click",
+                () => {
+
+                    openModal(
+                        "NIGHTFALL",
+
+                        "Здесь можно подключить форму подписки на новости игры, Discord или Telegram."
+                    );
+
+                }
+            );
+
+
+        /* =================================================
+           SCROLL REVEAL
+        ================================================= */
+
+        const revealElements =
+            document.querySelectorAll(
+                ".reveal"
+            );
+
+
+        const observer =
+            new IntersectionObserver(
+                entries => {
+
+                    entries.forEach(
+                        entry => {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target
+                                    .classList
+                                    .add("visible");
+
+                                observer.unobserve(
+                                    entry.target
+                                );
+
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: .12
+                }
+            );
+
+
+        revealElements.forEach(
+            element => {
+
+                observer.observe(
+                    element
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           MOUSE PARALLAX
+        ================================================= */
+
+        window.addEventListener(
+            "mousemove",
+            event => {
+
+                if (
+                    window.innerWidth < 900
+                ) {
+                    return;
+                }
+
+
+                const mouseX =
+                    event.clientX /
+                    window.innerWidth -
+                    .5;
+
+
+                const mouseY =
+                    event.clientY /
+                    window.innerHeight -
+                    .5;
+
+
+                heroContent.style.transform =
+                    `
+                    translate(
+                        ${mouseX * 8}px,
+                        ${mouseY * 8}px
+                    )
+                    `;
+
+
+                heroScene.style.transform =
+                    `
+                    translate(
+                        ${mouseX * -15}px,
+                        ${mouseY * -10}px
+                    )
+                    `;
+
+            }
+        );
+
+
+        /* =================================================
+           ACTIVE NAVIGATION
+        ================================================= */
+
+        const sections =
+            document.querySelectorAll(
+                "section[id]"
+            );
+
+
+        const navLinks =
+            document.querySelectorAll(
+                "nav a"
+            );
+
+
+        window.addEventListener(
+            "scroll",
+            () => {
+
+                let current = "";
+
+
+                sections.forEach(
+                    section => {
+
+                        const top =
+                            section.offsetTop -
+                            180;
+
+
+                        if (
+                            window.scrollY >=
+                            top
+                        ) {
+
+                            current =
+                                section.id;
+
+                        }
+
+                    }
+                );
+
+
+                navLinks.forEach(
+                    link => {
+
+                        link.style.color =
+                            "#888";
+
+
+                        if (
+                            link.getAttribute(
+                                "href"
+                            ) ===
+                            "#" + current
+                        ) {
+
+                            link.style.color =
+                                "#fff";
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =================================================
+           RANDOM PARTICLE DELAYS
+        ================================================= */
+
+        document
+            .querySelectorAll(
+                ".particles i"
+            )
+            .forEach(
+                particle => {
+
+                    const randomDelay =
+                        Math.random() * 5;
+
+
+                    const randomDuration =
+                        4 + Math.random() * 5;
+
+
+                    particle.style
+                        .animationDelay =
+                        randomDelay + "s";
+
+
+                    particle.style
+                        .animationDuration =
+                        randomDuration + "s";
+
+                }
+            );
+
+
+        /* =================================================
            INITIAL LOAD
-        ========================= */
+        ================================================= */
 
-        window.addEventListener("load", () => {
+        window.addEventListener(
+            "load",
+            () => {
 
-            setTimeout(() => {
+                setTimeout(
+                    () => {
 
-                document
-                    .querySelector(".hero-content")
-                    .classList.add("visible");
+                        heroContent
+                            .classList
+                            .add("visible");
 
-            }, 150);
+                    },
+                    150
+                );
 
-        });
+            }
+        );
 
     </script>
 
 </body>
 </html>
-```
