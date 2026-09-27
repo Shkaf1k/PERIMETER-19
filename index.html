@@ -1,441 +1,1387 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PERIMETER 19 // OFFICIAL GAME HUB</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <title>NIGHTFALL — Тьма просыпается</title>
+
+    <meta
+        name="description"
+        content="NIGHTFALL — атмосферная игра, где ночь скрывает больше, чем кажется."
+    >
+
     <style>
-        :root {
-            --bg-dark: #07090e;
-            --card-bg: rgba(15, 23, 42, 0.65);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --border-glow: rgba(139, 92, 246, 0.25);
-            --primary-violet: #8b5cf6;
-            --primary-cyan: #06b6d4;
-            --accent-amber: #f59e0b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --text-dim: #64748b;
-        }
+        /* =========================
+           RESET
+        ========================= */
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            line-height: 1.6;
-            padding: 30px;
-            width: 100vw;
-            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #050509;
+            color: #fff;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(ellipse at top left, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
         }
 
-        .mono {
-            font-family: 'JetBrains Mono', monospace;
+        a {
+            color: inherit;
+            text-decoration: none;
         }
+
+        button {
+            font: inherit;
+        }
+
+        /* =========================
+           SCROLLBAR
+        ========================= */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050509;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 10px;
+        }
+
+        /* =========================
+           BACKGROUND EFFECT
+        ========================= */
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.035;
+            background-image:
+                linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
 
         header {
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 24px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-        }
-
-        .logo-group {
+            height: 76px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            justify-content: space-between;
+            padding: 0 7%;
+            z-index: 100;
+            background: rgba(5, 5, 9, 0.55);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,.06);
         }
 
-        .logo-badge {
-            background: linear-gradient(135deg, var(--primary-violet), var(--primary-cyan));
-            width: 42px;
-            height: 42px;
-            border-radius: 8px;
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 4px;
+        }
+
+        .logo span {
+            color: #9b5cff;
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        nav a {
+            color: #aaa;
+            font-size: 14px;
+            transition: .25s;
+        }
+
+        nav a:hover {
+            color: #fff;
+        }
+
+        .menu-btn {
+            display: none;
+            border: 0;
+            background: transparent;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 100vh;
+            position: relative;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            color: #fff;
-            font-size: 1.2rem;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+            padding: 130px 7% 80px;
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at 70% 45%,
+                    rgba(130, 70, 255, .22),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 20% 80%,
+                    rgba(0, 180, 255, .08),
+                    transparent 30%
+                ),
+                #050509;
         }
 
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: #fff;
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            right: -150px;
+            top: 20%;
+            background: #7c3aed;
+            filter: blur(180px);
+            opacity: .18;
+            border-radius: 50%;
+        }
+
+        .hero-content {
+            max-width: 750px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 22px;
+            color: #b994ff;
+            font-size: 13px;
+            letter-spacing: 5px;
             text-transform: uppercase;
         }
 
-        .logo-text span {
-            color: var(--primary-cyan);
+        .hero h1 {
+            font-size: clamp(65px, 12vw, 150px);
+            line-height: .82;
+            letter-spacing: -8px;
+            font-weight: 1000;
+            text-transform: uppercase;
         }
 
-        .sys-info {
+        .hero h1 span {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,.45);
+        }
+
+        .hero p {
+            max-width: 600px;
+            margin-top: 35px;
+            color: #aaa;
+            line-height: 1.8;
+            font-size: 17px;
+        }
+
+        .hero-buttons {
             display: flex;
-            gap: 20px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .sys-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            padding: 8px 14px;
-            border-radius: 6px;
-        }
-
-        .sys-item .val {
-            color: var(--primary-cyan);
-            font-weight: 600;
-        }
-
-        .nav-bar {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 35px;
+            gap: 15px;
+            margin-top: 35px;
             flex-wrap: wrap;
-            width: 100%;
         }
 
         .btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 24px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 0;
+            padding: 16px 27px;
             border-radius: 8px;
-            backdrop-filter: blur(12px);
-        }
-
-        .btn:hover {
-            border-color: var(--primary-cyan);
-            color: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.15);
+            cursor: pointer;
+            font-weight: 800;
+            transition: .3s;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary-violet), #6d28d9);
-            color: #fff;
-            border: none;
-            font-size: 1rem;
-            padding: 14px 28px;
-            font-weight: 700;
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+            background: #8b5cf6;
+            color: white;
+            box-shadow: 0 0 30px rgba(139,92,246,.25);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #9d72f8, #7c3aed);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+            transform: translateY(-3px);
+            background: #9d6cff;
+            box-shadow: 0 0 45px rgba(139,92,246,.45);
         }
 
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 2.2fr 1fr;
-            gap: 30px;
-            width: 100%;
+        .btn-secondary {
+            color: white;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.12);
         }
 
-        @media (max-width: 960px) {
-            .layout-grid {
-                grid-template-columns: 1fr;
-            }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,.1);
         }
 
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(16px);
-            transition: border-color 0.3s;
-        }
-
-        .card:hover {
-            border-color: var(--border-glow);
-        }
-
-        .card-header {
+        .hero-stats {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 14px;
-            margin-bottom: 20px;
+            gap: 50px;
+            margin-top: 60px;
         }
 
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .stat strong {
+            display: block;
+            font-size: 24px;
         }
 
-        .card-title::before {
-            content: '';
-            width: 4px;
-            height: 16px;
-            background: var(--primary-cyan);
-            border-radius: 2px;
+        .stat span {
+            color: #777;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 20px;
-            background: rgba(6, 182, 212, 0.1);
-            color: var(--primary-cyan);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            font-weight: 600;
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        section {
+            padding: 110px 7%;
+            position: relative;
+        }
+
+        .section-title {
+            max-width: 750px;
+            margin-bottom: 55px;
+        }
+
+        .section-title small {
+            color: #9b6cff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .section-title h2 {
+            margin-top: 12px;
+            font-size: clamp(35px, 5vw, 65px);
+            line-height: 1;
+        }
+
+        .section-title p {
+            color: #888;
+            line-height: 1.8;
+            margin-top: 20px;
+        }
+
+        /* =========================
+           FEATURES
+        ========================= */
+
+        .features {
+            background: #08080e;
         }
 
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
         }
 
-        .sub-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 18px;
-        }
-
-        .sub-card-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #fff;
-            margin-bottom: 12px;
-        }
-
-        .spec-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .spec-table tr {
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
-        }
-
-        .spec-table td {
-            padding: 8px 0;
-        }
-
-        .spec-table td:last-child {
-            text-align: right;
-            color: var(--accent-amber);
-            font-weight: 600;
-        }
-
-        .devlog-item {
+        .feature {
+            padding: 35px;
+            min-height: 280px;
+            background: linear-gradient(
+                145deg,
+                rgba(255,255,255,.07),
+                rgba(255,255,255,.025)
+            );
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 15px;
+            transition: .35s;
             position: relative;
-            padding-left: 24px;
-            margin-bottom: 24px;
-            border-left: 2px solid var(--border-color);
+            overflow: hidden;
         }
 
-        .devlog-item::before {
-            content: '';
+        .feature::before {
+            content: "";
             position: absolute;
-            left: -6px;
-            top: 4px;
-            width: 10px;
-            height: 10px;
+            width: 130px;
+            height: 130px;
+            background: #8b5cf6;
+            filter: blur(80px);
+            opacity: 0;
+            right: -50px;
+            top: -50px;
+            transition: .35s;
+        }
+
+        .feature:hover {
+            transform: translateY(-8px);
+            border-color: rgba(155,92,246,.4);
+        }
+
+        .feature:hover::before {
+            opacity: .35;
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 30px;
+        }
+
+        .feature h3 {
+            font-size: 22px;
+            margin-bottom: 14px;
+        }
+
+        .feature p {
+            color: #888;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           TRAILER
+        ========================= */
+
+        .trailer {
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    rgba(5,5,9,.4),
+                    rgba(5,5,9,.9)
+                ),
+                radial-gradient(
+                    circle at center,
+                    #28134e,
+                    #07070b 65%
+                );
+        }
+
+        .trailer-card {
+            width: min(1000px, 100%);
+            aspect-ratio: 16 / 9;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(139,92,246,.3),
+                    transparent 40%
+                ),
+                #08080d;
+        }
+
+        .trailer-card::before {
+            content: "NIGHTFALL";
+            position: absolute;
+            font-size: clamp(50px, 10vw, 130px);
+            font-weight: 1000;
+            color: rgba(255,255,255,.025);
+            letter-spacing: -5px;
+        }
+
+        .play-button {
+            position: relative;
+            z-index: 2;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
-            background: var(--primary-violet);
+            border: 1px solid rgba(255,255,255,.3);
+            background: rgba(255,255,255,.08);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: .3s;
         }
 
-        .devlog-date {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            margin-bottom: 4px;
+        .play-button:hover {
+            transform: scale(1.12);
+            background: #8b5cf6;
+            box-shadow: 0 0 50px rgba(139,92,246,.6);
         }
 
-        .devlog-heading {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 6px;
+        /* =========================
+           STORY
+        ========================= */
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 70px;
+            align-items: center;
         }
 
-        .devlog-desc {
-            font-size: 0.92rem;
-            color: var(--text-muted);
+        .story-image {
+            min-height: 500px;
+            border-radius: 18px;
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(139,92,246,.35),
+                    transparent
+                ),
+                radial-gradient(
+                    circle at 70% 30%,
+                    #5524a0,
+                    transparent 30%
+                ),
+                #09090f;
+            border: 1px solid rgba(255,255,255,.08);
+            position: relative;
+            overflow: hidden;
         }
+
+        .story-image::after {
+            content: "01";
+            position: absolute;
+            bottom: -40px;
+            right: 20px;
+            font-size: 220px;
+            font-weight: 1000;
+            color: rgba(255,255,255,.025);
+        }
+
+        .story-content h2 {
+            font-size: clamp(40px, 5vw, 70px);
+            line-height: .95;
+            margin-bottom: 25px;
+        }
+
+        .story-content p {
+            color: #8e8e98;
+            line-height: 1.9;
+            margin-bottom: 18px;
+        }
+
+        /* =========================
+           REQUIREMENTS
+        ========================= */
+
+        .requirements {
+            background: #08080e;
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .requirements-box {
+            padding: 35px;
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 14px;
+        }
+
+        .requirements-box h3 {
+            margin-bottom: 25px;
+            color: #b990ff;
+        }
+
+        .requirement {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+
+        .requirement:last-child {
+            border-bottom: 0;
+        }
+
+        .requirement span:first-child {
+            color: #777;
+        }
+
+        /* =========================
+           CTA
+        ========================= */
+
+        .cta {
+            text-align: center;
+            padding: 150px 7%;
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(139,92,246,.18),
+                    transparent 45%
+                );
+        }
+
+        .cta h2 {
+            font-size: clamp(45px, 8vw, 100px);
+            line-height: .9;
+            margin-bottom: 25px;
+        }
+
+        .cta p {
+            color: #888;
+            margin-bottom: 35px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
 
         footer {
-            border-top: 1px solid var(--border-color);
-            padding-top: 25px;
-            margin-top: 40px;
-            font-size: 0.85rem;
-            color: var(--text-dim);
+            padding: 35px 7%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            width: 100%;
+            border-top: 1px solid rgba(255,255,255,.07);
+            color: #666;
+            font-size: 13px;
         }
 
-        .social-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            margin-left: 20px;
-            transition: color 0.2s;
+        .socials {
+            display: flex;
+            gap: 20px;
         }
 
-        .social-links a:hover {
-            color: var(--primary-cyan);
+        .socials a {
+            transition: .25s;
+        }
+
+        .socials a:hover {
+            color: white;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: .3s;
+            padding: 20px;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            width: min(700px, 100%);
+            padding: 40px;
+            background: #101017;
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 18px;
+            position: relative;
+            transform: translateY(20px);
+            transition: .3s;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            background: transparent;
+            border: 0;
+            color: #888;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: #888;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           REVEAL ANIMATION
+        ========================= */
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            nav {
+                position: absolute;
+                top: 76px;
+                right: 0;
+                width: 100%;
+                padding: 25px;
+                flex-direction: column;
+                background: rgba(5,5,9,.96);
+                display: none;
+            }
+
+            nav.active {
+                display: flex;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .story-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .story-image {
+                min-height: 350px;
+            }
+
+            .hero h1 {
+                letter-spacing: -4px;
+            }
+
+            .hero-stats {
+                gap: 25px;
+                flex-wrap: wrap;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            header {
+                padding: 0 5%;
+            }
+
+            section,
+            .hero {
+                padding-left: 5%;
+                padding-right: 5%;
+            }
+
+            .hero {
+                padding-top: 120px;
+            }
+
+            .hero h1 {
+                font-size: 62px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .feature {
+                min-height: auto;
+            }
+
+            .requirement {
+                flex-direction: column;
+                gap: 5px;
+            }
         }
     </style>
 </head>
+
 <body>
 
+    <!-- =========================
+         HEADER
+    ========================= -->
+
     <header>
-        <div class="logo-group">
-            <div class="logo-badge">19</div>
-            <div class="logo-text">PERIMETER <span>19</span></div>
-        </div>
-        <div class="sys-info mono">
-            <div class="sys-item">ENGINE: <span class="val">LUAU / ROBLOX</span></div>
-            <div class="sys-item">VERSION: <span class="val">v0.2.1_ALPHA</span></div>
-            <div class="sys-item">STATUS: <span class="val" style="color: #10b981;">ACTIVE</span></div>
-        </div>
+
+        <a href="#home" class="logo">
+            NIGHT<span>FALL</span>
+        </a>
+
+        <nav id="nav">
+            <a href="#home">Главная</a>
+            <a href="#features">Особенности</a>
+            <a href="#story">История</a>
+            <a href="#requirements">Система</a>
+        </nav>
+
+        <button class="menu-btn" id="menuBtn">
+            ☰
+        </button>
+
     </header>
 
-    <div class="nav-bar">
-        <a href="https://www.roblox.com" target="_blank" class="btn btn-primary">► ЗАПУСТИТЬ В ROBLOX</a>
-        <a href="#about" class="btn">ОБ ИГРЕ</a>
-        <a href="#devlog" class="btn">ДНЕВНИК РАЗРАБОТКИ</a>
-        <a href="#community" class="btn">СООБЩЕСТВО</a>
-    </div>
 
-    <div class="layout-grid">
-        <main>
-            <div id="about" class="card">
-                <div class="card-header">
-                    <div class="card-title">01 // О ПРОЕКТЕ</div>
-                    <span class="badge mono">SECTOR_OVERVIEW</span>
-                </div>
-                <p style="color: var(--text-muted); font-size: 0.98rem; margin-bottom: 20px;">
-                    Atmospheric hard-survival simulator set inside Exclusion Sector 19. Explore hazardous anomalous zones, hunt for rare artifacts, survive lethal emissions, and engage in high-stakes tactical combat with rival factions.
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <main>
+
+        <section class="hero" id="home">
+
+            <div class="hero-content reveal">
+
+                <span class="eyebrow">
+                    Новая игра • 2026
+                </span>
+
+                <h1>
+                    Night<br>
+                    <span>Fall</span>
+                </h1>
+
+                <p>
+                    Ночь изменилась. Город больше не принадлежит людям.
+                    Исследуй заброшенные улицы, раскрывай тайны прошлого
+                    и решай, кому можно доверять, когда свет погаснет.
                 </p>
 
-                <div class="feature-grid">
-                    <div class="sub-card">
-                        <div class="sub-card-title">СПЕЦИФИКАЦИЯ</div>
-                        <table class="spec-table mono">
-                            <tr><td>Платформа</td><td>Roblox</td></tr>
-                            <tr><td>Жанр</td><td>FPS / Survival</td></tr>
-                            <tr><td>Вид</td><td>1st Person</td></tr>
-                            <tr><td>Режим</td><td>PvPvE Zone</td></tr>
-                        </table>
+                <div class="hero-buttons">
+
+                    <button class="btn btn-primary" id="downloadBtn">
+                        Играть сейчас
+                    </button>
+
+                    <a href="#trailer" class="btn btn-secondary">
+                        Смотреть трейлер
+                    </a>
+
+                </div>
+
+                <div class="hero-stats">
+
+                    <div class="stat">
+                        <strong>16+</strong>
+                        <span>Возраст</span>
                     </div>
 
-                    <div class="sub-card">
-                        <div class="sub-card-title">КЛЮЧЕВЫЕ МЕХАНИКИ</div>
-                        <ul style="list-style: none; font-size: 0.9rem; color: var(--text-muted);">
-                            <li style="margin-bottom: 8px;">• Поиск артефактов детекторами</li>
-                            <li style="margin-bottom: 8px;">• Реалистичная баллистика оружия</li>
-                            <li style="margin-bottom: 8px;">• Система радиации и выбросов</li>
-                            <li>• Война локальных группировок</li>
-                        </ul>
+                    <div class="stat">
+                        <strong>PC</strong>
+                        <span>Платформа</span>
                     </div>
+
+                    <div class="stat">
+                        <strong>2026</strong>
+                        <span>Релиз</span>
+                    </div>
+
                 </div>
+
             </div>
 
-            <div id="devlog" class="card">
-                <div class="card-header">
-                    <div class="card-title">02 // ДНЕВНИК РАЗРАБОТКИ</div>
-                    <span class="badge mono">PATCH_NOTES</span>
-                </div>
+        </section>
 
-                <div class="devlog-item">
-                    <div class="devlog-date mono">2026.09.26 // UPDATE_0.2.1</div>
-                    <div class="devlog-heading">Переработка аномальных зон и детекторов</div>
-                    <div class="devlog-desc">
-                        Полностью обновлены алгоритмы появления артефактов. Настроен новый интерфейс счетчика Гейгера, оптимизирован расход ресурсов при прорисовке радиационных аномалий.
-                    </div>
-                </div>
 
-                <div class="devlog-item">
-                    <div class="devlog-date mono">2026.09.15 // UPDATE_0.2.0</div>
-                    <div class="devlog-heading">Оружейный пак и физика отдачи</div>
-                    <div class="devlog-desc">
-                        Интегрирован новый пак стрелкового оружия с кастомной физикой отдачи, системой модификаций и пробития укрытий.
-                    </div>
-                </div>
-            </div>
-        </main>
+        <!-- =========================
+             FEATURES
+        ========================= -->
 
-        <aside>
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">МОНИТОРИНГ</div>
-                </div>
-                <table class="spec-table mono">
-                    <tr><td>СЕРВЕРА</td><td style="color: #10b981;">ONLINE</td></tr>
-                    <tr><td>ИГРОКИ</td><td>148 / 200</td></tr>
-                    <tr><td>ВЫБРОС ЧЕРЕЗ</td><td>12m 45s</td></tr>
-                    <tr><td>ПИНГ СРЕДНИЙ</td><td>24ms</td></tr>
-                </table>
-            </div>
+        <section class="features" id="features">
 
-            <div id="community" class="card">
-                <div class="card-header">
-                    <div class="card-title">СООБЩЕСТВО</div>
-                </div>
-                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
-                    Присоединяйся к нашему сообществу в Discord, чтобы оперативно получать информацию о тестах и обновлениях.
+            <div class="section-title reveal">
+
+                <small>Особенности</small>
+
+                <h2>
+                    Игра, которая<br>
+                    не отпускает.
+                </h2>
+
+                <p>
+                    Каждый шаг меняет мир вокруг тебя.
+                    Исследуй, принимай решения и будь готов
+                    к последствиям.
                 </p>
-                <a href="#" class="btn" style="width: 100%; justify-content: center;">DISCORD SERVER</a>
+
             </div>
-        </aside>
-    </div>
+
+
+            <div class="feature-grid">
+
+                <article class="feature reveal">
+
+                    <div class="feature-icon">🌑</div>
+
+                    <h3>Живой мир</h3>
+
+                    <p>
+                        Город продолжает существовать даже тогда,
+                        когда ты его не видишь. Персонажи меняют
+                        свои действия в зависимости от твоих решений.
+                    </p>
+
+                </article>
+
+
+                <article class="feature reveal">
+
+                    <div class="feature-icon">👁️</div>
+
+                    <h3>Невидимый враг</h3>
+
+                    <p>
+                        Не всё, что происходит ночью, можно объяснить.
+                        Иногда лучше спрятаться, чем пытаться узнать правду.
+                    </p>
+
+                </article>
+
+
+                <article class="feature reveal">
+
+                    <div class="feature-icon">⚡</div>
+
+                    <h3>Твои решения</h3>
+
+                    <p>
+                        Здесь нет одного правильного пути.
+                        Твои действия меняют отношения между персонажами
+                        и развитие истории.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             TRAILER
+        ========================= -->
+
+        <section class="trailer" id="trailer">
+
+            <div class="trailer-card reveal">
+
+                <button class="play-button" id="playBtn">
+                    ▶
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             STORY
+        ========================= -->
+
+        <section id="story">
+
+            <div class="story-grid">
+
+                <div class="story-image reveal"></div>
+
+                <div class="story-content reveal">
+
+                    <span class="eyebrow">
+                        История
+                    </span>
+
+                    <h2>
+                        Город,<br>
+                        который забыл солнце.
+                    </h2>
+
+                    <p>
+                        После неизвестного события ночь накрыла город
+                        и не собирается уходить.
+                    </p>
+
+                    <p>
+                        Ты играешь за человека, который возвращается
+                        домой спустя семь лет. Но место, которое он
+                        помнил, больше не существует.
+                    </p>
+
+                    <p>
+                        В каждом районе скрыта часть истории.
+                        И чем ближе ты подходишь к разгадке,
+                        тем меньше понимаешь, кому можно доверять.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             REQUIREMENTS
+        ========================= -->
+
+        <section class="requirements" id="requirements">
+
+            <div class="section-title reveal">
+
+                <small>Системные требования</small>
+
+                <h2>
+                    Готов встретить ночь?
+                </h2>
+
+            </div>
+
+
+            <div class="requirements-grid">
+
+                <div class="requirements-box reveal">
+
+                    <h3>Минимальные</h3>
+
+                    <div class="requirement">
+                        <span>ОС</span>
+                        <strong>Windows 10</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>Процессор</span>
+                        <strong>Intel Core i5</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>ОЗУ</span>
+                        <strong>8 GB</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>Видеокарта</span>
+                        <strong>GTX 1060</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>Место</span>
+                        <strong>35 GB</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="requirements-box reveal">
+
+                    <h3>Рекомендуемые</h3>
+
+                    <div class="requirement">
+                        <span>ОС</span>
+                        <strong>Windows 11</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>Процессор</span>
+                        <strong>Intel Core i7</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>ОЗУ</span>
+                        <strong>16 GB</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>Видеокарта</span>
+                        <strong>RTX 3060</strong>
+                    </div>
+
+                    <div class="requirement">
+                        <span>Место</span>
+                        <strong>35 GB SSD</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CTA
+        ========================= -->
+
+        <section class="cta">
+
+            <div class="reveal">
+
+                <span class="eyebrow">
+                    Ночь уже здесь
+                </span>
+
+                <h2>
+                    НЕ<br>
+                    ОГЛЯДЫВАЙСЯ.
+                </h2>
+
+                <p>
+                    NIGHTFALL — скоро на PC.
+                </p>
+
+                <button class="btn btn-primary" id="notifyBtn">
+                    Узнать о релизе
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
 
     <footer>
-        <div class="mono">PERIMETER 19 © ALL RIGHTS RESERVED</div>
-        <div class="social-links mono">
-            <a href="#">[DISCORD]</a>
-            <a href="#">[ROBLOX GROUP]</a>
-            <a href="#">[VK]</a>
+
+        <div>
+            © 2026 NIGHTFALL. Все права защищены.
         </div>
+
+        <div class="socials">
+            <a href="#">Discord</a>
+            <a href="#">YouTube</a>
+            <a href="#">Steam</a>
+        </div>
+
     </footer>
+
+
+    <!-- =========================
+         MODAL
+    ========================= -->
+
+    <div class="modal" id="modal">
+
+        <div class="modal-content">
+
+            <button class="modal-close" id="modalClose">
+                ×
+            </button>
+
+            <h2 id="modalTitle">
+                NIGHTFALL
+            </h2>
+
+            <p id="modalText">
+                Здесь появится информация.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        /* =========================
+           MOBILE MENU
+        ========================= */
+
+        const menuBtn = document.getElementById("menuBtn");
+        const nav = document.getElementById("nav");
+
+        menuBtn.addEventListener("click", () => {
+            nav.classList.toggle("active");
+        });
+
+
+        /* =========================
+           CLOSE MOBILE MENU
+        ========================= */
+
+        document.querySelectorAll("nav a").forEach(link => {
+
+            link.addEventListener("click", () => {
+                nav.classList.remove("active");
+            });
+
+        });
+
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        const modal = document.getElementById("modal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalText = document.getElementById("modalText");
+        const modalClose = document.getElementById("modalClose");
+
+
+        function openModal(title, text) {
+
+            modalTitle.textContent = title;
+            modalText.textContent = text;
+
+            modal.classList.add("active");
+
+        }
+
+
+        function closeModal() {
+            modal.classList.remove("active");
+        }
+
+
+        modalClose.addEventListener("click", closeModal);
+
+
+        modal.addEventListener("click", (event) => {
+
+            if (event.target === modal) {
+                closeModal();
+            }
+
+        });
+
+
+        document.addEventListener("keydown", (event) => {
+
+            if (event.key === "Escape") {
+                closeModal();
+            }
+
+        });
+
+
+        /* =========================
+           PLAY TRAILER
+        ========================= */
+
+        const playBtn = document.getElementById("playBtn");
+
+        playBtn.addEventListener("click", () => {
+
+            openModal(
+                "Трейлер NIGHTFALL",
+                "Здесь можно разместить YouTube-видео, трейлер игры или собственный видеоплеер."
+            );
+
+        });
+
+
+        /* =========================
+           DOWNLOAD BUTTON
+        ========================= */
+
+        const downloadBtn = document.getElementById("downloadBtn");
+
+        downloadBtn.addEventListener("click", () => {
+
+            openModal(
+                "Ранний доступ",
+                "Игра пока находится в разработке. Скоро здесь появится кнопка скачивания NIGHTFALL."
+            );
+
+        });
+
+
+        /* =========================
+           NOTIFY BUTTON
+        ========================= */
+
+        const notifyBtn = document.getElementById("notifyBtn");
+
+        notifyBtn.addEventListener("click", () => {
+
+            openModal(
+                "Спасибо!",
+                "Когда релиз будет близко, здесь можно подключить форму подписки или Discord-сообщество."
+            );
+
+        });
+
+
+        /* =========================
+           SCROLL REVEAL
+        ========================= */
+
+        const revealElements =
+            document.querySelectorAll(".reveal");
+
+
+        const observer = new IntersectionObserver(
+
+            (entries) => {
+
+                entries.forEach(entry => {
+
+                    if (entry.isIntersecting) {
+
+                        entry.target.classList.add("visible");
+
+                        observer.unobserve(entry.target);
+
+                    }
+
+                });
+
+            },
+
+            {
+                threshold: 0.12
+            }
+
+        );
+
+
+        revealElements.forEach(element => {
+            observer.observe(element);
+        });
+
+
+        /* =========================
+           PARALLAX HERO
+        ========================= */
+
+        const hero = document.querySelector(".hero");
+        const heroContent = document.querySelector(".hero-content");
+
+
+        window.addEventListener("mousemove", (event) => {
+
+            if (window.innerWidth < 900) return;
+
+            const x =
+                (event.clientX / window.innerWidth - 0.5) * 10;
+
+            const y =
+                (event.clientY / window.innerHeight - 0.5) * 10;
+
+            heroContent.style.transform =
+                `translate(${x}px, ${y}px)`;
+
+        });
+
+
+        /* =========================
+           ACTIVE NAVIGATION
+        ========================= */
+
+        const sections =
+            document.querySelectorAll("section[id]");
+
+        const navLinks =
+            document.querySelectorAll("nav a");
+
+
+        window.addEventListener("scroll", () => {
+
+            let current = "";
+
+            sections.forEach(section => {
+
+                const sectionTop =
+                    section.offsetTop - 150;
+
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute("id");
+                }
+
+            });
+
+
+            navLinks.forEach(link => {
+
+                link.style.color = "#aaa";
+
+                if (
+                    link.getAttribute("href") === "#" + current
+                ) {
+                    link.style.color = "#fff";
+                }
+
+            });
+
+        });
+
+
+        /* =========================
+           INITIAL LOAD
+        ========================= */
+
+        window.addEventListener("load", () => {
+
+            setTimeout(() => {
+
+                document
+                    .querySelector(".hero-content")
+                    .classList.add("visible");
+
+            }, 150);
+
+        });
+
+    </script>
 
 </body>
 </html>
+```
