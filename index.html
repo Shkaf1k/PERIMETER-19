@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CHRONICLES OF ASHES</title>
+    <title>NEON DASH // RETRO PLATFORMER</title>
     <style>
         :root {
-            --bg-color: #0b0a0a;
-            --accent-gold: #c9a050;
-            --accent-red: #8b0000;
-            --text-main: #dcd0c0;
-            --text-dim: #70685c;
-            --font-serif: 'Cinzel', 'Georgia', serif;
+            --bg: #11052C;
+            --pink: #FF007F;
+            --yellow: #FFE600;
+            --cyan: #00F0FF;
+            --purple: #3D0075;
         }
 
         * {
@@ -21,213 +20,163 @@
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-serif);
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
             overflow-x: hidden;
         }
 
-        canvas {
+        /* Perspective Synth Grid */
+        .grid-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(17, 5, 44, 0.2) 0%, var(--bg) 90%),
+                        linear-gradient(90deg, rgba(255, 0, 127, 0.15) 1px, transparent 1px),
+                        linear-gradient(rgba(255, 0, 127, 0.15) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
             z-index: -1;
-            pointer-events: none;
         }
 
         header {
-            padding: 30px 8%;
+            padding: 25px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(201, 160, 80, 0.2);
-            background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
+            border-bottom: 4px solid var(--pink);
+            background: var(--purple);
         }
 
         .logo {
-            font-size: 1.5rem;
-            letter-spacing: 4px;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(201, 160, 80, 0.3);
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: var(--yellow);
+            text-shadow: 3px 3px 0 var(--pink);
         }
 
         nav a {
-            color: var(--text-dim);
+            color: #fff;
             text-decoration: none;
-            margin-left: 30px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            transition: color 0.3s;
+            font-weight: bold;
+            margin-left: 20px;
+            padding: 6px 12px;
+            background: var(--bg);
+            border: 2px solid var(--cyan);
+            box-shadow: 3px 3px 0 var(--cyan);
+            transition: all 0.2s;
         }
 
         nav a:hover {
-            color: var(--accent-gold);
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0 var(--cyan);
+            background: var(--pink);
         }
 
         .hero {
-            min-height: 85vh;
+            min-height: 80vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 0 10%;
-        }
-
-        .subtitle {
-            color: var(--accent-gold);
-            letter-spacing: 6px;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            margin-bottom: 20px;
+            padding: 40px 20px;
         }
 
         h1 {
-            font-size: clamp(3rem, 7vw, 6rem);
-            font-weight: 400;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow: 0 0 30px rgba(139, 0, 0, 0.6);
-            margin-bottom: 25px;
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            color: var(--yellow);
+            text-shadow: 5px 5px 0 var(--pink), 10px 10px 0 var(--purple);
+            letter-spacing: 2px;
+            margin-bottom: 20px;
         }
 
         p {
-            max-width: 600px;
-            color: var(--text-dim);
-            line-height: 1.8;
+            max-width: 550px;
             font-size: 1.1rem;
-            margin-bottom: 40px;
+            line-height: 1.6;
+            color: var(--cyan);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border: 2px dashed var(--pink);
+            margin-bottom: 30px;
         }
 
-        .btn-gothic {
-            padding: 18px 40px;
-            background: transparent;
-            border: 1px solid var(--accent-gold);
-            color: var(--accent-gold);
-            font-family: var(--font-serif);
-            font-size: 0.9rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
+        .btn-pixel {
+            padding: 18px 36px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000;
+            background: var(--yellow);
+            border: 4px solid #000;
+            box-shadow: 6px 6px 0 var(--pink);
             cursor: pointer;
-            transition: all 0.4s;
-            position: relative;
+            text-transform: uppercase;
+            transition: all 0.1s;
         }
 
-        .btn-gothic:hover {
-            background: var(--accent-red);
-            border-color: var(--accent-red);
-            color: #fff;
-            box-shadow: 0 0 25px rgba(139, 0, 0, 0.8);
+        .btn-pixel:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 9px 9px 0 var(--pink);
+            background: var(--cyan);
         }
 
-        .classes-section {
-            padding: 80px 8%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+        .btn-pixel:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0 0 0;
         }
 
-        .card {
-            border: 1px solid rgba(201, 160, 80, 0.15);
-            background: rgba(15, 12, 12, 0.8);
-            padding: 40px 30px;
-            text-align: center;
-            transition: transform 0.3s, border-color 0.3s;
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            padding: 40px 5%;
         }
 
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent-gold);
+        .box {
+            background: var(--purple);
+            border: 3px solid var(--cyan);
+            box-shadow: 6px 6px 0 var(--pink);
+            padding: 25px;
+            width: 280px;
         }
 
-        .card h3 {
-            color: var(--accent-gold);
-            margin-bottom: 15px;
-            letter-spacing: 2px;
-        }
-
-        .card p {
-            font-size: 0.9rem;
-            margin-bottom: 0;
+        .box h3 {
+            color: var(--yellow);
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <canvas id="emberCanvas"></canvas>
+    <div class="grid-bg"></div>
 
     <header>
-        <div class="logo">ASHES // RPG</div>
+        <div class="logo">★ NEON_DASH ★</div>
         <nav>
-            <a href="#">Лор</a>
-            <a href="#">Классы</a>
-            <a href="#">Обновления</a>
+            <a href="#">GAME</a>
+            <a href="#">SCORE</a>
+            <a href="#">BUY</a>
         </nav>
     </header>
 
     <section class="hero">
-        <div class="subtitle">Пепел и Кровь</div>
-        <h1>CHRONICLES</h1>
-        <p>Мрачное царство, где угас свет древних богов. Сразитесь с порождениями Бездны и найдите трон павшего королевства.</p>
-        <button class="btn-gothic">Начать Путь</button>
+        <h1>NEON DASH 84</h1>
+        <p>Скоростной 2D-платформер в стиле синтвейв. Преодолевайте препятствия под динамичный саундтрек!</p>
+        <button class="btn-pixel" onclick="alert('DEMO READY!')">PLAY DEMO</button>
     </section>
 
-    <section class="classes-section">
-        <div class="card">
-            <h3>Рыцарь Пепла</h3>
-            <p>Непреклонный воин в сокрушительных доспехах, владеющий магией тлеющего пламени.</p>
+    <section class="features">
+        <div class="box">
+            <h3>100+ LEVELS</h3>
+            <p>Уникальные хардкорные уровни с пиксельной графикой.</p>
         </div>
-        <div class="card">
-            <h3>Ткач Тей</h3>
-            <p>Маг, манипулирующий затерянными душами и создающий проклятые заклинания.</p>
+        <div class="box">
+            <h3>SYNTH MUSIC</h3>
+            <p>Эксклюзивный саундтрек от лучших синтвейв-авторов.</p>
         </div>
-        <div class="card">
-            <h3>Охотник Бездны</h3>
-            <p>Быстрый следопыт, бьющий из тени с помощью отравленных клинков и арбалетов.</p>
+        <div class="box">
+            <h3>LEVEL EDITOR</h3>
+            <p>Создавайте собственные трассы и делитесь с сообществом.</p>
         </div>
     </section>
-
-    <script>
-        const canvas = document.getElementById('emberCanvas');
-        const ctx = canvas.getContext('2d');
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resize();
-        window.addEventListener('resize', resize);
-
-        const embers = Array.from({ length: 70 }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height + canvas.height,
-            size: Math.random() * 3 + 1,
-            speedY: Math.random() * 1.5 + 0.5,
-            speedX: (Math.random() - 0.5) * 0.8,
-            opacity: Math.random() * 0.8 + 0.2
-        }));
-
-        function drawEmbers() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            embers.forEach(e => {
-                e.y -= e.speedY;
-                e.x += e.speedX;
-                if (e.y < -10) {
-                    e.y = canvas.height + 10;
-                    e.x = Math.random() * canvas.width;
-                }
-                ctx.fillStyle = `rgba(201, 100, 30, ${e.opacity})`;
-                ctx.beginPath();
-                ctx.arc(e.x, e.y, e.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            requestAnimationFrame(drawEmbers);
-        }
-        drawEmbers();
-    </script>
 </body>
 </html>
