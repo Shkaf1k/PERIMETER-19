@@ -112,9 +112,8 @@
 
       <div class="industrial-box p-2 md:p-3 border-neutral-900">
         <div class="relative w-full aspect-video bg-black overflow-hidden border border-neutral-800">
-          <!-- ВИДЕО ТРЕЙЛЕР (укажи путь к своему видео или обложке) -->
-          <video controls poster="poster.jpg" class="w-full h-full object-cover">
-            <source src="trailer.mp4" type="video/mp4">
+          <video controls poster="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1200" class="w-full h-full object-cover">
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" type="video/mp4">
             Ваш браузер не поддерживает видео.
           </video>
           
@@ -178,7 +177,6 @@
         </div>
 
         <div>
-          <!-- ВСТАВЬ ССЫЛКУ НА ФАЙЛ В href="файл_игры.zip" -->
           <a href="game_build.zip" download class="block text-center w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 uppercase tracking-widest text-xs border border-red-400 transition-all hover:shadow-[0_0_20px_rgba(255,30,30,0.5)] active:scale-95 mb-3">
             <i class="fa-solid fa-download mr-2"></i> Скачать Игру
           </a>
@@ -190,31 +188,46 @@
 
     </section>
 
-    <!-- SCREENSHOT GALLERY MODAL/THUMBNAILS -->
+    <!-- SCREENSHOT GALLERY MODAL/THUMBNAILS (УВЕЛИЧЕННЫЙ БЛОК) -->
     <section class="industrial-box p-6 border-neutral-900">
-      <h2 class="text-xs font-bold text-neutral-500 tracking-widest uppercase mb-4">
-        // VISUAL_DATA_DUMP (НАЖМИТЕ ДЛЯ ПРОСМОТРА)
+      <h2 class="text-xs font-bold text-neutral-500 tracking-widest uppercase mb-4 flex justify-between items-center">
+        <span>// VISUAL_DATA_DUMP (НАЖМИТЕ ДЛЯ ПРОСМОТРА)</span>
+        <span class="text-red-500/60 text-[10px]">[4 SCREENSHOTS]</span>
       </h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      
+      <!-- Увеличенная сетка: 2x2 на больших экранах, увеличенная высота h-48 md:h-64 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         
-        <div onclick="openModal('screen1.jpg')" 
-             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group">
-          <img src="screen1.jpg" alt="Screen 1" class="w-full h-24 object-cover grayscale group-hover:scale-105 transition-transform">
+        <div onclick="openModal('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200')" 
+             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group relative">
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800" alt="Screen 1" class="w-full h-48 md:h-64 object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-500">
+          <div class="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[10px] text-neutral-400 border border-neutral-800">
+            SCREEN_01.RAW
+          </div>
         </div>
 
-        <div onclick="openModal('screen2.jpg')" 
-             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group">
-          <img src="screen2.jpg" alt="Screen 2" class="w-full h-24 object-cover grayscale group-hover:scale-105 transition-transform">
+        <div onclick="openModal('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1200')" 
+             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group relative">
+          <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=800" alt="Screen 2" class="w-full h-48 md:h-64 object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-500">
+          <div class="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[10px] text-neutral-400 border border-neutral-800">
+            SCREEN_02.RAW
+          </div>
         </div>
 
-        <div onclick="openModal('screen3.jpg')" 
-             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group">
-          <img src="screen3.jpg" alt="Screen 3" class="w-full h-24 object-cover grayscale group-hover:scale-105 transition-transform">
+        <div onclick="openModal('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200')" 
+             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group relative">
+          <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800" alt="Screen 3" class="w-full h-48 md:h-64 object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-500">
+          <div class="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[10px] text-neutral-400 border border-neutral-800">
+            SCREEN_03.RAW
+          </div>
         </div>
 
-        <div onclick="openModal('screen4.jpg')" 
-             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group">
-          <img src="screen4.jpg" alt="Screen 4" class="w-full h-24 object-cover grayscale group-hover:scale-105 transition-transform">
+        <div onclick="openModal('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200')" 
+             class="cursor-pointer overflow-hidden border border-neutral-800 hover:border-red-600 transition-all group relative">
+          <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800" alt="Screen 4" class="w-full h-48 md:h-64 object-cover grayscale contrast-125 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-500">
+          <div class="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[10px] text-neutral-400 border border-neutral-800">
+            SCREEN_04.RAW
+          </div>
         </div>
 
       </div>
