@@ -6,9 +6,9 @@
     <title>BUNKER: SURVIVAL</title>
     <style>
         :root {
-            --bg-dark: #0a0c10;
-            --panel-bg: rgba(16, 22, 30, 0.92);
-            --border-color: #2a3b4d;
+            --bg-dark: #05080c;
+            --panel-bg: rgba(12, 18, 26, 0.94);
+            --border-color: #233345;
             --accent-blue: #3d8bfd;
             --accent-green: #2ecc71;
             --accent-yellow: #f1c40f;
@@ -44,20 +44,27 @@
             align-items: center;
         }
 
-        canvas {
+        canvas#gameCanvas {
             display: block;
             width: 100%;
             height: 100%;
             image-rendering: pixelated;
         }
 
-        /* OVERLAYS & PANELS */
+        /* CRT Scanline & Screen Noise FX */
+        .crt-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* UI OVERLAY LAYER */
         .ui-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             display: flex;
             flex-direction: column;
@@ -66,9 +73,7 @@
             z-index: 10;
         }
 
-        .interactive {
-            pointer-events: auto;
-        }
+        .interactive { pointer-events: auto; }
 
         /* HUD Top Bar */
         .hud-top {
@@ -82,11 +87,11 @@
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             padding: 10px 15px;
-            border-radius: 4px;
+            border-radius: 6px;
             display: flex;
-            gap: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
         }
 
         .stat-item {
@@ -94,16 +99,16 @@
             align-items: center;
             gap: 6px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .stat-bar {
-            width: 60px;
+            width: 55px;
             height: 8px;
-            background: #1e2530;
+            background: #141b24;
             border-radius: 4px;
             overflow: hidden;
-            border: 1px solid #34495e;
+            border: 1px solid #2a3b4d;
         }
 
         .stat-fill {
@@ -116,14 +121,15 @@
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             padding: 10px 15px;
-            border-radius: 4px;
+            border-radius: 6px;
             text-align: right;
             font-family: var(--font-mono);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
         }
 
         .time-display {
-            font-size: 18px;
+            font-size: 16px;
             color: var(--accent-blue);
             font-weight: bold;
         }
@@ -131,6 +137,12 @@
         .power-display {
             font-size: 12px;
             margin-top: 4px;
+        }
+
+        .noise-display {
+            font-size: 11px;
+            color: var(--accent-yellow);
+            margin-top: 2px;
         }
 
         /* HUD Bottom Quick slots */
@@ -148,40 +160,41 @@
             padding: 6px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
         }
 
         .slot {
-            width: 44px;
-            height: 44px;
-            background: rgba(25, 35, 48, 0.8);
-            border: 1px solid #3a4d62;
+            width: 46px;
+            height: 46px;
+            background: rgba(18, 26, 36, 0.8);
+            border: 1px solid #2a3b4d;
             border-radius: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 22px;
+            transition: all 0.15s ease;
         }
 
-        .slot.selected {
+        .slot:hover, .slot.selected {
             border-color: var(--accent-blue);
-            box-shadow: 0 0 8px rgba(61, 139, 253, 0.6);
+            box-shadow: 0 0 10px rgba(61, 139, 253, 0.5);
+            background: rgba(30, 45, 65, 0.9);
         }
 
         .slot-num {
             position: absolute;
-            top: 2px;
-            left: 4px;
-            font-size: 10px;
+            top: 2px; left: 4px;
+            font-size: 9px;
             color: var(--text-dim);
             font-family: var(--font-mono);
         }
 
         .slot-count {
             position: absolute;
-            bottom: 2px;
-            right: 4px;
+            bottom: 2px; right: 4px;
             font-size: 11px;
             font-weight: bold;
             color: #fff;
@@ -191,30 +204,27 @@
         /* Prompts */
         .prompt-layer {
             position: absolute;
-            top: 65%;
-            left: 50%;
+            top: 62%; left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(10, 15, 20, 0.85);
+            background: rgba(10, 15, 22, 0.9);
             border: 1px solid var(--accent-blue);
-            padding: 8px 16px;
+            padding: 8px 18px;
             border-radius: 20px;
             color: #fff;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             pointer-events: none;
-            box-shadow: 0 0 10px rgba(61, 139, 253, 0.3);
+            box-shadow: 0 0 15px rgba(61, 139, 253, 0.4);
             display: none;
+            letter-spacing: 1px;
         }
 
         /* MODAL WINDOWS */
         .modal {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5, 8, 12, 0.85);
-            backdrop-filter: blur(6px);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 7, 10, 0.85);
+            backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -238,7 +248,7 @@
             max-height: 85vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.9);
             overflow: hidden;
         }
 
@@ -248,21 +258,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(20, 30, 42, 0.5);
+            background: rgba(18, 28, 40, 0.6);
         }
 
         .modal-header h2 {
-            font-size: 18px;
-            letter-spacing: 1px;
+            font-size: 16px;
+            letter-spacing: 1.5px;
             color: #fff;
             text-transform: uppercase;
+            font-family: var(--font-mono);
         }
 
         .close-btn {
             background: transparent;
             border: none;
             color: var(--text-dim);
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
         }
 
@@ -274,14 +285,10 @@
             flex-grow: 1;
         }
 
-        /* MENU SPECIFIC */
+        /* MAIN MENU SPECIFIC */
         #main-menu {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, #1a2330 0%, #05080c 100%);
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 200;
             display: flex;
             flex-direction: column;
@@ -290,24 +297,30 @@
             gap: 20px;
         }
 
+        #menuCanvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+
         .menu-title {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .menu-title h1 {
-            font-size: 48px;
-            letter-spacing: 6px;
+            font-size: 46px;
+            letter-spacing: 8px;
             color: #e6f0ff;
-            text-shadow: 0 0 15px rgba(61, 139, 253, 0.5);
+            text-shadow: 0 0 20px rgba(61, 139, 253, 0.6);
             font-family: var(--font-mono);
         }
 
         .menu-title p {
             color: var(--accent-red);
-            font-size: 14px;
+            font-size: 13px;
             letter-spacing: 3px;
-            margin-top: 5px;
+            margin-top: 8px;
             font-family: var(--font-mono);
             animation: blink 1.5s infinite;
         }
@@ -321,29 +334,40 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            width: 260px;
+            width: 280px;
         }
 
         .btn {
-            background: rgba(30, 42, 56, 0.8);
+            background: rgba(22, 34, 48, 0.85);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             padding: 12px 20px;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
             text-align: center;
+            font-family: var(--font-mono);
         }
 
         .btn:hover {
             background: var(--accent-blue);
             color: #fff;
             border-color: var(--accent-blue);
-            box-shadow: 0 0 12px rgba(61, 139, 253, 0.4);
+            box-shadow: 0 0 15px rgba(61, 139, 253, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: var(--border-color) !important;
+            background: rgba(22, 34, 48, 0.4) !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
 
         /* INVENTORY GRID */
@@ -355,7 +379,7 @@
         }
 
         .inv-item {
-            background: rgba(20, 30, 42, 0.6);
+            background: rgba(18, 28, 40, 0.6);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 10px;
@@ -368,31 +392,26 @@
 
         .inv-item:hover, .inv-item.selected {
             border-color: var(--accent-blue);
-            background: rgba(35, 50, 70, 0.8);
+            background: rgba(30, 48, 70, 0.8);
         }
 
-        .inv-item .icon { font-size: 28px; margin-bottom: 5px; }
-        .inv-item .name { font-size: 12px; text-align: center; }
+        .inv-item .icon { font-size: 26px; margin-bottom: 4px; }
+        .inv-item .name { font-size: 11px; text-align: center; }
         .inv-item .qty { position: absolute; top: 4px; right: 6px; font-size: 11px; font-weight: bold; }
 
         .item-desc {
-            background: rgba(10, 15, 20, 0.5);
+            background: rgba(8, 12, 18, 0.6);
             border: 1px solid var(--border-color);
             padding: 12px;
             border-radius: 6px;
-            font-size: 13px;
-            min-height: 70px;
+            font-size: 12px;
+            min-height: 60px;
         }
 
         /* CRAFT LIST */
-        .craft-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
+        .craft-list { display: flex; flex-direction: column; gap: 10px; }
         .craft-card {
-            background: rgba(20, 30, 42, 0.6);
+            background: rgba(18, 28, 40, 0.6);
             border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 12px;
@@ -402,26 +421,13 @@
         }
 
         /* DIALOGUE & QUEST LOG */
-        .dialogue-text {
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 20px;
-            color: #e0e0e0;
-        }
-
-        .dialogue-options {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .dialogue-text { font-size: 14px; line-height: 1.5; margin-bottom: 20px; color: #e0e0e0; }
+        .dialogue-options { display: flex; flex-direction: column; gap: 8px; }
 
         /* TOUCH CONTROLS */
         .touch-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: 20;
             display: none;
@@ -429,69 +435,54 @@
 
         .joystick-zone {
             position: absolute;
-            bottom: 30px;
-            left: 30px;
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            bottom: 35px; left: 35px;
+            width: 120px; height: 120px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             pointer-events: auto;
         }
 
         .joystick-knob {
             position: absolute;
-            top: 35px;
-            left: 35px;
-            width: 50px;
-            height: 50px;
-            background: rgba(61, 139, 253, 0.5);
+            top: 35px; left: 35px;
+            width: 50px; height: 50px;
+            background: rgba(61, 139, 253, 0.4);
             border-radius: 50%;
         }
 
         .action-btns {
             position: absolute;
-            bottom: 30px;
-            right: 30px;
+            bottom: 35px; right: 35px;
             display: grid;
-            grid-template-columns: repeat(2, 60px);
-            gap: 12px;
+            grid-template-columns: repeat(2, 55px);
+            gap: 10px;
             pointer-events: auto;
         }
 
         .touch-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(30, 42, 56, 0.8);
+            width: 55px; height: 55px;
+            background: rgba(22, 34, 48, 0.85);
             border: 1px solid var(--border-color);
             border-radius: 50%;
             color: #fff;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            font-family: var(--font-mono);
         }
 
-        .touch-btn:active {
-            background: var(--accent-blue);
-        }
+        .touch-btn:active { background: var(--accent-blue); }
 
-        /* FORM CONTROLS */
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            color: var(--text-dim);
-        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-size: 12px; color: var(--text-dim); }
         .form-control {
             width: 100%;
             padding: 8px 12px;
-            background: #121820;
+            background: #0d131a;
             border: 1px solid var(--border-color);
             color: #fff;
             border-radius: 4px;
@@ -499,37 +490,38 @@
 
         .notification {
             position: absolute;
-            top: 70px;
-            left: 50%;
+            top: 70px; left: 50%;
             transform: translateX(-50%);
-            background: rgba(20, 30, 45, 0.95);
+            background: rgba(15, 23, 34, 0.95);
             border: 1px solid var(--accent-blue);
             color: #fff;
             padding: 8px 16px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
             z-index: 50;
+            font-family: var(--font-mono);
         }
 
         .notification.show { opacity: 1; }
 
         @media (max-width: 768px) {
             .touch-layer { display: block; }
-            .stats-panel { gap: 8px; padding: 6px 10px; }
-            .stat-bar { width: 40px; }
+            .stats-panel { gap: 6px; padding: 6px 10px; }
+            .stat-bar { width: 35px; }
             .stat-item { font-size: 11px; }
             .info-panel { padding: 6px 10px; }
-            .time-display { font-size: 14px; }
+            .time-display { font-size: 13px; }
         }
     </style>
 </head>
 <body>
 
 <div id="game-container">
+    <div class="crt-overlay"></div>
     <canvas id="gameCanvas"></canvas>
 
     <!-- UI Overlay Layer -->
@@ -553,6 +545,7 @@
             <div class="info-panel interactive">
                 <div class="time-display" id="time-display">ДЕНЬ 1 — 08:00</div>
                 <div class="power-display" id="power-display" style="color: var(--accent-green);">ЭЛЕКТРИЧЕСТВО: 100%</div>
+                <div class="noise-display" id="noise-display">ШУМ: 0%</div>
             </div>
         </div>
 
@@ -581,13 +574,14 @@
 
     <!-- MAIN MENU -->
     <div id="main-menu">
+        <canvas id="menuCanvas"></canvas>
         <div class="menu-title">
             <h1>BUNKER: SURVIVAL</h1>
             <p>SYSTEM ONLINE — DAY 0</p>
         </div>
         <div class="btn-group">
             <button class="btn" id="btn-new-game">▶ Новая Игра</button>
-            <button class="btn" id="btn-continue" style="display:none;">▶ Продолжить</button>
+            <button class="btn" id="btn-continue" disabled>▶ Продолжить</button>
             <button class="btn" id="btn-settings">▶ Настройки</button>
             <button class="btn" id="btn-controls">▶ Управление</button>
             <button class="btn" id="btn-about">▶ Об Игре</button>
@@ -610,14 +604,14 @@
                     <label>Специализация (Класс):</label>
                     <select id="char-class" class="form-control" onchange="UI.updateClassDesc()">
                         <option value="engineer">Инженер (+20% к скорости ремонта)</option>
-                        <option value="medic">Медик (+20% к эффективным аптечкам)</option>
-                        <option value="scout">Разведчик (+20% к луту)</option>
-                        <option value="tech">Техник (-20% расхода энергии бункера)</option>
-                        <option value="survivor">Выживший (+10% ко всем характеристикам)</option>
+                        <option value="medic">Медик (+20% к эффективности лечения)</option>
+                        <option value="scout">Разведчик (+20% к поиску ресурсов)</option>
+                        <option value="tech">Техник (-20% расхода энергии)</option>
+                        <option value="survivor">Выживший (+10% к харатеристикам)</option>
                     </select>
                 </div>
                 <div class="item-desc" id="class-desc" style="margin-bottom: 20px;">
-                    Бонус класса появится здесь.
+                    Бонус класса...
                 </div>
                 <button class="btn" style="width: 100%;" id="btn-start-game">Начать Выживание</button>
             </div>
@@ -628,7 +622,7 @@
     <div class="modal" id="modal-inventory">
         <div class="modal-box">
             <div class="modal-header">
-                <h2>Инвентарь и Верстак</h2>
+                <h2>Инвентарь & Верстак</h2>
                 <button class="close-btn" onclick="UI.closeModals()">✕</button>
             </div>
             <div class="modal-body">
@@ -677,8 +671,8 @@
             <div class="modal-body">
                 <h3>Активные Задания</h3>
                 <div id="quest-list" style="margin-top: 10px; margin-bottom: 20px;"></div>
-                <h3>Схема Бункера</h3>
-                <div style="background: #101620; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 12px; white-space: pre; overflow-x: auto; color: var(--accent-blue);">
+                <h3>Схема Комплекса</h3>
+                <div style="background: #0a0f16; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 11px; white-space: pre; overflow-x: auto; color: var(--accent-blue);">
 ┌──────────────────────────────┐
 │          ЖИЛОЙ БЛОК          │
 ├──────────────┬───────────────┤
@@ -688,7 +682,7 @@
 ├──────────────┴───────────────┤
 │           КОРИДОР            │
 ├──────────────────────────────┤
-│        ВХОДНОЙ ТАМБУР        │
+│  ТАМБУР (ВЫХОД НА ПОВЕРХН.)  │
 └──────────────────────────────┘
                 </div>
             </div>
@@ -712,7 +706,7 @@
                     <select id="setting-diff" class="form-control">
                         <option value="easy">Легкая (Больше ресурсов)</option>
                         <option value="normal" selected>Нормальная (Баланс)</option>
-                        <option value="hard">Хардкор (Частые поломки)</option>
+                        <option value="hard">Хардкор (Быстрый износ)</option>
                     </select>
                 </div>
                 <button class="btn" style="width: 100%; margin-top: 15px;" onclick="UI.saveSettings()">Сохранить</button>
@@ -720,7 +714,7 @@
         </div>
     </div>
 
-    <!-- MODAL: GENERIC MESSAGE (Controls / About) -->
+    <!-- MODAL: GENERIC INFO -->
     <div class="modal" id="modal-info">
         <div class="modal-box">
             <div class="modal-header">
@@ -738,7 +732,7 @@
                 <h2 id="go-title" style="color: var(--accent-red);">СИСТЕМА ОТКЛЮЧЕНА</h2>
             </div>
             <div class="modal-body">
-                <p id="go-desc" style="margin-bottom: 20px;">Вы не смогли выжить в условиях бункера.</p>
+                <p id="go-desc" style="margin-bottom: 20px;">Вы не смогли выжить в бункере.</p>
                 <div id="go-stats" style="font-family: var(--font-mono); margin-bottom: 20px; color: var(--accent-blue);"></div>
                 <button class="btn" style="width: 100%;" onclick="location.reload()">В Главное Меню</button>
             </div>
@@ -765,14 +759,14 @@ const Audio = {
         this.volume = val / 100;
     },
 
-    playTone(freq, type, duration) {
+    playTone(freq, type, duration, volMult = 1) {
         if (!this.ctx) return;
         try {
             let osc = this.ctx.createOscillator();
             let gain = this.ctx.createGain();
             osc.type = type;
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-            gain.gain.setValueAtTime(this.volume * 0.2, this.ctx.currentTime);
+            gain.gain.setValueAtTime(this.volume * 0.15 * volMult, this.ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
             osc.connect(gain);
             gain.connect(this.ctx.destination);
@@ -781,30 +775,29 @@ const Audio = {
         } catch(e){}
     },
 
-    playFootstep() { this.playTone(100 + Math.random()*40, 'triangle', 0.08); },
-    playInteract() { this.playTone(600, 'sine', 0.1); },
-    playDoor() { this.playTone(180, 'sawtooth', 0.3); },
-    playAlarm() { this.playTone(800, 'square', 0.2); },
-    playPickup() { this.playTone(440, 'sine', 0.15); }
+    playFootstep() { this.playTone(80 + Math.random()*30, 'triangle', 0.06, 0.5); },
+    playInteract() { this.playTone(550, 'sine', 0.1); },
+    playDoor() { this.playTone(140, 'sawtooth', 0.25); },
+    playAlarm() { this.playTone(750, 'square', 0.2, 0.8); },
+    playPickup() { this.playTone(480, 'sine', 0.12); }
 };
 
 /* ==========================================================================
-   GAME STATE & CONFIG
+   GAME CONFIG & DATA
    ========================================================================== */
 const CONFIG = {
     tileSize: 32,
-    dayDurationSec: 600, // 10 min real time per game day
+    dayDurationSec: 600,
 };
 
 const ITEMS = {
-    canned_food: { id: 'canned_food', name: 'Консервы', icon: '🥫', desc: 'Сытная еда длительного хранения. Восстанавливает +35 голода.', type: 'use', hunger: 35 },
+    canned_food: { id: 'canned_food', name: 'Консервы', icon: '🥫', desc: 'Сытная еда. Восстанавливает +35 голода.', type: 'use', hunger: 35 },
     water: { id: 'water', name: 'Вода', icon: '💧', desc: 'Чистая питьевая вода. Восстанавливает +40 жажды.', type: 'use', thirst: 40 },
     medkit: { id: 'medkit', name: 'Аптечка', icon: '🩹', desc: 'Медицинский набор. Восстанавливает +50 здоровья.', type: 'use', hp: 50 },
     metal: { id: 'metal', name: 'Металлолом', icon: '🔩', desc: 'Базовый материал для ремонта и крафта.', type: 'mat' },
     parts: { id: 'parts', name: 'Детали', icon: '⚙️', desc: 'Электронные и механические компоненты.', type: 'mat' },
-    battery: { id: 'battery', name: 'Батарейка', icon: '🔋', desc: 'Источник энергии для фонаря и приборов.', type: 'use', bat: 50 },
-    repair_kit: { id: 'repair_kit', name: 'Ремкомплект', icon: '🧰', desc: 'Используется для починки сложных систем.', type: 'mat' },
-    keycard_lab: { id: 'keycard_lab', name: 'Ключ-карта B', icon: '🔑', desc: 'Открывает доступ к лаборатории.', type: 'key' }
+    battery: { id: 'battery', name: 'Батарейка', icon: '🔋', desc: 'Заряд для фонаря.', type: 'use', bat: 50 },
+    repair_kit: { id: 'repair_kit', name: 'Ремкомплект', icon: '🧰', desc: 'Используется для починки систем бункера.', type: 'mat' }
 };
 
 const RECIPES = [
@@ -816,15 +809,15 @@ const RECIPES = [
 let Game = {
     running: false,
     paused: false,
-    time: 8 * 60, // minutes from 00:00
+    time: 8 * 60,
     day: 1,
-    power: 100, // %
+    power: 100,
+    noise: 0,
     difficulty: 'normal',
     
     player: {
         x: 10, y: 15,
-        vx: 0, vy: 0,
-        speed: 3,
+        speed: 3.2,
         hp: 100, maxHp: 100,
         hunger: 100,
         thirst: 100,
@@ -839,26 +832,25 @@ let Game = {
     inventory: [
         { item: 'canned_food', count: 2 },
         { item: 'water', count: 2 },
-        { item: 'metal', count: 5 },
+        { item: 'metal', count: 4 },
         { item: 'parts', count: 2 }
     ],
     selectedSlot: 0,
 
     quests: [
-        { id: 'gen_fix', title: 'Проверить генератор', desc: 'Осмотрите генератор в генераторной комнате.', done: false },
-        { id: 'find_water', title: 'Найти запасы', desc: 'Исследуйте склад для поиска воды.', done: false }
+        { id: 'gen_fix', title: 'Проверить генератор', desc: 'Осмотрите главный генератор комплекса.', done: false },
+        { id: 'find_water', title: 'Найти запасы', desc: 'Найдите воду на складе.', done: false }
     ],
 
     generatorHp: 80,
-    labUnlocked: false,
 
     npcs: [
-        { id: 'ivan', name: 'Иван (Инженер)', x: 14, y: 8, room: 'МАСТЕРСКАЯ', text: 'Генератор работает на пределе. Не забудь проверять его состояние!' }
+        { id: 'ivan', name: 'Иван (Инженер)', x: 17, y: 5, room: 'МАСТЕРСКАЯ', text: 'Следи за показателями генератора! Если свет отключится, вентиляция тоже встанет.' }
     ]
 };
 
 /* ==========================================================================
-   MAP & ROOM DEFINITION
+   MAP & ROOM SYSTEM
    ========================================================================== */
 const MAP_WIDTH = 30;
 const MAP_HEIGHT = 30;
@@ -866,48 +858,41 @@ let mapGrid = [];
 let containers = [];
 
 function initMap() {
-    mapGrid = Array(MAP_HEIGHT).fill(0).map(() => Array(MAP_WIDTH).fill(1)); // 1 = wall, 0 = floor
+    mapGrid = Array(MAP_HEIGHT).fill(0).map(() => Array(MAP_WIDTH).fill(1));
 
-    // Helper to draw rooms
     function createRoom(x, y, w, h) {
         for (let r = y; r < y + h; r++) {
             for (let c = x; c < x + w; c++) {
-                if (r === y || r === y + h - 1 || c === x || c === x + w - 1) {
-                    mapGrid[r][c] = 1; // Wall
-                } else {
-                    mapGrid[r][c] = 0; // Floor
-                }
+                mapGrid[r][c] = (r === y || r === y + h - 1 || c === x || c === x + w - 1) ? 1 : 0;
             }
         }
     }
 
-    // Layout
-    createRoom(2, 2, 12, 8);   // Living Block
+    createRoom(2, 2, 12, 8);   // Living
     createRoom(15, 2, 12, 8);  // Workshop
     createRoom(2, 11, 12, 8);  // Storage
-    createRoom(15, 11, 12, 8); // Generator Room
+    createRoom(15, 11, 12, 8); // Generator & Med
     createRoom(2, 20, 25, 6);  // Main Corridor
 
-    // Doors / Corridors
-    mapGrid[9][7] = 0;   // Living -> Corridor
-    mapGrid[9][20] = 0;  // Workshop -> Corridor
-    mapGrid[11][7] = 0;  // Storage -> Corridor
-    mapGrid[11][20] = 0; // Generator -> Corridor
-    mapGrid[19][13] = 0; // Corridor South
+    // Doors
+    mapGrid[9][7] = 0; mapGrid[9][20] = 0;
+    mapGrid[11][7] = 0; mapGrid[11][20] = 0;
+    mapGrid[19][13] = 0;
 
-    // Populate Containers / Interactive Objects
     containers = [
         { id: 'c1', x: 4, y: 4, type: 'bed', name: 'Кровать', searched: false },
-        { id: 'c2', x: 10, y: 4, type: 'radio', name: 'Радиоприемник', searched: false },
+        { id: 'c2', x: 10, y: 4, type: 'radio', name: 'Радиостанция', searched: false },
         { id: 'c3', x: 4, y: 13, type: 'crate', name: 'Ящик склада', loot: ['canned_food', 'water'], searched: false },
-        { id: 'c4', x: 8, y: 15, type: 'crate', name: 'Ящик с деталями', loot: ['metal', 'parts'], searched: false },
+        { id: 'c4', x: 8, y: 15, type: 'crate', name: 'Ящик запчастей', loot: ['metal', 'parts'], searched: false },
         { id: 'c5', x: 20, y: 13, type: 'generator', name: 'Главный Генератор', searched: false },
-        { id: 'c6', x: 18, y: 4, type: 'workbench', name: 'Верстак', searched: false }
+        { id: 'c6', x: 18, y: 4, type: 'workbench', name: 'Верстак', searched: false },
+        { id: 'c7', x: 22, y: 15, type: 'medbed', name: 'Медицинская кушетка', searched: false },
+        { id: 'c8', x: 13, y: 23, type: 'exit_door', name: 'Гермозатвор Выхода', searched: false }
     ];
 }
 
 /* ==========================================================================
-   INPUT HANDLING
+   INPUTS & TOUCH CONTROLS
    ========================================================================== */
 const Keys = {};
 
@@ -929,7 +914,7 @@ window.addEventListener('keydown', e => {
 
 window.addEventListener('keyup', e => { Keys[e.code] = false; });
 
-// Touch Controls Implementation
+// Touch Joystick
 let joystickActive = false;
 let joystickStart = { x: 0, y: 0 };
 let joystickMove = { x: 0, y: 0 };
@@ -968,15 +953,44 @@ document.getElementById('btn-touch-i').onclick = () => UI.toggleModal('modal-inv
 document.getElementById('btn-touch-m').onclick = () => UI.toggleModal('modal-map');
 
 /* ==========================================================================
-   GAME LOGIC & UPDATES
+   GAME MECHANICS & SAVE SYSTEM
    ========================================================================== */
+function saveGameData() {
+    try {
+        localStorage.setItem('bunker_survival_save', JSON.stringify(Game));
+        UI.notify('Игра сохранена!');
+    } catch(e){}
+}
+
+function loadGameData() {
+    try {
+        let data = localStorage.getItem('bunker_survival_save');
+        if (data) {
+            Game = JSON.parse(data);
+            initMap();
+            document.getElementById('main-menu').style.display = 'none';
+            UI.closeModals();
+            Game.running = true;
+            Game.paused = false;
+            UI.notify('Сохранение загружено');
+            requestAnimationFrame(gameLoop);
+        }
+    } catch(e){}
+}
+
+function checkSaveAvailable() {
+    if (localStorage.getItem('bunker_survival_save')) {
+        document.getElementById('btn-continue').disabled = false;
+    }
+}
+
 function toggleFlashlight() {
     if (Game.player.flashlightBat > 0) {
         Game.player.flashlight = !Game.player.flashlight;
         Audio.playInteract();
         UI.notify(Game.player.flashlight ? 'Фонарь включен' : 'Фонарь выключен');
     } else {
-        UI.notify('Батарея фонаря разряжена!');
+        UI.notify('Батарея разряжена!');
     }
 }
 
@@ -984,39 +998,35 @@ function interact() {
     let px = Math.floor(Game.player.x);
     let py = Math.floor(Game.player.y);
 
-    // Check containers
     for (let c of containers) {
         if (Math.hypot(c.x - px, c.y - py) < 1.8) {
             Audio.playInteract();
-            if (c.type === 'bed') {
-                sleep();
+            if (c.type === 'bed') { sleep(); return; }
+            if (c.type === 'generator') { repairGenerator(); return; }
+            if (c.type === 'workbench') { UI.toggleModal('modal-inventory'); UI.switchInvTab('craft'); return; }
+            if (c.type === 'medbed') {
+                Game.player.hp = Math.min(Game.player.maxHp, Game.player.hp + 25);
+                UI.notify('Вы немного подлечились (+25 HP)');
                 return;
             }
-            if (c.type === 'generator') {
-                repairGenerator();
-                return;
-            }
-            if (c.type === 'workbench') {
-                UI.toggleModal('modal-inventory');
-                UI.switchInvTab('craft');
+            if (c.type === 'exit_door') {
+                UI.notify('Вылазка на поверхность: Найдено 2x Металл!');
+                addItem('metal', 2);
                 return;
             }
             if (c.loot && !c.searched) {
                 c.searched = true;
-                for (let itemId of c.loot) {
-                    addItem(itemId, 1);
-                }
+                for (let itemId of c.loot) addItem(itemId, 1);
                 UI.notify(`Найдено: ${c.loot.map(i => ITEMS[i].name).join(', ')}`);
                 checkQuests();
                 return;
             } else if (c.searched) {
-                UI.notify('Здесь больше ничего нет');
+                UI.notify('Здесь пусто.');
                 return;
             }
         }
     }
 
-    // Check NPCs
     for (let npc of Game.npcs) {
         if (Math.hypot(npc.x - px, npc.y - py) < 1.8) {
             UI.openDialogue(npc);
@@ -1026,30 +1036,30 @@ function interact() {
 }
 
 function sleep() {
-    Game.time += 6 * 60; // 6 hours
+    Game.time += 6 * 60;
     Game.player.stamina = 100;
     Game.player.hp = Math.min(Game.player.hp + 20, Game.player.maxHp);
-    Game.player.hunger = Math.max(0, Game.player.hunger - 25);
-    Game.player.thirst = Math.max(0, Game.player.thirst - 35);
-    UI.notify('Вы поспали 6 часов');
+    Game.player.hunger = Math.max(0, Game.player.hunger - 20);
+    Game.player.thirst = Math.max(0, Game.player.thirst - 30);
+    saveGameData();
+    UI.notify('Вы поспали. Игра сохранена.');
     triggerRandomEvent();
 }
 
 function repairGenerator() {
     if (Game.generatorHp >= 100) {
-        UI.notify('Генератор в отличном состоянии');
+        UI.notify('Генератор исправен');
         return;
     }
-
     let metal = getItemCount('metal');
     let parts = getItemCount('parts');
 
     if (metal >= 2 && parts >= 1) {
         removeItem('metal', 2);
         removeItem('parts', 1);
-        Game.generatorHp = Math.min(100, Game.generatorHp + 30 * Game.player.bonuses.repair);
+        Game.generatorHp = Math.min(100, Game.generatorHp + 35 * Game.player.bonuses.repair);
         Game.power = Game.generatorHp;
-        UI.notify('Генератор отремонтирован!');
+        UI.notify('Генератор отремонтирован');
         Audio.playDoor();
         checkQuests();
     } else {
@@ -1059,11 +1069,8 @@ function repairGenerator() {
 
 function addItem(itemId, count = 1) {
     let slot = Game.inventory.find(s => s.item === itemId);
-    if (slot) {
-        slot.count += count;
-    } else {
-        Game.inventory.push({ item: itemId, count: count });
-    }
+    if (slot) slot.count += count;
+    else Game.inventory.push({ item: itemId, count: count });
     Audio.playPickup();
     UI.renderInventory();
 }
@@ -1072,9 +1079,7 @@ function removeItem(itemId, count = 1) {
     let slot = Game.inventory.find(s => s.item === itemId);
     if (slot) {
         slot.count -= count;
-        if (slot.count <= 0) {
-            Game.inventory = Game.inventory.filter(s => s.item !== itemId);
-        }
+        if (slot.count <= 0) Game.inventory = Game.inventory.filter(s => s.item !== itemId);
     }
     UI.renderInventory();
 }
@@ -1094,86 +1099,75 @@ function checkQuests() {
 
 function triggerRandomEvent() {
     let events = [
-        'Слышен странный гул в вентиляции.',
-        'Напряжение в сети скачет.',
-        'Система зафиксировала понижение температуры.',
-        'Радио изливает белый шум.'
+        'Шум в вентиляционной шахте!',
+        'Скачок напряжения в генераторной!',
+        'Внезапная тревога на главном пульте!',
+        'Служебный радиоприемник поймал сигнал.'
     ];
     let ev = events[Math.floor(Math.random() * events.length)];
+    Audio.playAlarm();
     UI.notify(`СОБЫТИЕ: ${ev}`);
 }
 
 /* ==========================================================================
-   UPDATE LOOP
+   UPDATE GAME LOOP
    ========================================================================== */
 let lastTime = performance.now();
 
 function update(dt) {
     if (!Game.running || Game.paused) return;
 
-    // Movement
-    let dx = 0;
-    let dy = 0;
-
+    let dx = 0, dy = 0;
     if (Keys['KeyW'] || Keys['ArrowUp']) dy -= 1;
     if (Keys['KeyS'] || Keys['ArrowDown']) dy += 1;
     if (Keys['KeyA'] || Keys['ArrowLeft']) dx -= 1;
     if (Keys['KeyD'] || Keys['ArrowRight']) dx += 1;
 
-    if (joystickActive) {
-        dx = joystickMove.x;
-        dy = joystickMove.y;
-    }
-
-    if (dx !== 0 && dy !== 0 && !joystickActive) {
-        dx *= 0.7071;
-        dy *= 0.7071;
-    }
+    if (joystickActive) { dx = joystickMove.x; dy = joystickMove.y; }
+    if (dx !== 0 && dy !== 0 && !joystickActive) { dx *= 0.7071; dy *= 0.7071; }
 
     let speed = Game.player.speed * dt;
     let newX = Game.player.x + dx * speed;
     let newY = Game.player.y + dy * speed;
 
-    // Collision Check Simple bounding radius
     if (!isSolid(newX, Game.player.y)) Game.player.x = newX;
     if (!isSolid(Game.player.x, newY)) Game.player.y = newY;
 
-    if ((dx !== 0 || dy !== 0) && Math.random() < 0.05) {
-        Audio.playFootstep();
+    // Movement noise
+    let isMoving = dx !== 0 || dy !== 0;
+    if (isMoving) {
+        Game.noise = Math.min(100, Game.noise + dt * 30);
+        if (Math.random() < 0.05) Audio.playFootstep();
+    } else {
+        Game.noise = Math.max(0, Game.noise - dt * 40);
     }
 
-    // Flashlight & Battery
     if (Game.player.flashlight) {
-        Game.player.flashlightBat = Math.max(0, Game.player.flashlightBat - dt * 0.5);
+        Game.player.flashlightBat = Math.max(0, Game.player.flashlightBat - dt * 0.4);
         if (Game.player.flashlightBat === 0) Game.player.flashlight = false;
     }
 
     // Time & Vitals Tick
-    Game.time += (dt / CONFIG.dayDurationSec) * 1440; // 1440 mins per day
+    Game.time += (dt / CONFIG.dayDurationSec) * 1440;
     if (Game.time >= 1440) {
         Game.time -= 1440;
         Game.day++;
         triggerRandomEvent();
     }
 
-    // Degradation
-    let diffMult = Game.difficulty === 'hard' ? 1.5 : (Game.difficulty === 'easy' ? 0.7 : 1.0);
-    Game.player.hunger = Math.max(0, Game.player.hunger - dt * 0.15 * diffMult);
-    Game.player.thirst = Math.max(0, Game.player.thirst - dt * 0.25 * diffMult);
+    let diffMult = Game.difficulty === 'hard' ? 1.4 : (Game.difficulty === 'easy' ? 0.7 : 1.0);
+    Game.player.hunger = Math.max(0, Game.player.hunger - dt * 0.12 * diffMult);
+    Game.player.thirst = Math.max(0, Game.player.thirst - 0.2 * diffMult);
 
     if (Game.player.hunger === 0 || Game.player.thirst === 0) {
-        Game.player.hp = Math.max(0, Game.player.hp - dt * 1.5);
+        Game.player.hp = Math.max(0, Game.player.hp - dt * 1.2);
     }
 
-    // Generator & Power decay
-    Game.generatorHp = Math.max(0, Game.generatorHp - dt * 0.05 * diffMult);
+    Game.generatorHp = Math.max(0, Game.generatorHp - dt * 0.04 * diffMult * Game.player.bonuses.power);
     Game.power = Math.floor(Game.generatorHp);
 
-    if (Game.player.hp <= 0) {
-        gameOver(false);
-    }
+    if (Game.player.hp <= 0) gameOver(false);
 
-    // UI Updates
     UI.updateHUD();
     checkInteractionPrompts();
 }
@@ -1202,7 +1196,7 @@ function checkInteractionPrompts() {
 }
 
 /* ==========================================================================
-   RENDER ENGINE (Canvas 2D + Lighting)
+   RENDER ENGINE
    ========================================================================== */
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -1217,61 +1211,55 @@ resizeCanvas();
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Camera follow player
     let camX = canvas.width / 2 - Game.player.x * CONFIG.tileSize;
     let camY = canvas.height / 2 - Game.player.y * CONFIG.tileSize;
 
     ctx.save();
     ctx.translate(camX, camY);
 
-    // Render Map
     for (let r = 0; r < MAP_HEIGHT; r++) {
         for (let c = 0; c < MAP_WIDTH; c++) {
             let posX = c * CONFIG.tileSize;
             let posY = r * CONFIG.tileSize;
 
             if (mapGrid[r][c] === 1) {
-                // Wall
-                ctx.fillStyle = '#1c2530';
+                ctx.fillStyle = '#16202c';
                 ctx.fillRect(posX, posY, CONFIG.tileSize, CONFIG.tileSize);
-                ctx.strokeStyle = '#0f151d';
+                ctx.strokeStyle = '#0a0f16';
                 ctx.strokeRect(posX, posY, CONFIG.tileSize, CONFIG.tileSize);
             } else {
-                // Floor
-                ctx.fillStyle = '#0b0e14';
+                ctx.fillStyle = '#080d14';
                 ctx.fillRect(posX, posY, CONFIG.tileSize, CONFIG.tileSize);
-                ctx.strokeStyle = '#141c26';
+                ctx.strokeStyle = '#121a24';
                 ctx.strokeRect(posX, posY, CONFIG.tileSize, CONFIG.tileSize);
             }
         }
     }
 
-    // Render Objects / Containers
     for (let c of containers) {
-        ctx.fillStyle = c.searched ? '#3a4d62' : varColor('--accent-blue');
-        if (c.type === 'generator') ctx.fillStyle = Game.power > 20 ? varColor('--accent-green') : varColor('--accent-red');
-        
+        ctx.fillStyle = c.searched ? '#2e3e50' : varColor('--accent-blue');
+        if (c.type === 'generator') ctx.fillStyle = Game.power > 25 ? varColor('--accent-green') : varColor('--accent-red');
+        if (c.type === 'exit_door') ctx.fillStyle = varColor('--accent-yellow');
+
         ctx.fillRect(c.x * CONFIG.tileSize + 4, c.y * CONFIG.tileSize + 4, CONFIG.tileSize - 8, CONFIG.tileSize - 8);
         ctx.fillStyle = '#fff';
-        ctx.font = '10px sans-serif';
+        ctx.font = '10px var(--font-mono)';
         ctx.fillText(c.name[0], c.x * CONFIG.tileSize + 12, c.y * CONFIG.tileSize + 20);
     }
 
-    // Render NPCs
     for (let npc of Game.npcs) {
         ctx.fillStyle = '#f39c12';
         ctx.beginPath();
-        ctx.arc(npc.x * CONFIG.tileSize + 16, npc.y * CONFIG.tileSize + 16, 12, 0, Math.PI * 2);
+        ctx.arc(npc.x * CONFIG.tileSize + 16, npc.y * CONFIG.tileSize + 16, 11, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    // Render Player
     let px = Game.player.x * CONFIG.tileSize;
     let py = Game.player.y * CONFIG.tileSize;
 
     ctx.fillStyle = varColor('--accent-blue');
     ctx.beginPath();
-    ctx.arc(px + 16, py + 16, 12, 0, Math.PI * 2);
+    ctx.arc(px + 16, py + 16, 11, 0, Math.PI * 2);
     ctx.fill();
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
@@ -1279,7 +1267,6 @@ function render() {
 
     ctx.restore();
 
-    // Lighting Overlay
     renderLighting(camX, camY);
 }
 
@@ -1287,26 +1274,24 @@ function renderLighting(camX, camY) {
     let px = Game.player.x * CONFIG.tileSize + camX;
     let py = Game.player.y * CONFIG.tileSize + camY;
 
-    // Ambient Darkness
-    let ambientOpacity = 1.0 - (Game.power / 100) * 0.75; // darker if power low
+    let ambientOpacity = 0.98 - (Game.power / 100) * 0.7;
     
     let darkCanvas = document.createElement('canvas');
     darkCanvas.width = canvas.width;
     darkCanvas.height = canvas.height;
     let dCtx = darkCanvas.getContext('2d');
 
-    dCtx.fillStyle = `rgba(5, 8, 12, ${ambientOpacity})`;
+    dCtx.fillStyle = `rgba(4, 7, 10, ${ambientOpacity})`;
     dCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     dCtx.globalCompositeOperation = 'destination-out';
 
-    // Player Ambient Light
-    let grad = dCtx.createRadialGradient(px, py, 10, px, py, Game.player.flashlight ? 180 : 70);
+    let grad = dCtx.createRadialGradient(px, py, 10, px, py, Game.player.flashlight ? 200 : 75);
     grad.addColorStop(0, 'rgba(0,0,0,1)');
     grad.addColorStop(1, 'rgba(0,0,0,0)');
     dCtx.fillStyle = grad;
     dCtx.beginPath();
-    dCtx.arc(px, py, Game.player.flashlight ? 180 : 70, 0, Math.PI * 2);
+    dCtx.arc(px, py, Game.player.flashlight ? 200 : 75, 0, Math.PI * 2);
     dCtx.fill();
 
     ctx.drawImage(darkCanvas, 0, 0);
@@ -1317,7 +1302,60 @@ function varColor(name) {
 }
 
 /* ==========================================================================
-   USER INTERFACE (UI) MANAGER
+   MENU BACKGROUND ANIMATION ENGINE
+   ========================================================================== */
+const menuCanvas = document.getElementById('menuCanvas');
+const mCtx = menuCanvas.getContext('2d');
+let particles = [];
+
+function initMenuBg() {
+    menuCanvas.width = window.innerWidth;
+    menuCanvas.height = window.innerHeight;
+    particles = [];
+    for (let i = 0; i < 40; i++) {
+        particles.push({
+            x: Math.random() * menuCanvas.width,
+            y: Math.random() * menuCanvas.height,
+            size: Math.random() * 2 + 1,
+            speedY: -Math.random() * 0.5 - 0.2,
+            opacity: Math.random() * 0.5 + 0.2
+        });
+    }
+}
+
+function drawMenuBg() {
+    if (document.getElementById('main-menu').style.display === 'none') return;
+
+    mCtx.fillStyle = '#05080c';
+    mCtx.fillRect(0, 0, menuCanvas.width, menuCanvas.height);
+
+    // Lamp Glow FX
+    let pulse = Math.sin(Date.now() * 0.003) * 0.15 + 0.85;
+    let grad = mCtx.createRadialGradient(menuCanvas.width / 2, 100, 10, menuCanvas.width / 2, 100, 350);
+    grad.addColorStop(0, `rgba(61, 139, 253, ${0.25 * pulse})`);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    mCtx.fillStyle = grad;
+    mCtx.fillRect(0, 0, menuCanvas.width, menuCanvas.height);
+
+    // Dust Particles
+    mCtx.fillStyle = '#3d8bfd';
+    for (let p of particles) {
+        p.y += p.speedY;
+        if (p.y < 0) p.y = menuCanvas.height;
+        mCtx.globalAlpha = p.opacity;
+        mCtx.fillRect(p.x, p.y, p.size, p.size);
+    }
+    mCtx.globalAlpha = 1.0;
+
+    requestAnimationFrame(drawMenuBg);
+}
+
+window.addEventListener('resize', initMenuBg);
+initMenuBg();
+drawMenuBg();
+
+/* ==========================================================================
+   UI MANAGER
    ========================================================================== */
 const UI = {
     updateHUD() {
@@ -1333,6 +1371,8 @@ const UI = {
         let pDisp = document.getElementById('power-display');
         pDisp.innerText = `ЭЛЕКТРИЧЕСТВО: ${Game.power}%`;
         pDisp.style.color = Game.power > 30 ? 'var(--accent-green)' : 'var(--accent-red)';
+
+        document.getElementById('noise-display').innerText = `ШУМ: ${Math.floor(Game.noise)}%`;
     },
 
     renderHotbar() {
@@ -1399,7 +1439,7 @@ const UI = {
                     <strong>${item.icon} ${r.name}</strong>
                     <div style="font-size:11px; color:var(--text-dim);">Требуется: ${reqs}</div>
                 </div>
-                <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="UI.craft('${r.id}')">Создать</button>
+                <button class="btn" style="padding:6px 12px; font-size:11px;" onclick="UI.craft('${r.id}')">Создать</button>
             `;
             list.appendChild(div);
         });
@@ -1408,16 +1448,12 @@ const UI = {
     craft(recipeId) {
         let r = RECIPES.find(x => x.id === recipeId);
         if (!r) return;
-
-        // Check ingredients
         for (let [k, v] of Object.entries(r.req)) {
             if (getItemCount(k) < v) {
                 UI.notify('Недостаточно ресурсов!');
                 return;
             }
         }
-
-        // Deduct & Add
         for (let [k, v] of Object.entries(r.req)) removeItem(k, v);
         addItem(r.result.item, r.result.count);
         UI.notify(`Создано: ${r.name}`);
@@ -1432,7 +1468,7 @@ const UI = {
             div.style.marginBottom = '8px';
             div.innerHTML = `
                 <strong style="color:${q.done ? 'var(--accent-green)' : 'var(--accent-yellow)'}">${q.done ? '✓' : '○'} ${q.title}</strong>
-                <div style="font-size:12px; color:var(--text-dim);">${q.desc}</div>
+                <div style="font-size:11px; color:var(--text-dim);">${q.desc}</div>
             `;
             qList.appendChild(div);
         });
@@ -1442,9 +1478,7 @@ const UI = {
         document.getElementById('npc-name').innerText = npc.name;
         document.getElementById('dialogue-text').innerText = npc.text;
         let opts = document.getElementById('dialogue-options');
-        opts.innerHTML = `
-            <button class="btn" onclick="UI.closeModals()">[Уйти]</button>
-        `;
+        opts.innerHTML = `<button class="btn" onclick="UI.closeModals()">[Закрыть]</button>`;
         this.toggleModal('modal-dialogue');
     },
 
@@ -1452,7 +1486,7 @@ const UI = {
         let el = document.getElementById('notification');
         el.innerText = text;
         el.classList.add('show');
-        setTimeout(() => el.classList.remove('show'), 2500);
+        setTimeout(() => el.classList.remove('show'), 2400);
     },
 
     toggleModal(id) {
@@ -1477,7 +1511,11 @@ const UI = {
     togglePause() {
         Game.paused = !Game.paused;
         if (Game.paused) {
-            this.showInfo('ПАУЗА', '<button class="btn" style="width:100%" onclick="UI.closeModals()">Продолжить</button>');
+            this.showInfo('ПАУЗА', `
+                <button class="btn" style="width:100%; margin-bottom:10px;" onclick="UI.closeModals()">Продолжить</button>
+                <button class="btn" style="width:100%; margin-bottom:10px;" onclick="saveGameData()">Сохранить игру</button>
+                <button class="btn" style="width:100%; background:#4a1515;" onclick="location.reload()">Выйти в меню</button>
+            `);
         } else {
             this.closeModals();
         }
@@ -1492,11 +1530,11 @@ const UI = {
     updateClassDesc() {
         let val = document.getElementById('char-class').value;
         let descs = {
-            engineer: '+20% к скорости ремонта генератора и оборудования.',
-            medic: '+20% к эффективности восстанавливаемого аптечками здоровья.',
-            scout: '+20% к шансу получить дополнительный лут при поиске.',
-            tech: '-20% расхода электричества всем бункером.',
-            survivor: '+10% к показателям здоровья, энергии и выносливости.'
+            engineer: '+20% к скорости ремонта оборудования.',
+            medic: '+20% к эффекту лечения аптечками.',
+            scout: '+20% к шансу получить доп. ресурсы при поиске.',
+            tech: '-20% расхода энергии всем комплексом.',
+            survivor: '+10% ко всем характеристикам персонажа.'
         };
         document.getElementById('class-desc').innerText = descs[val];
     },
@@ -1509,7 +1547,6 @@ const UI = {
     }
 };
 
-/* Button handlers for inventory usage */
 document.getElementById('btn-use-item').onclick = () => {
     if (UI.selectedInvIdx === null) return;
     let slot = Game.inventory[UI.selectedInvIdx];
@@ -1539,11 +1576,11 @@ document.getElementById('btn-drop-item').onclick = () => {
 };
 
 /* ==========================================================================
-   GAME ENGINE CORE
+   START / INIT LISTENERS
    ========================================================================== */
 function gameLoop(time) {
     let dt = (time - lastTime) / 1000;
-    if (dt > 0.1) dt = 0.1; // Clamp frame delta
+    if (dt > 0.1) dt = 0.1;
     lastTime = time;
 
     update(dt);
@@ -1557,15 +1594,10 @@ function startNewGame() {
     Game.player.name = document.getElementById('char-name').value || 'Алексей';
     Game.player.class = document.getElementById('char-class').value;
 
-    // Apply class bonuses
-    if (Game.player.class === 'engineer') Game.player.bonuses.repair = 1.2;
-    if (Game.player.class === 'medic') Game.player.bonuses.med = 1.2;
-    if (Game.player.class === 'scout') Game.player.bonuses.loot = 1.2;
+    if (Game.player.class === 'engineer') Game.player.bonuses.repair = 1.25;
+    if (Game.player.class === 'medic') Game.player.bonuses.med = 1.25;
     if (Game.player.class === 'tech') Game.player.bonuses.power = 0.8;
-    if (Game.player.class === 'survivor') {
-        Game.player.maxHp = 110;
-        Game.player.hp = 110;
-    }
+    if (Game.player.class === 'survivor') Game.player.maxHp = 110;
 
     initMap();
     document.getElementById('main-menu').style.display = 'none';
@@ -1573,32 +1605,31 @@ function startNewGame() {
     Game.running = true;
     Game.paused = false;
 
-    UI.notify(`Добро пожаловать в Бункер, ${Game.player.name}`);
+    UI.notify(`Смена начата, ${Game.player.name}`);
     requestAnimationFrame(gameLoop);
 }
 
 function gameOver(win = false) {
     Game.running = false;
     document.getElementById('go-title').innerText = win ? 'ВЫ ВЫЖИЛИ!' : 'СИСТЕМА ОТКЛЮЧЕНА';
-    document.getElementById('go-desc').innerText = win ? 'Вам удалось продержаться и найти решение.' : 'Вы погибли в подземном бункере.';
+    document.getElementById('go-desc').innerText = win ? 'Вы успешно прошли все испытания.' : 'Вы погибнули в подземном бункере.';
     document.getElementById('go-stats').innerText = `Прожито дней: ${Game.day}`;
     document.getElementById('modal-gameover').classList.add('active');
 }
 
-/* Setup Main Menu UI listeners */
 document.getElementById('btn-new-game').onclick = () => UI.toggleModal('modal-char');
+document.getElementById('btn-continue').onclick = () => loadGameData();
 document.getElementById('btn-start-game').onclick = () => startNewGame();
-
 document.getElementById('btn-settings').onclick = () => UI.toggleModal('modal-settings');
 
 document.getElementById('btn-controls').onclick = () => {
     UI.showInfo('УПРАВЛЕНИЕ', `
         <p><strong>WASD / Стрелки</strong> — Перемещение</p>
-        <p><strong>E</strong> — Взаимодействие (шкафы, генератор, диалог)</p>
-        <p><strong>F</strong> — Включить / Выключить фонарик</p>
+        <p><strong>E</strong> — Действие / Взаимодействие</p>
+        <p><strong>F</strong> — Ручной фонарь</p>
         <p><strong>I</strong> — Инвентарь и верстак</p>
-        <p><strong>M</strong> — Карта и журнал квестов</p>
-        <p><strong>1-8</strong> — Выбор слота быстрого доступа</p>
+        <p><strong>M</strong> — Карта комплекса и задания</p>
+        <p><strong>1-8</strong> — Быстрый выбор слота</p>
         <p><strong>ESC</strong> — Пауза</p>
     `);
 };
@@ -1606,11 +1637,12 @@ document.getElementById('btn-controls').onclick = () => {
 document.getElementById('btn-about').onclick = () => {
     UI.showInfo('ОБ ИГРЕ', `
         <p><strong>BUNKER: SURVIVAL</strong></p>
-        <p>Атмосферная 2D-игра про выживание в подземном комплексе после катастрофы.</p>
-        <p>Следите за состоянием генератора, поддерживайте жизненные показатели, создавайте необходимые предметы и выполняйте задания, чтобы выжить.</p>
+        <p>Полная автономная 2D-игра про выживание в подземном комплексе после масштабной катастрофы.</p>
+        <p>Поддерживайте работу генератора, исследуйте помещения, следите за уровнем шума, производите ресурсы и продержитесь как можно дольше.</p>
     `);
 };
 
+checkSaveAvailable();
 UI.updateClassDesc();
 </script>
 </body>
