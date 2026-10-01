@@ -2,12 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BUNKER: SURVIVAL & MADNESS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUNKER 3D: SURVIVAL</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #04060a;
             --panel-bg: rgba(10, 16, 26, 0.88);
             --panel-border: rgba(61, 139, 253, 0.25);
             --panel-border-glow: rgba(0, 242, 254, 0.4);
@@ -26,7 +25,6 @@
         * {
             box-sizing: border-box;
             user-select: none;
-            -webkit-user-select: none;
             margin: 0;
             padding: 0;
         }
@@ -35,34 +33,23 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--bg-dark);
+            background-color: #000;
             font-family: var(--font-sans);
             color: var(--text-main);
         }
 
-        #game-container {
-            position: relative;
+        #canvas-container {
             width: 100vw;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-        }
-
-        canvas#gameCanvas {
             display: block;
-            width: 100%;
-            height: 100%;
-            image-rendering: pixelated;
         }
 
         .crt-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background: 
-                radial-gradient(circle at center, transparent 55%, rgba(0, 0, 0, 0.75) 100%),
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+                radial-gradient(circle at center, transparent 60%, rgba(0, 0, 0, 0.8) 100%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
             background-size: 100% 100%, 100% 4px;
             pointer-events: none !important;
             z-index: 50;
@@ -85,7 +72,6 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 15px;
         }
 
         .stats-panel {
@@ -134,14 +120,12 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
         }
 
-        .time-display { font-size: 14px; color: var(--accent-cyan); font-weight: 800; letter-spacing: 1px; }
+        .time-display { font-size: 14px; color: var(--accent-cyan); font-weight: 800; }
         .power-display { font-size: 12px; margin-top: 3px; color: var(--accent-green); font-weight: 600; }
-        .noise-display { font-size: 11px; color: var(--accent-yellow); margin-top: 2px; }
 
         .hud-bottom {
             display: flex;
             justify-content: center;
-            align-items: center;
         }
 
         .hotbar {
@@ -152,7 +136,6 @@
             backdrop-filter: blur(12px);
             padding: 8px;
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
         }
 
         .slot {
@@ -166,41 +149,36 @@
             align-items: center;
             position: relative;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        .slot:hover, .slot.selected {
+        .slot.selected {
             border-color: var(--accent-cyan);
             background: rgba(0, 242, 254, 0.12);
-            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
         }
 
-        .slot-num { position: absolute; top: 3px; left: 5px; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); font-weight: 600; }
+        .slot-num { position: absolute; top: 3px; left: 5px; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); }
         .slot-count { position: absolute; bottom: 3px; right: 5px; font-size: 11px; font-weight: 800; color: #fff; font-family: var(--font-mono); }
 
         .prompt-layer {
             position: absolute;
-            top: 58%; left: 50%;
+            top: 55%; left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(10, 16, 26, 0.95);
             border: 1px solid var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
             padding: 8px 22px;
             border-radius: 20px;
             color: #fff;
             font-weight: 700;
             font-size: 13px;
             font-family: var(--font-mono);
-            pointer-events: none;
             display: none;
             z-index: 15;
-            letter-spacing: 0.5px;
         }
 
         .modal {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(4, 7, 12, 0.8);
+            background: rgba(4, 7, 12, 0.85);
             backdrop-filter: blur(12px);
             display: flex;
             justify-content: center;
@@ -220,154 +198,89 @@
             background: var(--panel-bg);
             border: 1px solid var(--panel-border-glow);
             border-radius: 16px;
-            width: 92%;
-            max-width: 600px;
-            max-height: 85vh;
+            width: 90%;
+            max-width: 580px;
+            max-height: 80vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 30px rgba(0, 242, 254, 0.15);
         }
 
         .modal-header {
-            padding: 18px 24px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--panel-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.02);
         }
 
-        .modal-header h2 {
-            font-size: 16px;
-            letter-spacing: 2px;
-            color: #fff;
-            text-transform: uppercase;
-            font-family: var(--font-mono);
-            font-weight: 800;
-        }
+        .modal-header h2 { font-size: 15px; letter-spacing: 2px; color: #fff; font-family: var(--font-mono); }
+        .close-btn { background: none; border: none; color: var(--text-dim); font-size: 18px; cursor: pointer; }
+        .close-btn:hover { color: #fff; }
 
-        .close-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-dim);
-            width: 32px; height: 32px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            transition: all 0.2s;
-        }
-
-        .close-btn:hover { background: var(--accent-red); color: #fff; border-color: var(--accent-red); }
-
-        .modal-body {
-            padding: 24px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-        }
+        .modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
 
         .btn {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--panel-border);
             color: var(--text-main);
-            padding: 13px 20px;
+            padding: 12px;
             border-radius: 8px;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-align: center;
             font-family: var(--font-mono);
+            width: 100%;
+            margin-bottom: 8px;
         }
 
-        .btn:hover {
-            background: var(--accent-blue);
-            color: #fff;
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(61, 139, 253, 0.4);
-        }
+        .btn:hover { background: var(--accent-blue); color: #fff; border-color: var(--accent-cyan); }
 
         #main-menu {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 40;
+            z-index: 200;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 30px;
+            gap: 25px;
             background: radial-gradient(circle at center, #0d1826 0%, #04070c 100%);
         }
 
-        .menu-title { text-align: center; }
-        .menu-title h1 {
-            font-size: 48px;
-            letter-spacing: 10px;
-            color: #fff;
-            text-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
-            font-family: var(--font-mono);
-            font-weight: 800;
-        }
-        .menu-title p {
-            color: var(--accent-cyan);
-            font-size: 12px;
-            letter-spacing: 4px;
-            margin-top: 10px;
-            font-family: var(--font-mono);
-            opacity: 0.8;
-        }
+        .menu-title h1 { font-size: 42px; letter-spacing: 8px; color: #fff; font-family: var(--font-mono); font-weight: 800; text-align: center;}
+        .menu-title p { color: var(--accent-cyan); font-size: 12px; letter-spacing: 3px; text-align: center; margin-top: 8px; font-family: var(--font-mono); }
+        .menu-btns { width: 280px; }
 
-        .menu-btns { width: 320px; }
-
-        .inv-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
+        .inv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
         .inv-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--panel-border);
             border-radius: 8px;
-            padding: 10px 4px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
             position: relative;
-            transition: all 0.2s;
-            min-height: 70px;
         }
-
-        .inv-item:hover, .inv-item.selected {
-            border-color: var(--accent-cyan);
-            background: rgba(0, 242, 254, 0.08);
-        }
-
-        .inv-item .icon { font-size: 24px; margin-bottom: 2px; }
-        .inv-item .name { font-size: 10px; text-align: center; color: var(--text-dim); line-height: 1.1; }
+        .inv-item.selected { border-color: var(--accent-cyan); background: rgba(0, 242, 254, 0.1); }
+        .inv-item .icon { font-size: 24px; }
+        .inv-item .name { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 4px; }
         .inv-item .qty { position: absolute; top: 3px; right: 6px; font-size: 10px; font-weight: 800; font-family: var(--font-mono); }
 
         .item-desc {
             background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--panel-border);
-            padding: 14px;
+            padding: 12px;
             border-radius: 8px;
             font-size: 12px;
-            min-height: 65px;
             color: var(--text-dim);
-            line-height: 1.4;
+            min-height: 50px;
         }
 
         .notification {
@@ -376,186 +289,97 @@
             transform: translateX(-50%) translateY(-10px);
             background: rgba(10, 16, 26, 0.95);
             border: 1px solid var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
             color: #fff;
-            padding: 10px 24px;
-            border-radius: 30px;
+            padding: 8px 20px;
+            border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
             pointer-events: none;
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 150;
             font-family: var(--font-mono);
         }
-
         .notification.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
-<div id="game-container">
-    <div class="crt-overlay"></div>
-    <canvas id="gameCanvas"></canvas>
+<div id="canvas-container"></div>
+<div class="crt-overlay"></div>
 
-    <div class="ui-layer">
-        <div class="hud-top">
-            <div class="stats-panel interactive">
-                <div class="stat-item" title="Здоровье">
-                    ❤️ <div class="stat-bar-bg"><div id="hp-fill" class="stat-fill" style="background: var(--accent-red);"></div></div>
-                </div>
-                <div class="stat-item" title="Голод">
-                    🍗 <div class="stat-bar-bg"><div id="hunger-fill" class="stat-fill" style="background: var(--accent-yellow);"></div></div>
-                </div>
-                <div class="stat-item" title="Жажда">
-                    💧 <div class="stat-bar-bg"><div id="thirst-fill" class="stat-fill" style="background: var(--accent-blue);"></div></div>
-                </div>
-                <div class="stat-item" title="Энергия">
-                    ⚡ <div class="stat-bar-bg"><div id="stamina-fill" class="stat-fill" style="background: var(--accent-green);"></div></div>
-                </div>
-                <div class="stat-item" title="Рассудок">
-                    🧠 <div class="stat-bar-bg"><div id="sanity-fill" class="stat-fill" style="background: var(--accent-purple);"></div></div>
-                </div>
-            </div>
-
-            <div class="info-panel interactive">
-                <div class="time-display" id="time-display">ДЕНЬ 1 — 08:00</div>
-                <div class="power-display" id="power-display">ЭЛЕКТРИЧЕСТВО: 100%</div>
-                <div class="noise-display" id="noise-display">ШУМ: 0%</div>
-            </div>
+<div class="ui-layer">
+    <div class="hud-top">
+        <div class="stats-panel interactive">
+            <div class="stat-item" title="Здоровье">❤️ <div class="stat-bar-bg"><div id="hp-fill" class="stat-fill" style="background: var(--accent-red);"></div></div></div>
+            <div class="stat-item" title="Голод">🍗 <div class="stat-bar-bg"><div id="hunger-fill" class="stat-fill" style="background: var(--accent-yellow);"></div></div></div>
+            <div class="stat-item" title="Жажда">💧 <div class="stat-bar-bg"><div id="thirst-fill" class="stat-fill" style="background: var(--accent-blue);"></div></div></div>
+            <div class="stat-item" title="Рассудок">🧠 <div class="stat-bar-bg"><div id="sanity-fill" class="stat-fill" style="background: var(--accent-purple);"></div></div></div>
         </div>
 
-        <div class="prompt-layer" id="interaction-prompt">[E] ВЗАИМОДЕЙСТВИЕ</div>
-
-        <div class="hud-bottom">
-            <div class="hotbar interactive" id="hotbar"></div>
+        <div class="info-panel interactive">
+            <div class="time-display" id="time-display">ДЕНЬ 1 — 08:00</div>
+            <div class="power-display" id="power-display">ЭЛЕКТРИЧЕСТВО: 100%</div>
         </div>
     </div>
 
-    <div class="notification" id="notification">Уведомление</div>
+    <div class="prompt-layer" id="interaction-prompt">[E] ВЗАИМОДЕЙСТВИЕ</div>
 
-    <div id="main-menu">
-        <div class="menu-title">
-            <h1>BUNKER: SURVIVAL</h1>
-            <p>PROTOCOL 0 — UNKNOWN MADNESS</p>
-        </div>
-        <div class="btn-group menu-btns">
-            <button class="btn" id="btn-new-game">▶ Начать Смену</button>
-            <button class="btn" id="btn-controls">▶ Управление</button>
-            <button class="btn" id="btn-about">▶ Справка</button>
-        </div>
+    <div class="hud-bottom">
+        <div class="hotbar interactive" id="hotbar"></div>
     </div>
+</div>
 
-    <div class="modal" id="modal-pause">
-        <div class="modal-box" style="max-width: 380px;">
-            <div class="modal-header">
-                <h2>Пауза</h2>
-            </div>
-            <div class="modal-body">
-                <div class="btn-group">
-                    <button class="btn" onclick="UI.resumeGame()">Продолжить</button>
-                    <button class="btn" onclick="UI.quitToMenu()" style="background: rgba(255, 71, 87, 0.15); border-color: var(--accent-red);">Выйти в меню</button>
-                </div>
-            </div>
-        </div>
+<div class="notification" id="notification">Уведомление</div>
+
+<div id="main-menu">
+    <div class="menu-title">
+        <h1>BUNKER 3D</h1>
+        <p>3D SURVIVAL EXPERIENCE</p>
     </div>
-
-    <div class="modal" id="modal-inventory">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2>Инвентарь & Лаборатория</h2>
-                <button class="close-btn" onclick="UI.closeModals()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <button class="btn" style="flex:1" onclick="UI.switchInvTab('inv')">Предметы</button>
-                    <button class="btn" style="flex:1" onclick="UI.switchInvTab('craft')">Крафтинг</button>
-                </div>
-
-                <div id="tab-inv">
-                    <div class="inv-grid" id="inv-grid"></div>
-                    <div class="item-desc" id="inv-desc">Выберите предмет для просмотра или использования.</div>
-                    <button class="btn" id="btn-use-item" style="width:100%; margin-top:10px; display:none;" onclick="UI.useSelectedItem()">Использовать</button>
-                </div>
-
-                <div id="tab-craft" style="display: none;">
-                    <div class="item-desc" style="margin-bottom:12px;">Верстак: Выберите чертеж для сборки.</div>
-                    <div class="btn-group" id="craft-list"></div>
-                </div>
-            </div>
-        </div>
+    <div class="menu-btns">
+        <button class="btn" id="btn-start">▶ Войти в Бункер</button>
     </div>
+</div>
 
-    <div class="modal" id="modal-info">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2 id="info-title">Информация</h2>
-                <button class="close-btn" onclick="UI.closeModals()">✕</button>
+<div class="modal" id="modal-inventory">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2>Инвентарь & Крафт</h2>
+            <button class="close-btn" onclick="UI.closeModals()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <button class="btn" style="flex:1" onclick="UI.switchInvTab('inv')">Предметы</button>
+                <button class="btn" style="flex:1" onclick="UI.switchInvTab('craft')">Крафт</button>
             </div>
-            <div class="modal-body" id="info-body"></div>
+            <div id="tab-inv">
+                <div class="inv-grid" id="inv-grid"></div>
+                <div class="item-desc" id="inv-desc">Выберите предмет...</div>
+                <button class="btn" id="btn-use-item" style="margin-top:10px; display:none;" onclick="UI.useSelectedItem()">Использовать</button>
+            </div>
+            <div id="tab-craft" style="display: none;">
+                <div id="craft-list"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-const Audio = {
-    ctx: null,
-    volume: 0.8,
-    init() {
-        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    },
-    playTone(freq, type, duration) {
-        if (!this.ctx) return;
-        try {
-            let osc = this.ctx.createOscillator();
-            let gain = this.ctx.createGain();
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-            gain.gain.setValueAtTime(this.volume * 0.08, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start();
-            osc.stop(this.ctx.currentTime + duration);
-        } catch(e){}
-    },
-    playInteract() { this.playTone(650, 'sine', 0.08); },
-    playClick() { this.playTone(400, 'triangle', 0.05); },
-    playStrangeNoise() { this.playTone(120 + Math.random() * 80, 'sawtooth', 0.4); }
-};
-
-// БОЛЬШОЙ БАЗАР ПРЕДМЕТОВ
 const ITEMS = {
-    canned_food: { name: 'Консервы', icon: '🥫', desc: 'Сытная тушенка. +35 Голода.', type: 'food', value: 35 },
-    mre: { name: 'ИРП Сухпаек', icon: '🍱', desc: 'Армейский рацион. +60 Голода, +20 Энергии.', type: 'food_plus', value: 60 },
-    water: { name: 'Чистая Вода', icon: '💧', desc: 'Запечатанная бутылка. +40 Жажды.', type: 'drink', value: 40 },
-    soda: { name: 'Газировка', icon: '🥤', desc: 'Химозный напиток. +25 Жажды, +15 Энергии.', type: 'drink_plus', value: 25 },
-    medkit: { name: 'Аптечка', icon: '🩹', desc: 'Первая помощь. +50 Здоровья.', type: 'heal', value: 50 },
-    pills: { name: 'Успокоительное', icon: '💊', desc: 'Снимает панику. +40 Рассудка.', type: 'mind', value: 40 },
-    battery: { name: 'Батарейка', icon: '🔋', desc: 'Заряжает электронику.', type: 'mat' },
-    metal: { name: 'Металлолом', icon: '🔩', desc: 'Основа для ремесла.', type: 'mat' },
-    gears: { name: 'Шестерни', icon: '⚙️', desc: 'Механические части.', type: 'mat' },
-    wire: { name: 'Провода', icon: '🔌', desc: 'Медный кабель.', type: 'mat' },
-    cleaner: { name: 'Фильтр Воздуха', icon: '🫁', desc: 'Нужен для очистки бункера.', type: 'tool' },
-    lockpick: { name: 'Отмычка', icon: '🔑', desc: 'Взламывает закрытые ящики.', type: 'tool' },
-    torch: { name: 'Самодельный Факел', icon: '🔦', desc: 'Освещает тьму и бережет рассудок.', type: 'tool' },
-    strange_artifact: { name: 'Странная Сфера', icon: '🔮', desc: 'Шепчет непонятные слова на латыни...', type: 'weird' },
-    rubber_duck: { name: 'Резиновая Утка', icon: '🦆', desc: 'Единственный друг в этом месте. +10 Рассудка.', type: 'mind', value: 10 },
-    fungus: { name: 'Светящийся Гриб', icon: '🍄', desc: 'Вырос в сыром углу. Съедобен? (+15 Голода, -10 Рассудка)', type: 'risky_food', value: 15 },
-    diary: { name: 'Старый Дневник', icon: '📓', desc: 'Запись: "Они смотрят сквозь вентиляцию..."', type: 'lore' },
-    fuel: { name: 'Канистра Топлива', icon: '⛽', desc: 'Топливо для генератора. +50% Тока.', type: 'fuel', value: 50 }
+    canned_food: { name: 'Консервы', icon: '🥫', desc: '+35 Голода', type: 'food', value: 35 },
+    water: { name: 'Вода', icon: '💧', desc: '+40 Жажды', type: 'drink', value: 40 },
+    pills: { name: 'Успокоительное', icon: '💊', desc: '+40 Рассудка', type: 'mind', value: 40 },
+    metal: { name: 'Металл', icon: '🔩', desc: 'Материал', type: 'mat' },
+    wire: { name: 'Провода', icon: '🔌', desc: 'Материал', type: 'mat' },
+    gears: { name: 'Шестерни', icon: '⚙️', desc: 'Материал', type: 'mat' },
+    medkit: { name: 'Аптечка', icon: '🩹', desc: '+50 Здоровья', type: 'heal', value: 50 }
 };
 
 const CRAFT_RECIPES = [
-    { result: 'medkit', req: { metal: 2, pills: 1 }, name: '🩹 Аптечка (2x Металл, 1x Успокоительное)' },
-    { result: 'lockpick', req: { metal: 3, wire: 1 }, name: '🔑 Отмычка (3x Металл, 1x Провода)' },
-    { result: 'torch', req: { metal: 1, battery: 1, wire: 1 }, name: '🔦 Факел (1x Металл, 1x Батарейка, 1x Провода)' },
-    { result: 'cleaner', req: { gears: 2, wire: 2 }, name: '🫁 Фильтр (2x Шестерни, 2x Провода)' }
+    { result: 'medkit', req: { metal: 2, pills: 1 }, name: '🩹 Аптечка (2x Металл, 1x Успокоительное)' }
 ];
-
-const CONFIG = { tileSize: 40 };
-const MAP_WIDTH = 26;
-const MAP_HEIGHT = 26;
 
 let Game = {
     running: false,
@@ -563,183 +387,204 @@ let Game = {
     timeMinutes: 480,
     day: 1,
     power: 100,
-    noise: 5,
-    selectedInvIndex: null,
-    player: {
-        x: 13, y: 13,
-        dirX: 0, dirY: 1,
-        speed: 4.5,
-        hp: 100,
-        hunger: 90,
-        thirst: 80,
-        stamina: 100,
-        sanity: 100
-    },
+    player: { x: 0, z: 0, rot: 0, hp: 100, hunger: 90, thirst: 80, sanity: 100 },
     inventory: [
         { item: 'canned_food', count: 3 },
-        { item: 'water', count: 3 },
-        { item: 'pills', count: 2 },
-        { item: 'metal', count: 8 },
-        { item: 'wire', count: 5 },
-        { item: 'gears', count: 4 },
-        { item: 'strange_artifact', count: 1 },
-        { item: 'rubber_duck', count: 1 }
+        { item: 'water', count: 2 },
+        { item: 'pills', count: 1 },
+        { item: 'metal', count: 5 }
     ],
-    selectedSlot: 0
+    selectedSlot: 0,
+    selectedInvIndex: null
 };
 
-let mapGrid = [];
-let rooms = [];
-let interactiveObjects = [];
+// --- THREE.JS ENGINE SETUP ---
+let scene, camera, renderer;
+let playerMesh, flashlight;
+let interactiveMeshes = [];
+const keys = {};
 
-function initMap() {
-    mapGrid = Array(MAP_HEIGHT).fill(0).map(() => Array(MAP_WIDTH).fill(1));
+function init3D() {
+    const container = document.getElementById('canvas-container');
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x020408);
+    scene.fog = new THREE.FogExp2(0x020408, 0.08);
+
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     
-    rooms = [
-        { name: 'ЖИЛОЙ БЛОК', x: 3, y: 3, w: 20, h: 5 },
-        { name: 'СКЛАД ПРИПАСОВ', x: 3, y: 10, w: 9, h: 6 },
-        { name: 'ЛАБОРАТОРИЯ', x: 14, y: 10, w: 9, h: 6 },
-        { name: 'ГЕНЕРАТОРНАЯ И РАДИО', x: 3, y: 18, w: 20, h: 5 }
-    ];
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
 
-    rooms.forEach(r => {
-        for (let y = r.y; y < r.y + r.h; y++) {
-            for (let x = r.x; x < r.x + r.w; x++) {
-                mapGrid[y][x] = 0;
-            }
-        }
-    });
+    // Освещение окружения
+    const ambientLight = new THREE.AmbientLight(0x1a2636, 0.2);
+    scene.add(ambientLight);
 
-    for (let y = 3; y < 23; y++) {
-        mapGrid[y][12] = 0;
-        mapGrid[y][13] = 0;
-    }
+    buildBunkerLayout();
+    createPlayer();
 
-    interactiveObjects = [
-        { id: 'bed', name: 'Кровать (Отдых)', x: 5, y: 5.5, type: 'bed', icon: '🛏️' },
-        { id: 'workbench', name: 'Верстак', x: 20.5, y: 12.5, type: 'workbench', icon: '🛠️' },
-        { id: 'generator', name: 'Генератор', x: 6, y: 20.5, type: 'generator', icon: '⚡' },
-        { id: 'radio', name: 'Радиостанция', x: 20, y: 20.5, type: 'radio', icon: '📻' },
-        { id: 'chest1', name: 'Ящик с ломом', x: 5, y: 12.5, type: 'chest', icon: '📦' },
-        { id: 'chest2', name: 'Медицинский шкаф', x: 16, y: 12.5, type: 'med_chest', icon: '🩺' },
-        { id: 'vent', name: 'Подозрительная Вентиляция', x: 13, y: 4, type: 'vent', icon: '🕳️' }
-    ];
+    window.addEventListener('resize', onWindowResize);
 }
 
-const Keys = {};
+function buildBunkerLayout() {
+    // Текстуры/материалы
+    const wallMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
+    
+    // Пол
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // Функция создания стен
+    function createWall(x, z, w, d, h=4) {
+        const wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+        wall.position.set(x, h/2, z);
+        wall.castShadow = true;
+        wall.receiveShadow = true;
+        scene.add(wall);
+    }
+
+    // Периметр
+    createWall(0, -15, 30, 1);
+    createWall(0, 15, 30, 1);
+    createWall(-15, 0, 1, 30);
+    createWall(15, 0, 1, 30);
+
+    // Внутренние перегородки
+    createWall(-5, -5, 1, 20);
+    createWall(5, 5, 1, 20);
+
+    // Интерактивные объекты (3D)
+    createInteractiveObj(0, 0, -12, 0x3b82f6, 'bed', 'Кровать (Отдых)', '🛏️');
+    createInteractiveObj(-10, 0, 10, 0xeab308, 'generator', 'Генератор', '⚡');
+    createInteractiveObj(10, 0, -10, 0x10b981, 'workbench', 'Верстак', '🛠️️');
+    createInteractiveObj(10, 0, 10, 0xa855f7, 'radio', 'Радиостанция', '📻');
+
+    // Лампы под потолком
+    addCeilingLight(0, 3.5, 0, 0x00f2fe, 1.2);
+    addCeilingLight(-10, 3.5, 10, 0xf1c40f, 1.5);
+    addCeilingLight(10, 3.5, -10, 0x2ecc71, 1.5);
+}
+
+function addCeilingLight(x, y, z, color, intensity) {
+    const light = new THREE.PointLight(color, intensity, 15);
+    light.position.set(x, y, z);
+    light.castShadow = true;
+    scene.add(light);
+
+    const bulb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.2, 8, 8),
+        new THREE.MeshBasicMaterial({ color: color })
+    );
+    bulb.position.set(x, y, z);
+    scene.add(bulb);
+}
+
+function createInteractiveObj(x, y, z, color, type, name, icon) {
+    const group = new THREE.Group();
+    const geo = new THREE.BoxGeometry(1.8, 1.2, 1.8);
+    const mat = new THREE.MeshStandardMaterial({ color: color, metalness: 0.3, roughness: 0.4 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.y = 0.6;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    group.add(mesh);
+    group.position.set(x, y, z);
+    scene.add(group);
+
+    interactiveMeshes.push({ group, type, name, icon, x, z });
+}
+
+function createPlayer() {
+    playerMesh = new THREE.Group();
+
+    // Тело
+    const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 1.6, 12);
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x3d8bfd });
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.position.y = 0.8;
+    body.castShadow = true;
+    playerMesh.add(body);
+
+    // Голова
+    const headGeo = new THREE.SphereGeometry(0.3, 12, 12);
+    const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa });
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.position.y = 1.8;
+    playerMesh.add(head);
+
+    // Фонарик игрока
+    flashlight = new THREE.SpotLight(0xffffff, 2, 18, Math.PI / 5, 0.5, 1);
+    flashlight.position.set(0, 1.6, 0);
+    flashlight.target.position.set(0, 1.6, 5);
+    flashlight.castShadow = true;
+    playerMesh.add(flashlight);
+    playerMesh.add(flashlight.target);
+
+    scene.add(playerMesh);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+// --- ИГРОВАЯ ЛОГИКА И УПРАВЛЕНИЕ ---
 window.addEventListener('keydown', e => {
-    Keys[e.code] = true;
-    if (e.code === 'Escape' && Game.running) {
-        if (Game.paused) UI.resumeGame();
-        else UI.pauseGame();
-    }
-    if (!Game.running || Game.paused) return;
-
-    if (e.code === 'KeyE') interactNear();
+    keys[e.code] = true;
+    if (e.code === 'KeyE') checkInteraction();
     if (e.code === 'KeyI') UI.toggleModal('modal-inventory');
-
-    if (e.code.startsWith('Digit')) {
-        let num = parseInt(e.code.replace('Digit', '')) - 1;
-        if (num >= 0 && num < 5) UI.selectSlot(num);
-    }
 });
-window.addEventListener('keyup', e => { Keys[e.code] = false; });
+window.addEventListener('keyup', e => keys[e.code] = false);
 
-function interactNear() {
-    let near = getNearbyObject();
-    if (!near) return;
-
-    Audio.playInteract();
-    if (near.type === 'bed') {
-        Game.player.stamina = 100;
-        Game.player.sanity = Math.min(100, Game.player.sanity + 15);
-        Game.timeMinutes += 120;
-        UI.notify('Вы поспали (+100% Энергии, +15% Рассудка)');
-    } else if (near.type === 'workbench') {
-        UI.toggleModal('modal-inventory');
-        UI.switchInvTab('craft');
-    } else if (near.type === 'generator') {
-        Game.power = 100;
-        UI.notify('Генератор заправлен и отрегулирован');
-    } else if (near.type === 'radio') {
-        Audio.playStrangeNoise();
-        let msgs = [
-            'Радио шипит: "...они уже на третьем уровне..."',
-            'Шум помех... Слышен чья-то мольба о помощи.',
-            'В эфире тишина, но кто-то ритмично стучит по микрофону.'
-        ];
-        UI.notify(msgs[Math.floor(Math.random() * msgs.length)]);
-    } else if (near.type === 'chest') {
-        addItemToInv('metal', 2);
-        addItemToInv('wire', 1);
-        UI.notify('Найдено: Металл x2, Провода x1');
-    } else if (near.type === 'med_chest') {
-        addItemToInv('pills', 1);
-        UI.notify('Найдено: Успокоительное x1');
-    } else if (near.type === 'vent') {
-        Audio.playStrangeNoise();
-        Game.player.sanity -= 10;
-        UI.notify('Из вентиляции раздался жуткий шепот! (-10% Рассудка)');
-    }
-}
-
-function addItemToInv(itemId, count = 1) {
-    let existing = Game.inventory.find(i => i.item === itemId);
-    if (existing) existing.count += count;
-    else Game.inventory.push({ item: itemId, count: count });
-}
-
-function getNearbyObject() {
-    return interactiveObjects.find(o => Math.hypot(o.x - Game.player.x, o.y - Game.player.y) < 1.6);
-}
-
-function update(dt) {
+function updateGame(dt) {
     if (!Game.running || Game.paused) return;
 
-    // Время и потребности
-    Game.timeMinutes += dt * 3;
-    if (Game.timeMinutes >= 1440) {
-        Game.timeMinutes = 0;
-        Game.day++;
+    // Таймеры
+    Game.timeMinutes += dt * 4;
+    if (Game.timeMinutes >= 1440) { Game.timeMinutes = 0; Game.day++; }
+    Game.player.hunger = Math.max(0, Game.player.hunger - dt * 0.3);
+    Game.player.thirst = Math.max(0, Game.player.thirst - dt * 0.5);
+    Game.power = Math.max(0, Game.power - dt * 0.2);
+
+    // Перемещение игрока
+    const moveSpeed = 6 * dt;
+    let moveX = 0, moveZ = 0;
+
+    if (keys['KeyW'] || keys['ArrowUp']) moveZ += 1;
+    if (keys['KeyS'] || keys['ArrowDown']) moveZ -= 1;
+    if (keys['KeyA'] || keys['ArrowLeft']) moveX += 1;
+    if (keys['KeyD'] || keys['ArrowRight']) moveX -= 1;
+
+    if (moveX !== 0 || moveZ !== 0) {
+        const angle = Math.atan2(moveX, moveZ);
+        Game.player.rot = angle;
+        
+        const nextX = Game.player.x + Math.sin(angle) * moveSpeed;
+        const nextZ = Game.player.z + Math.cos(angle) * moveSpeed;
+
+        // Коллизии с границами
+        if (Math.abs(nextX) < 13.5) Game.player.x = nextX;
+        if (Math.abs(nextZ) < 13.5) Game.player.z = nextZ;
+
+        playerMesh.position.set(Game.player.x, 0, Game.player.z);
+        playerMesh.rotation.y = Game.player.rot;
     }
 
-    Game.player.hunger = Math.max(0, Game.player.hunger - dt * 0.4);
-    Game.player.thirst = Math.max(0, Game.player.thirst - dt * 0.6);
-    Game.power = Math.max(0, Game.power - dt * 0.3);
+    // Камера следит за игроком
+    camera.position.x = Game.player.x;
+    camera.position.y = Game.player.z + 10;
+    camera.position.z = Game.player.z + 12;
+    camera.lookAt(Game.player.x, 1, Game.player.z);
 
-    // Падение рассудка в темноте
-    if (Game.power < 20) {
-        Game.player.sanity = Math.max(0, Game.player.sanity - dt * 1.5);
-    }
-
-    // Случайная дичь
-    if (Math.random() < 0.001) {
-        Audio.playStrangeNoise();
-        UI.notify('⚠️ По стенам бункера прошёл странный гул...');
-    }
-
-    // Движение
-    let dx = 0, dy = 0;
-    if (Keys['KeyW'] || Keys['ArrowUp']) dy -= 1;
-    if (Keys['KeyS'] || Keys['ArrowDown']) dy += 1;
-    if (Keys['KeyA'] || Keys['ArrowLeft']) dx -= 1;
-    if (Keys['KeyD'] || Keys['ArrowRight']) dx += 1;
-
-    if (dx !== 0 || dy !== 0) {
-        let len = Math.hypot(dx, dy);
-        dx /= len; dy /= len;
-        Game.player.dirX = dx;
-        Game.player.dirY = dy;
-
-        let nextX = Game.player.x + dx * Game.player.speed * dt;
-        let nextY = Game.player.y + dy * Game.player.speed * dt;
-
-        if (mapGrid[Math.floor(Game.player.y)][Math.floor(nextX)] === 0) Game.player.x = nextX;
-        if (mapGrid[Math.floor(nextY)][Math.floor(Game.player.x)] === 0) Game.player.y = nextY;
-    }
-
-    let prompt = document.getElementById('interaction-prompt');
-    let near = getNearbyObject();
+    // Подсказка об интерактивности
+    const near = getNearbyObject();
+    const prompt = document.getElementById('interaction-prompt');
     if (near) {
         prompt.style.display = 'block';
         prompt.innerText = `[E] ${near.name.toUpperCase()}`;
@@ -750,123 +595,35 @@ function update(dt) {
     UI.updateHUD();
 }
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+function getNearbyObject() {
+    return interactiveMeshes.find(o => Math.hypot(o.x - Game.player.x, o.z - Game.player.z) < 2.5);
 }
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
 
-function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!Game.running) return;
+function checkInteraction() {
+    const near = getNearbyObject();
+    if (!near) return;
 
-    let tileSize = CONFIG.tileSize;
-    let camX = canvas.width / 2 - Game.player.x * tileSize;
-    let camY = canvas.height / 2 - Game.player.y * tileSize;
-
-    ctx.save();
-    ctx.translate(camX, camY);
-
-    // Карта
-    for (let r = 0; r < MAP_HEIGHT; r++) {
-        for (let c = 0; c < MAP_WIDTH; c++) {
-            if (mapGrid[r][c] === 1) {
-                ctx.fillStyle = '#060a10';
-                ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
-                ctx.strokeStyle = '#0e1824';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(c * tileSize, r * tileSize, tileSize, tileSize);
-            } else {
-                ctx.fillStyle = '#0b121c';
-                ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
-                ctx.fillStyle = 'rgba(255,255,255,0.012)';
-                ctx.fillRect(c * tileSize + 1, r * tileSize + 1, tileSize - 2, tileSize - 2);
-            }
-        }
+    if (near.type === 'bed') {
+        Game.player.sanity = Math.min(100, Game.player.sanity + 20);
+        Game.timeMinutes += 120;
+        UI.notify('Вы поспали (+20% Рассудка)');
+    } else if (near.type === 'generator') {
+        Game.power = 100;
+        UI.notify('Генератор полностью перезапущен!');
+    } else if (near.type === 'workbench') {
+        UI.toggleModal('modal-inventory');
+        UI.switchInvTab('craft');
+    } else if (near.type === 'radio') {
+        UI.notify('📻 Шум радио: "...сигнал утерян..."');
     }
-
-    // Зоны
-    ctx.font = 'bold 10px "JetBrains Mono"';
-    ctx.fillStyle = 'rgba(0, 242, 254, 0.25)';
-    ctx.textAlign = 'center';
-    rooms.forEach(r => {
-        ctx.fillText(r.name, (r.x + r.w / 2) * tileSize, (r.y + 1) * tileSize);
-    });
-
-    // Объекты
-    interactiveObjects.forEach(obj => {
-        let ox = obj.x * tileSize;
-        let oy = obj.y * tileSize;
-
-        ctx.fillStyle = 'rgba(61, 139, 253, 0.12)';
-        ctx.strokeStyle = 'rgba(0, 242, 254, 0.4)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(ox, oy, 18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.font = '18px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(obj.icon, ox, oy);
-    });
-
-    // Свет и Галлюцинации при низком рассудке
-    let px = Game.player.x * tileSize;
-    let py = Game.player.y * tileSize;
-
-    let lightRadius = Game.power > 10 ? 160 : 70;
-    let grad = ctx.createRadialGradient(px, py, 5, px, py, lightRadius);
-    grad.addColorStop(0, Game.player.sanity < 30 ? 'rgba(255, 71, 87, 0.3)' : 'rgba(0, 242, 254, 0.25)');
-    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(px, py, lightRadius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Персонаж
-    ctx.fillStyle = Game.player.sanity < 40 ? '#ff4757' : '#00f2fe';
-    ctx.shadowColor = ctx.fillStyle;
-    ctx.shadowBlur = 12;
-    ctx.beginPath();
-    ctx.arc(px, py, 11, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Взгляд
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(px, py);
-    ctx.lineTo(px + Game.player.dirX * 18, py + Game.player.dirY * 18);
-    ctx.stroke();
-
-    ctx.restore();
 }
 
-let lastTime = performance.now();
-function gameLoop(time) {
-    let dt = (time - lastTime) / 1000;
-    if (dt > 0.1) dt = 0.1;
-    lastTime = time;
-
-    update(dt);
-    render();
-
-    requestAnimationFrame(gameLoop);
-}
-
+// --- UI РЕНДЕР И МОДАЛКИ ---
 const UI = {
     updateHUD() {
         document.getElementById('hp-fill').style.width = `${Game.player.hp}%`;
         document.getElementById('hunger-fill').style.width = `${Game.player.hunger}%`;
         document.getElementById('thirst-fill').style.width = `${Game.player.thirst}%`;
-        document.getElementById('stamina-fill').style.width = `${Game.player.stamina}%`;
         document.getElementById('sanity-fill').style.width = `${Game.player.sanity}%`;
 
         let hrs = Math.floor(Game.timeMinutes / 60).toString().padStart(2, '0');
@@ -875,67 +632,51 @@ const UI = {
         document.getElementById('power-display').innerText = `ЭЛЕКТРИЧЕСТВО: ${Math.round(Game.power)}%`;
     },
     renderHotbar() {
-        let hotbar = document.getElementById('hotbar');
+        const hotbar = document.getElementById('hotbar');
         hotbar.innerHTML = '';
         for (let i = 0; i < 5; i++) {
-            let slotData = Game.inventory[i];
-            let item = slotData ? ITEMS[slotData.item] : null;
-            let div = document.createElement('div');
+            const slotData = Game.inventory[i];
+            const item = slotData ? ITEMS[slotData.item] : null;
+            const div = document.createElement('div');
             div.className = `slot ${i === Game.selectedSlot ? 'selected' : ''}`;
-            div.onclick = () => this.selectSlot(i);
             div.innerHTML = `
                 <span class="slot-num">${i + 1}</span>
-                ${item ? `<span style="font-size: 22px;">${item.icon}</span><span class="slot-count">${slotData.count}</span>` : ''}
+                ${item ? `<span style="font-size: 20px;">${item.icon}</span><span class="slot-count">${slotData.count}</span>` : ''}
             `;
             hotbar.appendChild(div);
         }
     },
-    selectSlot(idx) {
-        Game.selectedSlot = idx;
-        this.renderHotbar();
-    },
     renderInventory() {
-        let grid = document.getElementById('inv-grid');
+        const grid = document.getElementById('inv-grid');
         grid.innerHTML = '';
         Game.inventory.forEach((slot, idx) => {
-            let item = ITEMS[slot.item];
+            const item = ITEMS[slot.item];
             if (!item) return;
-            let div = document.createElement('div');
+            const div = document.createElement('div');
             div.className = `inv-item ${Game.selectedInvIndex === idx ? 'selected' : ''}`;
             div.innerHTML = `<span class="qty">x${slot.count}</span><div class="icon">${item.icon}</div><div class="name">${item.name}</div>`;
             div.onclick = () => {
                 Game.selectedInvIndex = idx;
                 this.renderInventory();
                 document.getElementById('inv-desc').innerText = `${item.name}: ${item.desc}`;
-                let useBtn = document.getElementById('btn-use-item');
-                if (['food','food_plus','drink','drink_plus','heal','mind','risky_food'].includes(item.type)) {
-                    useBtn.style.display = 'block';
-                } else {
-                    useBtn.style.display = 'none';
-                }
+                document.getElementById('btn-use-item').style.display = item.type !== 'mat' ? 'block' : 'none';
             };
             grid.appendChild(div);
         });
     },
     useSelectedItem() {
         if (Game.selectedInvIndex === null) return;
-        let slot = Game.inventory[Game.selectedInvIndex];
-        if (!slot) return;
-        let item = ITEMS[slot.item];
+        const slot = Game.inventory[Game.selectedInvIndex];
+        const item = ITEMS[slot.item];
 
         if (item.type === 'food') Game.player.hunger = Math.min(100, Game.player.hunger + item.value);
-        if (item.type === 'food_plus') { Game.player.hunger = Math.min(100, Game.player.hunger + item.value); Game.player.stamina = 100; }
         if (item.type === 'drink') Game.player.thirst = Math.min(100, Game.player.thirst + item.value);
-        if (item.type === 'heal') Game.player.hp = Math.min(100, Game.player.hp + item.value);
         if (item.type === 'mind') Game.player.sanity = Math.min(100, Game.player.sanity + item.value);
-        if (item.type === 'risky_food') { Game.player.hunger += 15; Game.player.sanity -= 10; }
 
         slot.count--;
         if (slot.count <= 0) Game.inventory.splice(Game.selectedInvIndex, 1);
         Game.selectedInvIndex = null;
-        
         document.getElementById('btn-use-item').style.display = 'none';
-        document.getElementById('inv-desc').innerText = 'Предмет использован.';
         this.renderInventory();
         this.renderHotbar();
     },
@@ -945,107 +686,75 @@ const UI = {
         if (tab === 'craft') this.renderCrafting();
     },
     renderCrafting() {
-        let list = document.getElementById('craft-list');
+        const list = document.getElementById('craft-list');
         list.innerHTML = '';
-        CRAFT_RECIPES.forEach((rec, idx) => {
-            let btn = document.createElement('button');
+        CRAFT_RECIPES.forEach(rec => {
+            const btn = document.createElement('button');
             btn.className = 'btn';
             btn.innerText = rec.name;
-            btn.onclick = () => this.craftItem(rec);
+            btn.onclick = () => {
+                let can = true;
+                for (let r in rec.req) {
+                    let has = Game.inventory.find(i => i.item === r);
+                    if (!has || has.count < rec.req[r]) can = false;
+                }
+                if (can) {
+                    for (let r in rec.req) {
+                        Game.inventory.find(i => i.item === r).count -= rec.req[r];
+                    }
+                    let hasRes = Game.inventory.find(i => i.item === rec.result);
+                    if (hasRes) hasRes.count++;
+                    else Game.inventory.push({ item: rec.result, count: 1 });
+                    UI.notify('Скрафчено!');
+                    UI.renderInventory();
+                    UI.renderHotbar();
+                } else UI.notify('❌ Недостаточно ресурсов');
+            };
             list.appendChild(btn);
         });
     },
-    craftItem(rec) {
-        // Проверка компонентов
-        let canCraft = true;
-        for (let reqMat in rec.req) {
-            let has = Game.inventory.find(i => i.item === reqMat);
-            if (!has || has.count < rec.req[reqMat]) canCraft = false;
-        }
-
-        if (canCraft) {
-            for (let reqMat in rec.req) {
-                let has = Game.inventory.find(i => i.item === reqMat);
-                has.count -= rec.req[reqMat];
-            }
-            addItemToInv(rec.result, 1);
-            UI.notify('Скрафчено: ' + ITEMS[rec.result].name);
-            this.renderInventory();
-            this.renderHotbar();
-        } else {
-            UI.notify('❌ Не хватает материалов!');
-        }
-    },
-    notify(text) {
-        let el = document.getElementById('notification');
-        el.innerText = text;
+    notify(txt) {
+        const el = document.getElementById('notification');
+        el.innerText = txt;
         el.classList.add('show');
-        setTimeout(() => el.classList.remove('show'), 2400);
+        setTimeout(() => el.classList.remove('show'), 2000);
     },
     toggleModal(id) {
-        let el = document.getElementById(id);
-        let isActive = el.classList.contains('active');
-        this.closeModals();
-        if (!isActive) {
+        const el = document.getElementById(id);
+        const active = el.classList.contains('active');
+        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+        if (!active) {
             el.classList.add('active');
             Game.paused = true;
-            if (id === 'modal-inventory') {
-                this.renderInventory();
-                this.switchInvTab('inv');
-            }
+            this.renderInventory();
         } else {
-            if (Game.running) Game.paused = false;
+            Game.paused = false;
         }
     },
     closeModals() {
         document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-        if (Game.running) Game.paused = false;
-    },
-    pauseGame() {
-        if (!Game.running) return;
-        Game.paused = true;
-        document.getElementById('modal-pause').classList.add('active');
-    },
-    resumeGame() {
-        document.getElementById('modal-pause').classList.remove('active');
         Game.paused = false;
-    },
-    quitToMenu() {
-        this.closeModals();
-        Game.running = false;
-        Game.paused = false;
-        document.getElementById('main-menu').style.display = 'flex';
-    },
-    showInfo(title, html) {
-        document.getElementById('info-title').innerText = title;
-        document.getElementById('info-body').innerHTML = html;
-        this.toggleModal('modal-info');
     }
 };
 
-window.addEventListener('DOMContentLoaded', () => {
-    UI.renderHotbar();
-    
-    document.getElementById('btn-new-game').onclick = () => {
-        Audio.init();
-        initMap();
-        document.getElementById('main-menu').style.display = 'none';
-        UI.closeModals();
-        Game.running = true;
-        Game.paused = false;
-        requestAnimationFrame(gameLoop);
-    };
+// Главный цикл Three.js
+let lastTime = performance.now();
+function animate(time) {
+    requestAnimationFrame(animate);
+    const dt = (time - lastTime) / 1000;
+    lastTime = time;
 
-    document.getElementById('btn-controls').onclick = () => { 
-        Audio.playClick(); 
-        UI.showInfo('УПРАВЛЕНИЕ', '<p><b>WASD / Стрелки</b> — Движение<br><b>E</b> — Взаимодействие<br><b>I</b> — Инвентарь и верстак<br><b>1-5</b> — Выбор слотов<br><b>ESC</b> — Пауза</p>'); 
-    };
-    
-    document.getElementById('btn-about').onclick = () => { 
-        Audio.playClick(); 
-        UI.showInfo('О БУНКЕРЕ', '<p>Следите за шкалой <b>Рассудка 🧠</b>. Если электричество отключится, в темноте вы начнёте слышать вещи, которых нет...</p>'); 
-    };
-});
+    updateGame(dt);
+    renderer.render(scene, camera);
+}
+
+document.getElementById('btn-start').onclick = () => {
+    document.getElementById('main-menu').style.display = 'none';
+    init3D();
+    UI.renderHotbar();
+    Game.running = true;
+    animate(performance.now());
+};
 </script>
 </body>
 </html>
