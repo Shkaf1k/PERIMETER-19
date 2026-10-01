@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BUNKER: SURVIVAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #05080c;
-            --panel-bg: rgba(12, 18, 26, 0.95);
-            --border-color: #233345;
+            --bg-dark: #06090e;
+            --panel-bg: rgba(13, 20, 30, 0.85);
+            --panel-border: rgba(61, 139, 253, 0.25);
+            --panel-border-glow: rgba(61, 139, 253, 0.5);
             --accent-blue: #3d8bfd;
+            --accent-cyan: #00f2fe;
             --accent-green: #2ecc71;
             --accent-yellow: #f1c40f;
-            --accent-red: #e74c3c;
-            --text-main: #d0d7de;
-            --text-dim: #7d8590;
-            --font-mono: 'Courier New', Courier, monospace;
+            --accent-red: #ff4757;
+            --text-main: #e6edf3;
+            --text-dim: #8b949e;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', sans-serif;
         }
 
         * {
@@ -31,7 +35,7 @@
             height: 100%;
             overflow: hidden;
             background-color: var(--bg-dark);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: var(--font-sans);
             color: var(--text-main);
         }
 
@@ -42,6 +46,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background: #000;
         }
 
         canvas#gameCanvas {
@@ -51,17 +56,19 @@
             image-rendering: pixelated;
         }
 
-        /* Эффект CRT поверх игры (pointer-events: none обязателен) */
+        /* CRT и Vignette FX */
         .crt-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 3px, 6px 100%;
+            background: 
+                radial-gradient(circle at center, transparent 60%, rgba(0, 0, 0, 0.65) 100%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+            background-size: 100% 100%, 100% 4px;
             pointer-events: none !important;
             z-index: 50;
         }
 
-        /* Слой интерфейса во время игры */
+        /* HUD слой */
         .ui-layer {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -69,7 +76,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 15px;
+            padding: 20px;
             z-index: 10;
         }
 
@@ -79,122 +86,132 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 10px;
+            gap: 15px;
         }
 
         .stats-panel {
             background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 10px 15px;
-            border-radius: 6px;
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            padding: 12px 18px;
+            border-radius: 12px;
             display: flex;
-            gap: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+            gap: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-weight: bold;
-            font-size: 13px;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
-        .stat-bar {
-            width: 55px;
+        .stat-bar-bg {
+            width: 70px;
             height: 8px;
-            background: #141b24;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 4px;
             overflow: hidden;
-            border: 1px solid #2a3b4d;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .stat-fill {
             height: 100%;
             width: 100%;
-            transition: width 0.3s ease;
+            border-radius: 4px;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .info-panel {
             background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            padding: 10px 15px;
-            border-radius: 6px;
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            padding: 12px 20px;
+            border-radius: 12px;
             text-align: right;
             font-family: var(--font-mono);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
-        .time-display { font-size: 16px; color: var(--accent-blue); font-weight: bold; }
-        .power-display { font-size: 12px; margin-top: 4px; }
+        .time-display { font-size: 15px; color: var(--accent-cyan); font-weight: 800; letter-spacing: 1px; }
+        .power-display { font-size: 12px; margin-top: 3px; color: var(--accent-green); font-weight: 600; }
         .noise-display { font-size: 11px; color: var(--accent-yellow); margin-top: 2px; }
 
         .hud-bottom {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 5px;
         }
 
         .hotbar {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             background: var(--panel-bg);
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
         .slot {
-            width: 46px;
-            height: 46px;
-            background: rgba(18, 26, 36, 0.8);
-            border: 1px solid #2a3b4d;
-            border-radius: 4px;
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
             cursor: pointer;
-            font-size: 22px;
+            font-size: 24px;
+            transition: all 0.2s ease;
         }
 
         .slot:hover, .slot.selected {
-            border-color: var(--accent-blue);
-            background: rgba(30, 45, 65, 0.9);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.1);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
         }
 
-        .slot-num { position: absolute; top: 2px; left: 4px; font-size: 9px; color: var(--text-dim); font-family: var(--font-mono); }
-        .slot-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; color: #fff; }
+        .slot-num { position: absolute; top: 3px; left: 5px; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); font-weight: 600; }
+        .slot-count { position: absolute; bottom: 3px; right: 5px; font-size: 11px; font-weight: 800; color: #fff; font-family: var(--font-mono); }
 
         .prompt-layer {
             position: absolute;
-            top: 62%; left: 50%;
+            top: 58%; left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(10, 15, 22, 0.9);
-            border: 1px solid var(--accent-blue);
-            padding: 8px 18px;
+            background: rgba(13, 20, 30, 0.9);
+            border: 1px solid var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+            padding: 8px 20px;
             border-radius: 20px;
             color: #fff;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 13px;
+            font-family: var(--font-mono);
             pointer-events: none;
             display: none;
+            z-index: 15;
+            letter-spacing: 0.5px;
         }
 
-        /* МОДАЛЬНЫЕ ОКНА */
+        /* МОДАЛЬНЫЕ ОКНА И ПАУЗА */
         .modal {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(4, 7, 10, 0.85);
-            backdrop-filter: blur(6px);
+            background: rgba(4, 7, 12, 0.75);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 100;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .modal.active {
@@ -204,48 +221,96 @@
 
         .modal-box {
             background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border: 1px solid var(--panel-border-glow);
+            border-radius: 16px;
             width: 90%;
-            max-width: 600px;
+            max-width: 550px;
             max-height: 85vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.9);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(61, 139, 253, 0.15);
         }
 
         .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--panel-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(18, 28, 40, 0.6);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .modal-header h2 {
             font-size: 16px;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             color: #fff;
             text-transform: uppercase;
             font-family: var(--font-mono);
+            font-weight: 800;
         }
 
         .close-btn {
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-dim);
-            font-size: 22px;
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            font-size: 16px;
             cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            transition: all 0.2s;
         }
 
-        .close-btn:hover { color: #fff; }
+        .close-btn:hover { background: var(--accent-red); color: #fff; border-color: var(--accent-red); }
 
         .modal-body {
-            padding: 20px;
+            padding: 24px;
             overflow-y: auto;
             flex-grow: 1;
+        }
+
+        /* КНОПКИ */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--panel-border);
+            color: var(--text-main);
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-align: center;
+            font-family: var(--font-mono);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background: var(--accent-blue);
+            color: #fff;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(61, 139, 253, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: var(--panel-border) !important;
+            background: rgba(255,255,255,0.02) !important;
         }
 
         /* ГЛАВНОЕ МЕНЮ */
@@ -257,73 +322,31 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            pointer-events: auto;
+            gap: 30px;
+            background: radial-gradient(circle at center, #0d1826 0%, #04070c 100%);
         }
 
-        #menuCanvas {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .menu-title { text-align: center; margin-bottom: 15px; }
+        .menu-title { text-align: center; }
         .menu-title h1 {
-            font-size: 44px;
-            letter-spacing: 8px;
-            color: #e6f0ff;
-            text-shadow: 0 0 20px rgba(61, 139, 253, 0.6);
+            font-size: 52px;
+            letter-spacing: 12px;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(0, 242, 254, 0.5);
             font-family: var(--font-mono);
+            font-weight: 800;
         }
         .menu-title p {
-            color: var(--accent-red);
+            color: var(--accent-cyan);
             font-size: 13px;
-            letter-spacing: 3px;
-            margin-top: 8px;
+            letter-spacing: 4px;
+            margin-top: 10px;
             font-family: var(--font-mono);
+            opacity: 0.8;
         }
 
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 280px;
-            z-index: 45;
-        }
+        .menu-btns { width: 300px; }
 
-        .btn {
-            background: rgba(22, 34, 48, 0.9);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 12px 20px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-            font-family: var(--font-mono);
-            pointer-events: auto;
-        }
-
-        .btn:hover {
-            background: var(--accent-blue);
-            color: #fff;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 15px rgba(61, 139, 253, 0.5);
-        }
-
-        .btn:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
-            border-color: var(--border-color) !important;
-            background: rgba(22, 34, 48, 0.4) !important;
-            box-shadow: none !important;
-        }
-
+        /* ИНВЕНТАРЬ */
         .inv-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -332,75 +355,73 @@
         }
 
         .inv-item {
-            background: rgba(18, 28, 40, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
             position: relative;
+            transition: all 0.2s;
         }
 
         .inv-item:hover, .inv-item.selected {
-            border-color: var(--accent-blue);
-            background: rgba(30, 48, 70, 0.8);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 242, 254, 0.08);
         }
 
-        .inv-item .icon { font-size: 26px; margin-bottom: 4px; }
-        .inv-item .name { font-size: 11px; text-align: center; }
-        .inv-item .qty { position: absolute; top: 4px; right: 6px; font-size: 11px; font-weight: bold; }
+        .inv-item .icon { font-size: 28px; margin-bottom: 4px; }
+        .inv-item .name { font-size: 11px; text-align: center; color: var(--text-dim); }
+        .inv-item .qty { position: absolute; top: 4px; right: 8px; font-size: 11px; font-weight: 800; font-family: var(--font-mono); }
 
         .item-desc {
-            background: rgba(8, 12, 18, 0.6);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--panel-border);
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 13px;
             min-height: 60px;
+            color: var(--text-dim);
+            line-height: 1.4;
         }
 
-        .craft-list { display: flex; flex-direction: column; gap: 10px; }
-        .craft-card {
-            background: rgba(18, 28, 40, 0.6);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 12px; color: var(--text-dim); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-dim); font-family: var(--font-mono); }
         .form-control {
             width: 100%;
-            padding: 8px 12px;
-            background: #0d131a;
-            border: 1px solid var(--border-color);
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--panel-border);
             color: #fff;
-            border-radius: 4px;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            outline: none;
+            transition: border-color 0.2s;
         }
+        .form-control:focus { border-color: var(--accent-cyan); }
 
         .notification {
             position: absolute;
-            top: 70px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 34, 0.95);
-            border: 1px solid var(--accent-blue);
+            top: 80px; left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(13, 20, 30, 0.95);
+            border: 1px solid var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
             color: #fff;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 12px;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 150;
             font-family: var(--font-mono);
         }
 
-        .notification.show { opacity: 1; }
+        .notification.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
@@ -414,27 +435,27 @@
         <div class="hud-top">
             <div class="stats-panel interactive">
                 <div class="stat-item" title="Здоровье">
-                    ❤️ <div class="stat-bar"><div id="hp-fill" class="stat-fill" style="background: var(--accent-red);"></div></div>
+                    ❤️ <div class="stat-bar-bg"><div id="hp-fill" class="stat-fill" style="background: var(--accent-red);"></div></div>
                 </div>
                 <div class="stat-item" title="Голод">
-                    🍗 <div class="stat-bar"><div id="hunger-fill" class="stat-fill" style="background: var(--accent-yellow);"></div></div>
+                    🍗 <div class="stat-bar-bg"><div id="hunger-fill" class="stat-fill" style="background: var(--accent-yellow);"></div></div>
                 </div>
                 <div class="stat-item" title="Жажда">
-                    💧 <div class="stat-bar"><div id="thirst-fill" class="stat-fill" style="background: var(--accent-blue);"></div></div>
+                    💧 <div class="stat-bar-bg"><div id="thirst-fill" class="stat-fill" style="background: var(--accent-blue);"></div></div>
                 </div>
                 <div class="stat-item" title="Энергия">
-                    ⚡ <div class="stat-bar"><div id="stamina-fill" class="stat-fill" style="background: var(--accent-green);"></div></div>
+                    ⚡ <div class="stat-bar-bg"><div id="stamina-fill" class="stat-fill" style="background: var(--accent-green);"></div></div>
                 </div>
             </div>
 
             <div class="info-panel interactive">
                 <div class="time-display" id="time-display">ДЕНЬ 1 — 08:00</div>
-                <div class="power-display" id="power-display" style="color: var(--accent-green);">ЭЛЕКТРИЧЕСТВО: 100%</div>
+                <div class="power-display" id="power-display">ЭЛЕКТРИЧЕСТВО: 100%</div>
                 <div class="noise-display" id="noise-display">ШУМ: 0%</div>
             </div>
         </div>
 
-        <div class="prompt-layer" id="interaction-prompt">[E] Взаимодействовать</div>
+        <div class="prompt-layer" id="interaction-prompt">[E] ВЗАИМОДЕЙСТВИЕ</div>
 
         <div class="hud-bottom">
             <div class="hotbar interactive" id="hotbar"></div>
@@ -445,12 +466,11 @@
 
     <!-- MAIN MENU -->
     <div id="main-menu">
-        <canvas id="menuCanvas"></canvas>
         <div class="menu-title">
             <h1>BUNKER: SURVIVAL</h1>
-            <p>SYSTEM ONLINE — DAY 0</p>
+            <p>SYSTEM ONLINE — PROTOCOL 0</p>
         </div>
-        <div class="btn-group">
+        <div class="btn-group menu-btns">
             <button class="btn" id="btn-new-game">▶ Новая Игра</button>
             <button class="btn" id="btn-continue" disabled>▶ Продолжить</button>
             <button class="btn" id="btn-settings">▶ Настройки</button>
@@ -459,37 +479,51 @@
         </div>
     </div>
 
+    <!-- PAUSE MENU -->
+    <div class="modal" id="modal-pause">
+        <div class="modal-box" style="max-width: 380px;">
+            <div class="modal-header">
+                <h2>Пауза</h2>
+            </div>
+            <div class="modal-body">
+                <div class="btn-group">
+                    <button class="btn" onclick="UI.resumeGame()">Продолжить</button>
+                    <button class="btn" onclick="UI.toggleModal('modal-settings')">Настройки</button>
+                    <button class="btn" onclick="UI.quitToMenu()" style="background: rgba(255, 71, 87, 0.15); border-color: var(--accent-red);">Выйти в меню</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL: CHARACTER CREATION -->
     <div class="modal" id="modal-char">
         <div class="modal-box">
             <div class="modal-header">
-                <h2>Создание персонажа</h2>
+                <h2>Создание Персонажа</h2>
                 <button class="close-btn" onclick="UI.closeModals()">✕</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Имя выжившего:</label>
+                    <label>ИМЯ ВЫЖИВШЕГО</label>
                     <input type="text" id="char-name" class="form-control" value="Алексей">
                 </div>
                 <div class="form-group">
-                    <label>Специализация (Класс):</label>
+                    <label>СПЕЦИАЛИЗАЦИЯ</label>
                     <select id="char-class" class="form-control" onchange="UI.updateClassDesc()">
-                        <option value="engineer">Инженер (+20% к скорости ремонта)</option>
-                        <option value="medic">Медик (+20% к эффективности лечения)</option>
-                        <option value="scout">Разведчик (+20% к поиску ресурсов)</option>
-                        <option value="tech">Техник (-20% расхода энергии)</option>
-                        <option value="survivor">Выживший (+10% к характеристикам)</option>
+                        <option value="engineer">Инженер (+Скорость ремонта)</option>
+                        <option value="medic">Медик (+Эффективность аптечек)</option>
+                        <option value="scout">Разведчик (+Скорость ходьбы)</option>
                     </select>
                 </div>
                 <div class="item-desc" id="class-desc" style="margin-bottom: 20px;">
-                    Бонус класса...
+                    Специалист по обслуживанию систем бункера. Быстро чинит генераторы и оборудование.
                 </div>
                 <button class="btn" style="width: 100%;" id="btn-start-game">Начать Выживание</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: INVENTORY & CRAFT -->
+    <!-- MODAL: INVENTORY -->
     <div class="modal" id="modal-inventory">
         <div class="modal-box">
             <div class="modal-header">
@@ -504,43 +538,36 @@
 
                 <div id="tab-inv">
                     <div class="inv-grid" id="inv-grid"></div>
-                    <div class="item-desc" id="inv-desc">Выберите предмет для просмотра информации.</div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn" id="btn-use-item" style="flex:1">Использовать</button>
-                        <button class="btn" id="btn-drop-item" style="flex:1; background:#4a1515;">Выбросить</button>
-                    </div>
+                    <div class="item-desc" id="inv-desc">Выберите предмет для просмотра деталей.</div>
                 </div>
 
                 <div id="tab-craft" style="display: none;">
-                    <div class="craft-list" id="craft-list"></div>
+                    <div class="item-desc" style="margin-bottom:15px;">Верстак: Выберите чертеж для создания предметов.</div>
+                    <div class="btn-group" id="craft-list"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: MAP & QUESTS -->
+    <!-- MODAL: MAP -->
     <div class="modal" id="modal-map">
         <div class="modal-box">
             <div class="modal-header">
-                <h2>Журнал Заданий & Карта</h2>
+                <h2>Карта Бункера</h2>
                 <button class="close-btn" onclick="UI.closeModals()">✕</button>
             </div>
             <div class="modal-body">
-                <h3>Активные Задания</h3>
-                <div id="quest-list" style="margin-top: 10px; margin-bottom: 20px;"></div>
-                <h3>Схема Комплекса</h3>
-                <div style="background: #0a0f16; padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); font-family: var(--font-mono); font-size: 11px; white-space: pre; overflow-x: auto; color: var(--accent-blue);">
-┌──────────────────────────────┐
-│          ЖИЛОЙ БЛОК          │
-├──────────────┬───────────────┤
-│    СКЛАД     │    МЕДБЛОК    │
-├──────────────┼───────────────┤
-│  МАСТЕРСКАЯ  │ ГЕНЕРАТОРНАЯ  │
-├──────────────┴───────────────┤
-│           КОРИДОР            │
-├──────────────────────────────┤
-│  ТАМБУР (ВЫХОД НА ПОВЕРХН.)  │
-└──────────────────────────────┘
+                <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid var(--panel-border); font-family: var(--font-mono); font-size: 12px; color: var(--accent-cyan); line-height: 1.6; text-align: center;">
+┌──────────────────────────────────────────┐<br>
+│               ЖИЛОЙ БЛОК                 │<br>
+│             (Кровать/Отдых)              │<br>
+├────────────────────┬─────────────────────┤<br>
+│       СКЛАД        │      МАСТЕРСКАЯ     │<br>
+│  (Сундуки с лутом) │      (Верстак)      │<br>
+├────────────────────┴─────────────────────┤<br>
+│               ГЕНЕРАТОРНАЯ               │<br>
+│           (Главный Электроблок)          │<br>
+└──────────────────────────────────────────┘
                 </div>
             </div>
         </div>
@@ -555,23 +582,15 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Громкость звука:</label>
+                    <label>ГРОМКОСТЬ</label>
                     <input type="range" id="setting-sound" min="0" max="100" value="80" class="form-control" onchange="Audio.setVolume(this.value)">
                 </div>
-                <div class="form-group">
-                    <label>Сложность:</label>
-                    <select id="setting-diff" class="form-control">
-                        <option value="easy">Легкая (Больше ресурсов)</option>
-                        <option value="normal" selected>Нормальная (Баланс)</option>
-                        <option value="hard">Хардкор (Быстрый износ)</option>
-                    </select>
-                </div>
-                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="UI.saveSettings()">Сохранить</button>
+                <button class="btn" style="width: 100%; margin-top: 10px;" onclick="UI.saveSettings()">Сохранить</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: GENERIC INFO -->
+    <!-- MODAL: INFO -->
     <div class="modal" id="modal-info">
         <div class="modal-box">
             <div class="modal-header">
@@ -600,7 +619,7 @@ const Audio = {
             let gain = this.ctx.createGain();
             osc.type = type;
             osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-            gain.gain.setValueAtTime(this.volume * 0.1, this.ctx.currentTime);
+            gain.gain.setValueAtTime(this.volume * 0.08, this.ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
             osc.connect(gain);
             gain.connect(this.ctx.destination);
@@ -608,114 +627,168 @@ const Audio = {
             osc.stop(this.ctx.currentTime + duration);
         } catch(e){}
     },
-    playInteract() { this.playTone(550, 'sine', 0.1); },
-    playPickup() { this.playTone(480, 'sine', 0.12); }
+    playInteract() { this.playTone(600, 'sine', 0.08); },
+    playClick() { this.playTone(400, 'triangle', 0.05); }
 };
-
-const CONFIG = { tileSize: 32, dayDurationSec: 600 };
 
 const ITEMS = {
-    canned_food: { id: 'canned_food', name: 'Консервы', icon: '🥫', desc: 'Сытная еда. Восстанавливает +35 голода.', type: 'use', hunger: 35 },
-    water: { id: 'water', name: 'Вода', icon: '💧', desc: 'Чистая питьевая вода. Восстанавливает +40 жажды.', type: 'use', thirst: 40 },
-    medkit: { id: 'medkit', name: 'Аптечка', icon: '🩹', desc: 'Восстанавливает +50 здоровья.', type: 'use', hp: 50 },
-    metal: { id: 'metal', name: 'Металлолом', icon: '🔩', desc: 'Базовый материал.', type: 'mat' },
-    parts: { id: 'parts', name: 'Детали', icon: '⚙️', desc: 'Электронные компоненты.', type: 'mat' }
+    canned_food: { id: 'canned_food', name: 'Консервы', icon: '🥫', desc: 'Восстанавливает +35 голода.', type: 'use' },
+    water: { id: 'water', name: 'Вода', icon: '💧', desc: 'Восстанавливает +40 жажды.', type: 'use' },
+    medkit: { id: 'medkit', name: 'Аптечка', icon: '🩹', desc: 'Восстанавливает +50 здоровья.', type: 'use' },
+    metal: { id: 'metal', name: 'Металл', icon: '🔩', desc: 'Материал для крафта.', type: 'mat' },
+    parts: { id: 'parts', name: 'Детали', icon: '⚙️', desc: 'Компоненты электроники.', type: 'mat' }
 };
 
-const RECIPES = [
-    { id: 'medkit', name: 'Аптечка', req: { parts: 1, metal: 1 }, result: { item: 'medkit', count: 1 } }
-];
+const CONFIG = { tileSize: 40 };
+const MAP_WIDTH = 24;
+const MAP_HEIGHT = 24;
 
 let Game = {
     running: false,
     paused: false,
-    time: 8 * 60,
+    timeMinutes: 480, // 08:00
     day: 1,
     power: 100,
     noise: 0,
-    difficulty: 'normal',
     player: {
-        x: 10, y: 15,
-        speed: 3.2,
-        hp: 100, maxHp: 100,
-        hunger: 100,
-        thirst: 100,
-        stamina: 100,
-        flashlight: false,
-        flashlightBat: 100,
-        name: 'Алексей',
-        class: 'engineer',
-        bonuses: { repair: 1, med: 1, loot: 1, power: 1 }
+        x: 12, y: 12,
+        dirX: 0, dirY: 1,
+        speed: 4.5,
+        hp: 100,
+        hunger: 85,
+        thirst: 70,
+        stamina: 100
     },
     inventory: [
         { item: 'canned_food', count: 2 },
         { item: 'water', count: 2 },
-        { item: 'metal', count: 4 }
+        { item: 'metal', count: 5 },
+        { item: 'parts', count: 3 }
     ],
-    selectedSlot: 0,
-    quests: [
-        { id: 'gen_fix', title: 'Проверить генератор', desc: 'Осмотрите главный генератор комплекса.', done: false }
-    ],
-    generatorHp: 80
+    selectedSlot: 0
 };
 
-const MAP_WIDTH = 30;
-const MAP_HEIGHT = 30;
 let mapGrid = [];
-let containers = [];
+let rooms = [];
+let interactiveObjects = [];
 
 function initMap() {
     mapGrid = Array(MAP_HEIGHT).fill(0).map(() => Array(MAP_WIDTH).fill(1));
-    for (let r = 2; r < 25; r++) {
-        for (let c = 2; c < 25; c++) {
-            mapGrid[r][c] = 0;
+    
+    // Создаем структурированный бункер
+    rooms = [
+        { name: 'ЖИЛОЙ БЛОК', x: 3, y: 3, w: 18, h: 5 },
+        { name: 'СКЛАД', x: 3, y: 10, w: 8, h: 5 },
+        { name: 'МАСТЕРСКАЯ', x: 13, y: 10, w: 8, h: 5 },
+        { name: 'ГЕНЕРАТОРНАЯ', x: 3, y: 17, w: 18, h: 5 }
+    ];
+
+    rooms.forEach(r => {
+        for (let y = r.y; y < r.y + r.h; y++) {
+            for (let x = r.x; x < r.x + r.w; x++) {
+                mapGrid[y][x] = 0;
+            }
         }
+    });
+
+    // Соединительные коридоры
+    for (let y = 3; y < 22; y++) {
+        mapGrid[y][11] = 0;
+        mapGrid[y][12] = 0;
     }
-    containers = [
-        { id: 'c1', x: 4, y: 4, type: 'bed', name: 'Кровать' },
-        { id: 'c2', x: 20, y: 13, type: 'generator', name: 'Главный Генератор' },
-        { id: 'c3', x: 18, y: 4, type: 'workbench', name: 'Верстак' }
+
+    interactiveObjects = [
+        { id: 'bed', name: 'Кровать (Отдых)', x: 4.5, y: 4.5, type: 'bed', icon: '🛏️' },
+        { id: 'workbench', name: 'Верстак (Крафт)', x: 19.5, y: 11.5, type: 'workbench', icon: '🛠️' },
+        { id: 'generator', name: 'Генератор', x: 12, y: 19.5, type: 'generator', icon: '⚡' },
+        { id: 'chest', name: 'Ящик с припасами', x: 4.5, y: 11.5, type: 'chest', icon: '📦' }
     ];
 }
 
 const Keys = {};
 window.addEventListener('keydown', e => {
     Keys[e.code] = true;
+    if (e.code === 'Escape' && Game.running) {
+        if (Game.paused) UI.resumeGame();
+        else UI.pauseGame();
+    }
     if (!Game.running || Game.paused) return;
 
-    if (e.code === 'KeyE') interact();
+    if (e.code === 'KeyE') interactNear();
     if (e.code === 'KeyI') UI.toggleModal('modal-inventory');
     if (e.code === 'KeyM') UI.toggleModal('modal-map');
-    if (e.code === 'Escape') UI.togglePause();
+
+    if (e.code.startsWith('Digit')) {
+        let num = parseInt(e.code.replace('Digit', '')) - 1;
+        if (num >= 0 && num < 5) UI.selectSlot(num);
+    }
 });
 window.addEventListener('keyup', e => { Keys[e.code] = false; });
 
-function interact() {
-    let px = Math.floor(Game.player.x);
-    let py = Math.floor(Game.player.y);
-    for (let c of containers) {
-        if (Math.hypot(c.x - px, c.y - py) < 1.8) {
-            Audio.playInteract();
-            if (c.type === 'bed') { UI.notify('Вы поспали.'); return; }
-            if (c.type === 'generator') { UI.notify('Генератор работает.'); return; }
-            if (c.type === 'workbench') { UI.toggleModal('modal-inventory'); UI.switchInvTab('craft'); return; }
+function interactNear() {
+    let near = getNearbyObject();
+    if (near) {
+        Audio.playInteract();
+        if (near.type === 'bed') {
+            Game.player.stamina = 100;
+            Game.timeMinutes += 120;
+            UI.notify('Вы отдохнули (+100% Энергии)');
+        } else if (near.type === 'workbench') {
+            UI.toggleModal('modal-inventory');
+            UI.switchInvTab('craft');
+        } else if (near.type === 'generator') {
+            Game.power = 100;
+            UI.notify('Генератор обслужен (Питание: 100%)');
+        } else if (near.type === 'chest') {
+            UI.notify('В ящике пусто');
         }
     }
 }
 
-let lastTime = performance.now();
+function getNearbyObject() {
+    return interactiveObjects.find(o => Math.hypot(o.x - Game.player.x, o.y - Game.player.y) < 1.5);
+}
+
 function update(dt) {
     if (!Game.running || Game.paused) return;
 
+    // Временной цикл
+    Game.timeMinutes += dt * 2;
+    if (Game.timeMinutes >= 1440) {
+        Game.timeMinutes = 0;
+        Game.day++;
+    }
+
+    // Движение
     let dx = 0, dy = 0;
     if (Keys['KeyW'] || Keys['ArrowUp']) dy -= 1;
     if (Keys['KeyS'] || Keys['ArrowDown']) dy += 1;
     if (Keys['KeyA'] || Keys['ArrowLeft']) dx -= 1;
     if (Keys['KeyD'] || Keys['ArrowRight']) dx += 1;
 
-    let speed = Game.player.speed * dt;
-    Game.player.x += dx * speed;
-    Game.player.y += dy * speed;
+    if (dx !== 0 || dy !== 0) {
+        let len = Math.hypot(dx, dy);
+        dx /= len; dy /= len;
+        Game.player.dirX = dx;
+        Game.player.dirY = dy;
+
+        let nextX = Game.player.x + dx * Game.player.speed * dt;
+        let nextY = Game.player.y + dy * Game.player.speed * dt;
+
+        // Коллизии со стенами
+        if (mapGrid[Math.floor(Game.player.y)][Math.floor(nextX)] === 0) Game.player.x = nextX;
+        if (mapGrid[Math.floor(nextY)][Math.floor(Game.player.x)] === 0) Game.player.y = nextY;
+    }
+
+    // Интерактивная подсказка
+    let prompt = document.getElementById('interaction-prompt');
+    let near = getNearbyObject();
+    if (near) {
+        prompt.style.display = 'block';
+        prompt.innerText = `[E] ${near.name.toUpperCase()}`;
+    } else {
+        prompt.style.display = 'none';
+    }
 
     UI.updateHUD();
 }
@@ -734,27 +807,92 @@ function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!Game.running) return;
 
-    let camX = canvas.width / 2 - Game.player.x * CONFIG.tileSize;
-    let camY = canvas.height / 2 - Game.player.y * CONFIG.tileSize;
+    let tileSize = CONFIG.tileSize;
+    let camX = canvas.width / 2 - Game.player.x * tileSize;
+    let camY = canvas.height / 2 - Game.player.y * tileSize;
 
     ctx.save();
     ctx.translate(camX, camY);
 
+    // Отрисовка тайлов карты
     for (let r = 0; r < MAP_HEIGHT; r++) {
         for (let c = 0; c < MAP_WIDTH; c++) {
-            ctx.fillStyle = mapGrid[r][c] === 1 ? '#16202c' : '#080d14';
-            ctx.fillRect(c * CONFIG.tileSize, r * CONFIG.tileSize, CONFIG.tileSize, CONFIG.tileSize);
+            if (mapGrid[r][c] === 1) {
+                ctx.fillStyle = '#0a1017';
+                ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
+                ctx.strokeStyle = '#14202e';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(c * tileSize, r * tileSize, tileSize, tileSize);
+            } else {
+                ctx.fillStyle = '#0f1722';
+                ctx.fillRect(c * tileSize, r * tileSize, tileSize, tileSize);
+                ctx.fillStyle = 'rgba(255,255,255,0.015)';
+                ctx.fillRect(c * tileSize + 1, r * tileSize + 1, tileSize - 2, tileSize - 2);
+            }
         }
     }
 
-    ctx.fillStyle = '#3d8bfd';
+    // Подписи комнат
+    ctx.font = 'bold 11px "JetBrains Mono"';
+    ctx.fillStyle = 'rgba(61, 139, 253, 0.3)';
+    ctx.textAlign = 'center';
+    rooms.forEach(r => {
+        ctx.fillText(r.name, (r.x + r.w / 2) * tileSize, (r.y + 1) * tileSize);
+    });
+
+    // Интерактивные объекты
+    interactiveObjects.forEach(obj => {
+        let ox = obj.x * tileSize;
+        let oy = obj.y * tileSize;
+
+        ctx.fillStyle = 'rgba(0, 242, 254, 0.1)';
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(ox, oy, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = '18px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(obj.icon, ox, oy);
+    });
+
+    // Отрисовка персонажа
+    let px = Game.player.x * tileSize;
+    let py = Game.player.y * tileSize;
+
+    // Фонарик / Свет персонажа
+    let grad = ctx.createRadialGradient(px, py, 5, px, py, 140);
+    grad.addColorStop(0, 'rgba(0, 242, 254, 0.25)');
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.arc(Game.player.x * CONFIG.tileSize + 16, Game.player.y * CONFIG.tileSize + 16, 11, 0, Math.PI * 2);
+    ctx.arc(px, py, 140, 0, Math.PI * 2);
     ctx.fill();
+
+    // Персонаж
+    ctx.fillStyle = '#00f2fe';
+    ctx.shadowColor = '#00f2fe';
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    ctx.arc(px, py, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Указатель направления
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.lineTo(px + Game.player.dirX * 18, py + Game.player.dirY * 18);
+    ctx.stroke();
 
     ctx.restore();
 }
 
+let lastTime = performance.now();
 function gameLoop(time) {
     let dt = (time - lastTime) / 1000;
     if (dt > 0.1) dt = 0.1;
@@ -772,6 +910,31 @@ const UI = {
         document.getElementById('hunger-fill').style.width = `${Game.player.hunger}%`;
         document.getElementById('thirst-fill').style.width = `${Game.player.thirst}%`;
         document.getElementById('stamina-fill').style.width = `${Game.player.stamina}%`;
+
+        let hrs = Math.floor(Game.timeMinutes / 60).toString().padStart(2, '0');
+        let mins = Math.floor(Game.timeMinutes % 60).toString().padStart(2, '0');
+        document.getElementById('time-display').innerText = `ДЕНЬ ${Game.day} — ${hrs}:${mins}`;
+        document.getElementById('power-display').innerText = `ЭЛЕКТРИЧЕСТВО: ${Math.round(Game.power)}%`;
+    },
+    renderHotbar() {
+        let hotbar = document.getElementById('hotbar');
+        hotbar.innerHTML = '';
+        for (let i = 0; i < 5; i++) {
+            let slotData = Game.inventory[i];
+            let item = slotData ? ITEMS[slotData.item] : null;
+            let div = document.createElement('div');
+            div.className = `slot ${i === Game.selectedSlot ? 'selected' : ''}`;
+            div.onclick = () => this.selectSlot(i);
+            div.innerHTML = `
+                <span class="slot-num">${i + 1}</span>
+                ${item ? `<span style="font-size: 22px;">${item.icon}</span><span class="slot-count">${slotData.count}</span>` : ''}
+            `;
+            hotbar.appendChild(div);
+        }
+    },
+    selectSlot(idx) {
+        Game.selectedSlot = idx;
+        this.renderHotbar();
     },
     renderInventory() {
         let grid = document.getElementById('inv-grid');
@@ -781,18 +944,28 @@ const UI = {
             let div = document.createElement('div');
             div.className = 'inv-item';
             div.innerHTML = `<span class="qty">x${slot.count}</span><div class="icon">${item.icon}</div><div class="name">${item.name}</div>`;
+            div.onclick = () => {
+                document.getElementById('inv-desc').innerText = `${item.name}: ${item.desc}`;
+            };
             grid.appendChild(div);
         });
     },
     switchInvTab(tab) {
         document.getElementById('tab-inv').style.display = tab === 'inv' ? 'block' : 'none';
         document.getElementById('tab-craft').style.display = tab === 'craft' ? 'block' : 'none';
+        if (tab === 'craft') {
+            let list = document.getElementById('craft-list');
+            list.innerHTML = `<button class="btn" onclick="UI.craftItem('medkit')">🩹 Аптечка (1x Детали, 1x Металл)</button>`;
+        }
+    },
+    craftItem(id) {
+        UI.notify('Предмет создан!');
     },
     notify(text) {
         let el = document.getElementById('notification');
         el.innerText = text;
         el.classList.add('show');
-        setTimeout(() => el.classList.remove('show'), 2000);
+        setTimeout(() => el.classList.remove('show'), 2200);
     },
     toggleModal(id) {
         let el = document.getElementById(id);
@@ -801,17 +974,32 @@ const UI = {
         if (!isActive) {
             el.classList.add('active');
             Game.paused = true;
-            if (id === 'modal-inventory') this.renderInventory();
+            if (id === 'modal-inventory') {
+                this.renderInventory();
+                this.switchInvTab('inv');
+            }
         } else {
-            Game.paused = false;
+            if (Game.running) Game.paused = false;
         }
     },
     closeModals() {
         document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
         if (Game.running) Game.paused = false;
     },
-    togglePause() {
-        this.showInfo('ПАУЗА', '<p>Игра на паузе.</p>');
+    pauseGame() {
+        if (!Game.running) return;
+        Game.paused = true;
+        document.getElementById('modal-pause').classList.add('active');
+    },
+    resumeGame() {
+        document.getElementById('modal-pause').classList.remove('active');
+        Game.paused = false;
+    },
+    quitToMenu() {
+        this.closeModals();
+        Game.running = false;
+        Game.paused = false;
+        document.getElementById('main-menu').style.display = 'flex';
     },
     showInfo(title, html) {
         document.getElementById('info-title').innerText = title;
@@ -819,7 +1007,13 @@ const UI = {
         this.toggleModal('modal-info');
     },
     updateClassDesc() {
-        document.getElementById('class-desc').innerText = 'Специализация выжившего.';
+        let val = document.getElementById('char-class').value;
+        let descs = {
+            engineer: 'Специалист по обслуживанию систем бункера. Быстро чинит генераторы.',
+            medic: 'Прошел медицинскую подготовку. Лекарства восстанавливают больше HP.',
+            scout: 'Привык быстро перемещаться в замкнутых пространствах. Повышенная скорость.'
+        };
+        document.getElementById('class-desc').innerText = descs[val];
     },
     saveSettings() {
         UI.notify('Настройки сохранены');
@@ -827,9 +1021,14 @@ const UI = {
     }
 };
 
-// Привязка событий после загрузки документа
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('btn-new-game').onclick = () => UI.toggleModal('modal-char');
+    UI.renderHotbar();
+    
+    document.getElementById('btn-new-game').onclick = () => {
+        Audio.playClick();
+        UI.toggleModal('modal-char');
+    };
+    
     document.getElementById('btn-start-game').onclick = () => {
         Audio.init();
         initMap();
@@ -839,9 +1038,10 @@ window.addEventListener('DOMContentLoaded', () => {
         Game.paused = false;
         requestAnimationFrame(gameLoop);
     };
-    document.getElementById('btn-settings').onclick = () => UI.toggleModal('modal-settings');
-    document.getElementById('btn-controls').onclick = () => UI.showInfo('УПРАВЛЕНИЕ', '<p>WASD — Перемещение<p>E — Действие<p>I — Инвентарь<p>M — Карта');
-    document.getElementById('btn-about').onclick = () => UI.showInfo('О БУНКЕРЕ', '<p>Выживание в подземном комплексе.</p>');
+
+    document.getElementById('btn-settings').onclick = () => { Audio.playClick(); UI.toggleModal('modal-settings'); };
+    document.getElementById('btn-controls').onclick = () => { Audio.playClick(); UI.showInfo('УПРАВЛЕНИЕ', '<p>WASD — Перемещение<br>E — Взаимодействие<br>1-5 — Выбор предмета<br>I — Инвентарь<br>M — Карта<br>ESC — Пауза</p>'); };
+    document.getElementById('btn-about').onclick = () => { Audio.playClick(); UI.showInfo('О БУНКЕРЕ', '<p>Выживайте в автономном подземном бункере, следите за генератором и жизненными показателями.</p>'); };
 });
 </script>
 </body>
