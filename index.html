@@ -1,760 +1,760 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BUNKER 3D: SURVIVAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --panel-bg: rgba(10, 16, 26, 0.88);
-            --panel-border: rgba(61, 139, 253, 0.25);
-            --panel-border-glow: rgba(0, 242, 254, 0.4);
-            --accent-blue: #3d8bfd;
-            --accent-cyan: #00f2fe;
-            --accent-green: #2ecc71;
-            --accent-yellow: #f1c40f;
-            --accent-red: #ff4757;
-            --accent-purple: #a55eea;
-            --text-main: #e6edf3;
-            --text-dim: #8b949e;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-sans: 'Inter', sans-serif;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Launcher</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#0a0a0c',
+              card: '#111115',
+              input: '#18181c',
+              border: '#26262e',
+              accent: '#ffffff',
+              muted: '#71717a'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
         }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
+    body {
+      background-color: #070709;
+      color: #e4e4e7;
+      font-family: 'Inter', sans-serif;
+      user-select: none;
+    }
 
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            margin: 0;
-            padding: 0;
-        }
+    /* Custom Input Glow & Transitions */
+    .custom-input {
+      background-color: #16161a;
+      border: 1px solid #27272a;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .custom-input:focus-within {
+      border-color: #52525b;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+    }
 
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000;
-            font-family: var(--font-sans);
-            color: var(--text-main);
-        }
+    /* Smooth Fade for Screens */
+    .screen-fade {
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* Subtle Pixel Pattern Background */
+    .bg-dots {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
 
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-            display: block;
-        }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0c0c0e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
 
-        .crt-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at center, transparent 60%, rgba(0, 0, 0, 0.8) 100%),
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
-            background-size: 100% 100%, 100% 4px;
-            pointer-events: none !important;
-            z-index: 50;
-        }
+    /* Glowing Play Button */
+    .btn-play-glow {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-play-glow:hover {
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .btn-play-glow:active {
+      transform: translateY(1px);
+    }
 
-        .ui-layer {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-            z-index: 10;
-        }
-
-        .interactive { pointer-events: auto; }
-
-        .hud-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .stats-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            backdrop-filter: blur(12px);
-            padding: 12px 18px;
-            border-radius: 12px;
-            display: flex;
-            gap: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .stat-bar-bg {
-            width: 60px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-fill {
-            height: 100%;
-            width: 100%;
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-
-        .info-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            backdrop-filter: blur(12px);
-            padding: 12px 20px;
-            border-radius: 12px;
-            text-align: right;
-            font-family: var(--font-mono);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-        }
-
-        .time-display { font-size: 14px; color: var(--accent-cyan); font-weight: 800; }
-        .power-display { font-size: 12px; margin-top: 3px; color: var(--accent-green); font-weight: 600; }
-
-        .hud-bottom {
-            display: flex;
-            justify-content: center;
-        }
-
-        .hotbar {
-            display: flex;
-            gap: 8px;
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border);
-            backdrop-filter: blur(12px);
-            padding: 8px;
-            border-radius: 12px;
-        }
-
-        .slot {
-            width: 54px;
-            height: 54px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .slot.selected {
-            border-color: var(--accent-cyan);
-            background: rgba(0, 242, 254, 0.12);
-        }
-
-        .slot-num { position: absolute; top: 3px; left: 5px; font-size: 10px; color: var(--text-dim); font-family: var(--font-mono); }
-        .slot-count { position: absolute; bottom: 3px; right: 5px; font-size: 11px; font-weight: 800; color: #fff; font-family: var(--font-mono); }
-
-        .prompt-layer {
-            position: absolute;
-            top: 55%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(10, 16, 26, 0.95);
-            border: 1px solid var(--accent-cyan);
-            padding: 8px 22px;
-            border-radius: 20px;
-            color: #fff;
-            font-weight: 700;
-            font-size: 13px;
-            font-family: var(--font-mono);
-            display: none;
-            z-index: 15;
-        }
-
-        .modal {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(4, 7, 12, 0.85);
-            backdrop-filter: blur(12px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-        }
-
-        .modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-box {
-            background: var(--panel-bg);
-            border: 1px solid var(--panel-border-glow);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 580px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .modal-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--panel-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 { font-size: 15px; letter-spacing: 2px; color: #fff; font-family: var(--font-mono); }
-        .close-btn { background: none; border: none; color: var(--text-dim); font-size: 18px; cursor: pointer; }
-        .close-btn:hover { color: #fff; }
-
-        .modal-body { padding: 20px; overflow-y: auto; flex-grow: 1; }
-
-        .btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--panel-border);
-            color: var(--text-main);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-            font-family: var(--font-mono);
-            width: 100%;
-            margin-bottom: 8px;
-        }
-
-        .btn:hover { background: var(--accent-blue); color: #fff; border-color: var(--accent-cyan); }
-
-        #main-menu {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 200;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-            background: radial-gradient(circle at center, #0d1826 0%, #04070c 100%);
-        }
-
-        .menu-title h1 { font-size: 42px; letter-spacing: 8px; color: #fff; font-family: var(--font-mono); font-weight: 800; text-align: center;}
-        .menu-title p { color: var(--accent-cyan); font-size: 12px; letter-spacing: 3px; text-align: center; margin-top: 8px; font-family: var(--font-mono); }
-        .menu-btns { width: 280px; }
-
-        .inv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
-        .inv-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            position: relative;
-        }
-        .inv-item.selected { border-color: var(--accent-cyan); background: rgba(0, 242, 254, 0.1); }
-        .inv-item .icon { font-size: 24px; }
-        .inv-item .name { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 4px; }
-        .inv-item .qty { position: absolute; top: 3px; right: 6px; font-size: 10px; font-weight: 800; font-family: var(--font-mono); }
-
-        .item-desc {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--panel-border);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: var(--text-dim);
-            min-height: 50px;
-        }
-
-        .notification {
-            position: absolute;
-            top: 75px; left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            background: rgba(10, 16, 26, 0.95);
-            border: 1px solid var(--accent-cyan);
-            color: #fff;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            pointer-events: none;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 150;
-            font-family: var(--font-mono);
-        }
-        .notification.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    </style>
-    <!-- Three.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    /* Toast Notification */
+    #toast {
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-6 bg-dots overflow-hidden relative">
 
-<div id="canvas-container"></div>
-<div class="crt-overlay"></div>
-
-<div class="ui-layer">
-    <div class="hud-top">
-        <div class="stats-panel interactive">
-            <div class="stat-item" title="Здоровье">❤️ <div class="stat-bar-bg"><div id="hp-fill" class="stat-fill" style="background: var(--accent-red);"></div></div></div>
-            <div class="stat-item" title="Голод">🍗 <div class="stat-bar-bg"><div id="hunger-fill" class="stat-fill" style="background: var(--accent-yellow);"></div></div></div>
-            <div class="stat-item" title="Жажда">💧 <div class="stat-bar-bg"><div id="thirst-fill" class="stat-fill" style="background: var(--accent-blue);"></div></div></div>
-            <div class="stat-item" title="Рассудок">🧠 <div class="stat-bar-bg"><div id="sanity-fill" class="stat-fill" style="background: var(--accent-purple);"></div></div></div>
-        </div>
-
-        <div class="info-panel interactive">
-            <div class="time-display" id="time-display">ДЕНЬ 1 — 08:00</div>
-            <div class="power-display" id="power-display">ЭЛЕКТРИЧЕСТВО: 100%</div>
-        </div>
-    </div>
-
-    <div class="prompt-layer" id="interaction-prompt">[E] ВЗАИМОДЕЙСТВИЕ</div>
-
-    <div class="hud-bottom">
-        <div class="hotbar interactive" id="hotbar"></div>
-    </div>
-</div>
-
-<div class="notification" id="notification">Уведомление</div>
-
-<div id="main-menu">
-    <div class="menu-title">
-        <h1>BUNKER 3D</h1>
-        <p>3D SURVIVAL EXPERIENCE</p>
-    </div>
-    <div class="menu-btns">
-        <button class="btn" id="btn-start">▶ Войти в Бункер</button>
-    </div>
-</div>
-
-<div class="modal" id="modal-inventory">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h2>Инвентарь & Крафт</h2>
-            <button class="close-btn" onclick="UI.closeModals()">✕</button>
-        </div>
-        <div class="modal-body">
-            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                <button class="btn" style="flex:1" onclick="UI.switchInvTab('inv')">Предметы</button>
-                <button class="btn" style="flex:1" onclick="UI.switchInvTab('craft')">Крафт</button>
-            </div>
-            <div id="tab-inv">
-                <div class="inv-grid" id="inv-grid"></div>
-                <div class="item-desc" id="inv-desc">Выберите предмет...</div>
-                <button class="btn" id="btn-use-item" style="margin-top:10px; display:none;" onclick="UI.useSelectedItem()">Использовать</button>
-            </div>
-            <div id="tab-craft" style="display: none;">
-                <div id="craft-list"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-const ITEMS = {
-    canned_food: { name: 'Консервы', icon: '🥫', desc: '+35 Голода', type: 'food', value: 35 },
-    water: { name: 'Вода', icon: '💧', desc: '+40 Жажды', type: 'drink', value: 40 },
-    pills: { name: 'Успокоительное', icon: '💊', desc: '+40 Рассудка', type: 'mind', value: 40 },
-    metal: { name: 'Металл', icon: '🔩', desc: 'Материал', type: 'mat' },
-    wire: { name: 'Провода', icon: '🔌', desc: 'Материал', type: 'mat' },
-    gears: { name: 'Шестерни', icon: '⚙️', desc: 'Материал', type: 'mat' },
-    medkit: { name: 'Аптечка', icon: '🩹', desc: '+50 Здоровья', type: 'heal', value: 50 }
-};
-
-const CRAFT_RECIPES = [
-    { result: 'medkit', req: { metal: 2, pills: 1 }, name: '🩹 Аптечка (2x Металл, 1x Успокоительное)' }
-];
-
-let Game = {
-    running: false,
-    paused: false,
-    timeMinutes: 480,
-    day: 1,
-    power: 100,
-    player: { x: 0, z: 0, rot: 0, hp: 100, hunger: 90, thirst: 80, sanity: 100 },
-    inventory: [
-        { item: 'canned_food', count: 3 },
-        { item: 'water', count: 2 },
-        { item: 'pills', count: 1 },
-        { item: 'metal', count: 5 }
-    ],
-    selectedSlot: 0,
-    selectedInvIndex: null
-};
-
-// --- THREE.JS ENGINE SETUP ---
-let scene, camera, renderer;
-let playerMesh, flashlight;
-let interactiveMeshes = [];
-const keys = {};
-
-function init3D() {
-    const container = document.getElementById('canvas-container');
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x020408);
-    scene.fog = new THREE.FogExp2(0x020408, 0.08);
-
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  <main class="w-full max-w-[1020px] h-[660px] bg-[#0c0c0e] border border-[#222228] rounded-2xl shadow-2xl flex flex-col overflow-hidden relative z-10 backdrop-blur-md">
     
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
+    <!-- Top Header Bar (No three dots window buttons) -->
+    <header class="w-full h-12 bg-[#09090b] border-b border-[#1c1c22] px-5 flex items-center justify-between shrink-0 z-30">
+      <!-- Brand Title -->
+      <div class="flex items-center space-x-3">
+        <div class="w-6 h-6 rounded-full border border-zinc-700 bg-zinc-900 flex items-center justify-center">
+          <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.3" />
+            <path d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21" stroke="currentColor" stroke-linecap="round"/>
+            <path d="M15 9L9 15" stroke="currentColor" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="text-xs font-bold tracking-widest text-zinc-300 uppercase">Aethelgard Launcher</span>
+        <span class="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800/80 text-zinc-400 font-mono">v1.0.4</span>
+      </div>
 
-    // Освещение окружения
-    const ambientLight = new THREE.AmbientLight(0x1a2636, 0.2);
-    scene.add(ambientLight);
+      <!-- Navigation Tabs (Only Visible When Logged In) -->
+      <nav id="topNav" class="hidden md:flex items-center space-x-1 text-xs font-medium text-zinc-400">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-3 py-1.5 rounded-lg text-white bg-zinc-800/60 transition-colors">Главная</button>
+        <button onclick="switchTab('news')" id="nav-news" class="px-3 py-1.5 rounded-lg hover:text-white transition-colors">Новости</button>
+        <button onclick="switchTab('store')" id="nav-store" class="px-3 py-1.5 rounded-lg hover:text-white transition-colors">Магазин</button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="px-3 py-1.5 rounded-lg hover:text-white transition-colors">Настройки</button>
+      </nav>
 
-    buildBunkerLayout();
-    createPlayer();
-
-    window.addEventListener('resize', onWindowResize);
-}
-
-function buildBunkerLayout() {
-    // Текстуры/материалы
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.8 });
-    const floorMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
-    
-    // Пол
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    scene.add(floor);
-
-    // Функция создания стен
-    function createWall(x, z, w, d, h=4) {
-        const wall = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
-        wall.position.set(x, h/2, z);
-        wall.castShadow = true;
-        wall.receiveShadow = true;
-        scene.add(wall);
-    }
-
-    // Периметр
-    createWall(0, -15, 30, 1);
-    createWall(0, 15, 30, 1);
-    createWall(-15, 0, 1, 30);
-    createWall(15, 0, 1, 30);
-
-    // Внутренние перегородки
-    createWall(-5, -5, 1, 20);
-    createWall(5, 5, 1, 20);
-
-    // Интерактивные объекты (3D)
-    createInteractiveObj(0, 0, -12, 0x3b82f6, 'bed', 'Кровать (Отдых)', '🛏️');
-    createInteractiveObj(-10, 0, 10, 0xeab308, 'generator', 'Генератор', '⚡');
-    createInteractiveObj(10, 0, -10, 0x10b981, 'workbench', 'Верстак', '🛠️️');
-    createInteractiveObj(10, 0, 10, 0xa855f7, 'radio', 'Радиостанция', '📻');
-
-    // Лампы под потолком
-    addCeilingLight(0, 3.5, 0, 0x00f2fe, 1.2);
-    addCeilingLight(-10, 3.5, 10, 0xf1c40f, 1.5);
-    addCeilingLight(10, 3.5, -10, 0x2ecc71, 1.5);
-}
-
-function addCeilingLight(x, y, z, color, intensity) {
-    const light = new THREE.PointLight(color, intensity, 15);
-    light.position.set(x, y, z);
-    light.castShadow = true;
-    scene.add(light);
-
-    const bulb = new THREE.Mesh(
-        new THREE.SphereGeometry(0.2, 8, 8),
-        new THREE.MeshBasicMaterial({ color: color })
-    );
-    bulb.position.set(x, y, z);
-    scene.add(bulb);
-}
-
-function createInteractiveObj(x, y, z, color, type, name, icon) {
-    const group = new THREE.Group();
-    const geo = new THREE.BoxGeometry(1.8, 1.2, 1.8);
-    const mat = new THREE.MeshStandardMaterial({ color: color, metalness: 0.3, roughness: 0.4 });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.y = 0.6;
-    mesh.castShadow = true;
-    mesh.receiveShadow = true;
-    group.add(mesh);
-    group.position.set(x, y, z);
-    scene.add(group);
-
-    interactiveMeshes.push({ group, type, name, icon, x, z });
-}
-
-function createPlayer() {
-    playerMesh = new THREE.Group();
-
-    // Тело
-    const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 1.6, 12);
-    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x3d8bfd });
-    const body = new THREE.Mesh(bodyGeo, bodyMat);
-    body.position.y = 0.8;
-    body.castShadow = true;
-    playerMesh.add(body);
-
-    // Голова
-    const headGeo = new THREE.SphereGeometry(0.3, 12, 12);
-    const headMat = new THREE.MeshStandardMaterial({ color: 0xffccaa });
-    const head = new THREE.Mesh(headGeo, headMat);
-    head.position.y = 1.8;
-    playerMesh.add(head);
-
-    // Фонарик игрока
-    flashlight = new THREE.SpotLight(0xffffff, 2, 18, Math.PI / 5, 0.5, 1);
-    flashlight.position.set(0, 1.6, 0);
-    flashlight.target.position.set(0, 1.6, 5);
-    flashlight.castShadow = true;
-    playerMesh.add(flashlight);
-    playerMesh.add(flashlight.target);
-
-    scene.add(playerMesh);
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-// --- ИГРОВАЯ ЛОГИКА И УПРАВЛЕНИЕ ---
-window.addEventListener('keydown', e => {
-    keys[e.code] = true;
-    if (e.code === 'KeyE') checkInteraction();
-    if (e.code === 'KeyI') UI.toggleModal('modal-inventory');
-});
-window.addEventListener('keyup', e => keys[e.code] = false);
-
-function updateGame(dt) {
-    if (!Game.running || Game.paused) return;
-
-    // Таймеры
-    Game.timeMinutes += dt * 4;
-    if (Game.timeMinutes >= 1440) { Game.timeMinutes = 0; Game.day++; }
-    Game.player.hunger = Math.max(0, Game.player.hunger - dt * 0.3);
-    Game.player.thirst = Math.max(0, Game.player.thirst - dt * 0.5);
-    Game.power = Math.max(0, Game.power - dt * 0.2);
-
-    // Перемещение игрока
-    const moveSpeed = 6 * dt;
-    let moveX = 0, moveZ = 0;
-
-    if (keys['KeyW'] || keys['ArrowUp']) moveZ += 1;
-    if (keys['KeyS'] || keys['ArrowDown']) moveZ -= 1;
-    if (keys['KeyA'] || keys['ArrowLeft']) moveX += 1;
-    if (keys['KeyD'] || keys['ArrowRight']) moveX -= 1;
-
-    if (moveX !== 0 || moveZ !== 0) {
-        const angle = Math.atan2(moveX, moveZ);
-        Game.player.rot = angle;
+      <!-- Right Profile Summary or Server Indicator -->
+      <div id="headerProfile" class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 text-[11px] text-zinc-400 bg-zinc-900/80 px-2.5 py-1 rounded-full border border-zinc-800/80">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Сервер: <strong class="text-zinc-200 font-normal">Онлайн (1,420)</strong></span>
+        </div>
         
-        const nextX = Game.player.x + Math.sin(angle) * moveSpeed;
-        const nextZ = Game.player.z + Math.cos(angle) * moveSpeed;
+        <div id="userBadge" class="hidden items-center space-x-2 border-l border-zinc-800 pl-3">
+          <div class="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-white text-xs font-bold font-mono" id="avatarInitial">P</div>
+          <span class="text-xs text-zinc-200 font-medium hidden sm:inline" id="userDisplayName">Player</span>
+          <button onclick="logout()" title="Выйти из аккаунта" class="text-zinc-500 hover:text-red-400 transition-colors p-1">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+    </header>
 
-        // Коллизии с границами
-        if (Math.abs(nextX) < 13.5) Game.player.x = nextX;
-        if (Math.abs(nextZ) < 13.5) Game.player.z = nextZ;
+    <div class="flex-1 flex relative overflow-hidden">
 
-        playerMesh.position.set(Game.player.x, 0, Game.player.z);
-        playerMesh.rotation.y = Game.player.rot;
-    }
+      <!-- BACKGROUND CANVAS (Dot Matrix Columns) -->
+      <div class="absolute inset-0 pointer-events-none z-0 opacity-40 lg:opacity-100">
+        <canvas id="columnCanvas" class="w-full h-full block"></canvas>
+        <div class="absolute inset-0 bg-gradient-to-r from-[#0c0c0e] via-transparent to-[#0c0c0e]/80"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-transparent to-transparent"></div>
+      </div>
 
-    // Камера следит за игроком
-    camera.position.x = Game.player.x;
-    camera.position.y = Game.player.z + 10;
-    camera.position.z = Game.player.z + 12;
-    camera.lookAt(Game.player.x, 1, Game.player.z);
+      <!-- SCREEN 1: AUTHENTICATION (Login / Register) -->
+      <div id="authScreen" class="w-full h-full flex z-10 screen-fade">
+        <section class="w-full lg:w-[420px] h-full p-8 sm:p-10 flex flex-col justify-between shrink-0 bg-[#0c0c0e]/95 backdrop-blur-md border-r border-[#1c1c22]">
+          
+          <!-- Logo Header -->
+          <header class="flex justify-center pt-2">
+            <div class="relative flex items-center justify-center w-12 h-12 rounded-full border border-zinc-700/60 bg-zinc-900/50 group cursor-pointer">
+              <svg class="w-7 h-7 text-white transform transition-transform group-hover:rotate-180 duration-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity="0.3" />
+                <path d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21" stroke="currentColor" stroke-linecap="round"/>
+                <path d="M15 9L9 15" stroke="currentColor" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </header>
 
-    // Подсказка об интерактивности
-    const near = getNearbyObject();
-    const prompt = document.getElementById('interaction-prompt');
-    if (near) {
-        prompt.style.display = 'block';
-        prompt.innerText = `[E] ${near.name.toUpperCase()}`;
-    } else {
-        prompt.style.display = 'none';
-    }
+          <div id="formContainer" class="screen-fade my-auto py-2">
+            
+            <!-- Tab Toggles (Login / Register) -->
+            <div class="flex items-center justify-center gap-6 mb-6 text-sm font-medium">
+              <button id="tabLogin" onclick="switchAuthTab('login')" class="text-white border-b-2 border-white pb-1 transition-colors">
+                Вход
+              </button>
+              <button id="tabRegister" onclick="switchAuthTab('register')" class="text-zinc-500 hover:text-zinc-300 pb-1 transition-colors">
+                Регистрация
+              </button>
+            </div>
 
-    UI.updateHUD();
-}
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+              
+              <!-- Username Input (Only for Registration) -->
+              <div id="usernameGroup" class="hidden space-y-1.5">
+                <label class="block text-xs font-medium text-zinc-400">Имя пользователя</label>
+                <div class="custom-input flex items-center px-3 py-2.5 rounded-lg">
+                  <i data-lucide="user" class="w-4 h-4 text-zinc-500 mr-2.5 shrink-0"></i>
+                  <input type="text" id="username" placeholder="PlayerOne" class="w-full bg-transparent text-sm text-white placeholder-zinc-600 focus:outline-none">
+                </div>
+              </div>
 
-function getNearbyObject() {
-    return interactiveMeshes.find(o => Math.hypot(o.x - Game.player.x, o.z - Game.player.z) < 2.5);
-}
+              <!-- Email Input -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-zinc-400">Email</label>
+                <div class="custom-input flex items-center px-3 py-2.5 rounded-lg">
+                  <i data-lucide="mail" class="w-4 h-4 text-zinc-500 mr-2.5 shrink-0"></i>
+                  <input type="email" id="email" required placeholder="hello@0.email" class="w-full bg-transparent text-sm text-white placeholder-zinc-600 focus:outline-none">
+                </div>
+              </div>
 
-function checkInteraction() {
-    const near = getNearbyObject();
-    if (!near) return;
+              <!-- Password Input -->
+              <div class="space-y-1.5">
+                <label class="block text-xs font-medium text-zinc-400">Пароль</label>
+                <div class="custom-input flex items-center px-3 py-2.5 rounded-lg relative">
+                  <i data-lucide="key-round" class="w-4 h-4 text-zinc-500 mr-2.5 shrink-0"></i>
+                  <input type="password" id="password" required placeholder="••••••••••••" class="w-full bg-transparent text-sm text-white placeholder-zinc-600 focus:outline-none pr-7">
+                  <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 text-zinc-500 hover:text-zinc-300">
+                    <i data-lucide="eye" id="eyeIcon" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </div>
 
-    if (near.type === 'bed') {
-        Game.player.sanity = Math.min(100, Game.player.sanity + 20);
-        Game.timeMinutes += 120;
-        UI.notify('Вы поспали (+20% Рассудка)');
-    } else if (near.type === 'generator') {
-        Game.power = 100;
-        UI.notify('Генератор полностью перезапущен!');
-    } else if (near.type === 'workbench') {
-        UI.toggleModal('modal-inventory');
-        UI.switchInvTab('craft');
-    } else if (near.type === 'radio') {
-        UI.notify('📻 Шум радио: "...сигнал утерян..."');
-    }
-}
+              <!-- Confirm Password Input (Only for Registration) -->
+              <div id="confirmPasswordGroup" class="hidden space-y-1.5">
+                <label class="block text-xs font-medium text-zinc-400">Подтвердите пароль</label>
+                <div class="custom-input flex items-center px-3 py-2.5 rounded-lg">
+                  <i data-lucide="shield-check" class="w-4 h-4 text-zinc-500 mr-2.5 shrink-0"></i>
+                  <input type="password" id="confirmPassword" placeholder="••••••••••••" class="w-full bg-transparent text-sm text-white placeholder-zinc-600 focus:outline-none">
+                </div>
+              </div>
 
-// --- UI РЕНДЕР И МОДАЛКИ ---
-const UI = {
-    updateHUD() {
-        document.getElementById('hp-fill').style.width = `${Game.player.hp}%`;
-        document.getElementById('hunger-fill').style.width = `${Game.player.hunger}%`;
-        document.getElementById('thirst-fill').style.width = `${Game.player.thirst}%`;
-        document.getElementById('sanity-fill').style.width = `${Game.player.sanity}%`;
+              <!-- Primary Submit Button -->
+              <button type="submit" id="submitBtn" class="w-full mt-2 py-2.5 px-4 bg-white hover:bg-zinc-200 text-black font-semibold rounded-lg text-sm transition-all duration-200 active:scale-[0.98] shadow-lg shadow-white/5">
+                Войти
+              </button>
+            </form>
 
-        let hrs = Math.floor(Game.timeMinutes / 60).toString().padStart(2, '0');
-        let mins = Math.floor(Game.timeMinutes % 60).toString().padStart(2, '0');
-        document.getElementById('time-display').innerText = `ДЕНЬ ${Game.day} — ${hrs}:${mins}`;
-        document.getElementById('power-display').innerText = `ЭЛЕКТРИЧЕСТВО: ${Math.round(Game.power)}%`;
-    },
-    renderHotbar() {
-        const hotbar = document.getElementById('hotbar');
-        hotbar.innerHTML = '';
-        for (let i = 0; i < 5; i++) {
-            const slotData = Game.inventory[i];
-            const item = slotData ? ITEMS[slotData.item] : null;
-            const div = document.createElement('div');
-            div.className = `slot ${i === Game.selectedSlot ? 'selected' : ''}`;
-            div.innerHTML = `
-                <span class="slot-num">${i + 1}</span>
-                ${item ? `<span style="font-size: 20px;">${item.icon}</span><span class="slot-count">${slotData.count}</span>` : ''}
-            `;
-            hotbar.appendChild(div);
-        }
-    },
-    renderInventory() {
-        const grid = document.getElementById('inv-grid');
-        grid.innerHTML = '';
-        Game.inventory.forEach((slot, idx) => {
-            const item = ITEMS[slot.item];
-            if (!item) return;
-            const div = document.createElement('div');
-            div.className = `inv-item ${Game.selectedInvIndex === idx ? 'selected' : ''}`;
-            div.innerHTML = `<span class="qty">x${slot.count}</span><div class="icon">${item.icon}</div><div class="name">${item.name}</div>`;
-            div.onclick = () => {
-                Game.selectedInvIndex = idx;
-                this.renderInventory();
-                document.getElementById('inv-desc').innerText = `${item.name}: ${item.desc}`;
-                document.getElementById('btn-use-item').style.display = item.type !== 'mat' ? 'block' : 'none';
-            };
-            grid.appendChild(div);
-        });
-    },
-    useSelectedItem() {
-        if (Game.selectedInvIndex === null) return;
-        const slot = Game.inventory[Game.selectedInvIndex];
-        const item = ITEMS[slot.item];
+            <!-- Divider -->
+            <div class="relative my-5 flex items-center justify-center">
+              <div class="w-full border-t border-zinc-800"></div>
+              <span class="absolute bg-[#0c0c0e] px-3 text-[11px] text-zinc-500 uppercase tracking-wider">или</span>
+            </div>
 
-        if (item.type === 'food') Game.player.hunger = Math.min(100, Game.player.hunger + item.value);
-        if (item.type === 'drink') Game.player.thirst = Math.min(100, Game.player.thirst + item.value);
-        if (item.type === 'mind') Game.player.sanity = Math.min(100, Game.player.sanity + item.value);
+            <!-- Social Login Button -->
+            <button onclick="handleGithubLogin()" class="w-full py-2.5 px-4 bg-[#141418] hover:bg-[#1a1a20] border border-zinc-800 text-zinc-200 text-sm font-medium rounded-lg flex items-center justify-center space-x-2 transition-all active:scale-[0.98]">
+              <i data-lucide="github" class="w-4 h-4"></i>
+              <span>Войти через GitHub</span>
+            </button>
 
-        slot.count--;
-        if (slot.count <= 0) Game.inventory.splice(Game.selectedInvIndex, 1);
-        Game.selectedInvIndex = null;
-        document.getElementById('btn-use-item').style.display = 'none';
-        this.renderInventory();
-        this.renderHotbar();
-    },
-    switchInvTab(tab) {
-        document.getElementById('tab-inv').style.display = tab === 'inv' ? 'block' : 'none';
-        document.getElementById('tab-craft').style.display = tab === 'craft' ? 'block' : 'none';
-        if (tab === 'craft') this.renderCrafting();
-    },
-    renderCrafting() {
-        const list = document.getElementById('craft-list');
-        list.innerHTML = '';
-        CRAFT_RECIPES.forEach(rec => {
-            const btn = document.createElement('button');
-            btn.className = 'btn';
-            btn.innerText = rec.name;
-            btn.onclick = () => {
-                let can = true;
-                for (let r in rec.req) {
-                    let has = Game.inventory.find(i => i.item === r);
-                    if (!has || has.count < rec.req[r]) can = false;
-                }
-                if (can) {
-                    for (let r in rec.req) {
-                        Game.inventory.find(i => i.item === r).count -= rec.req[r];
-                    }
-                    let hasRes = Game.inventory.find(i => i.item === rec.result);
-                    if (hasRes) hasRes.count++;
-                    else Game.inventory.push({ item: rec.result, count: 1 });
-                    UI.notify('Скрафчено!');
-                    UI.renderInventory();
-                    UI.renderHotbar();
-                } else UI.notify('❌ Недостаточно ресурсов');
-            };
-            list.appendChild(btn);
-        });
-    },
-    notify(txt) {
-        const el = document.getElementById('notification');
-        el.innerText = txt;
-        el.classList.add('show');
-        setTimeout(() => el.classList.remove('show'), 2000);
-    },
-    toggleModal(id) {
-        const el = document.getElementById(id);
-        const active = el.classList.contains('active');
-        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-        if (!active) {
-            el.classList.add('active');
-            Game.paused = true;
-            this.renderInventory();
+          </div>
+
+          <footer class="text-center text-xs text-zinc-600 pt-2">
+            <span id="footerText">Ещё нет аккаунта?</span>
+            <button id="footerLink" onclick="toggleAuthMode()" class="text-zinc-300 underline underline-offset-4 hover:text-white ml-1 font-medium">
+              Зарегистрироваться
+            </button>
+          </footer>
+        </section>
+
+        <!-- Right Promo Area (Art side during login) -->
+        <div class="hidden lg:flex flex-1 flex-col justify-end p-10 relative z-10">
+          <div class="max-w-md space-y-3">
+            <div class="inline-block px-2.5 py-1 rounded-full bg-zinc-800/80 border border-zinc-700/50 text-[11px] text-zinc-300 font-mono">
+              Сезон 2: Тёмные Колонны
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-white">Исследуйте руины древнего мира</h1>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              Обновление v1.0.4 уже доступно. Подключайтесь к официальным серверам и участвуйте в командных сражениях.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: MAIN LAUNCHER DASHBOARD (Appears after Login/Register) -->
+      <div id="dashboardScreen" class="hidden w-full h-full flex flex-col justify-between p-6 sm:p-8 z-10 screen-fade">
+        
+        <!-- Top Section: News Feed Cards & Server Info -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl">
+          <!-- Featured News Card -->
+          <div class="md:col-span-2 bg-[#111116]/80 border border-zinc-800/80 hover:border-zinc-700 rounded-xl p-5 backdrop-blur-md transition-all group cursor-pointer relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/10 text-zinc-200">Главное событие</span>
+              <span class="text-[11px] text-zinc-500">2 октября 2026</span>
+            </div>
+            <h3 class="text-lg font-bold text-white group-hover:text-zinc-200 transition-colors">Крупное обновление v1.0.4: Эра Акрополя</h3>
+            <p class="text-xs text-zinc-400 mt-2 line-clamp-2 leading-relaxed">
+              Добавлены новые локации, оптимизирована производительность графики и исправлены ошибки сетевого кода.
+            </p>
+            <div class="mt-4 flex items-center text-xs text-white font-medium space-x-1 group-hover:translate-x-1 transition-transform">
+              <span>Читать патчноут</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </div>
+          </div>
+
+          <!-- Patch Notes Summary Card -->
+          <div class="bg-[#111116]/80 border border-zinc-800/80 rounded-xl p-5 backdrop-blur-md flex flex-col justify-between">
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-1.5">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                Патчноут 1.0.4
+              </h4>
+              <ul class="text-xs text-zinc-300 space-y-2">
+                <li class="flex items-start gap-2">
+                  <span class="text-emerald-400 font-bold">+</span>
+                  <span>Новая карта "Святилище"</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-emerald-400 font-bold">+</span>
+                  <span>Улучшен баланс оружия</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-amber-400 font-bold">~</span>
+                  <span>Оптимизация FPS до +20%</span>
+                </li>
+              </ul>
+            </div>
+            <div class="pt-3 border-t border-zinc-800/60 mt-3 flex justify-between items-center text-[11px] text-zinc-500">
+              <span>Размер: 1.2 GB</span>
+              <span class="text-emerald-400 font-medium">Готово к игре</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Section: Giant PLAY Button Area -->
+        <div class="w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-zinc-800/50 bg-[#0c0c0e]/60 backdrop-blur-sm -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 p-6 sm:p-8">
+          
+          <!-- Server Selector & State -->
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+              <i data-lucide="server" class="w-6 h-6 text-zinc-300"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm font-semibold text-white">Европа - Центральный #1</span>
+                <span class="text-[10px] text-emerald-400 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">24 ms</span>
+              </div>
+              <p class="text-xs text-zinc-500 mt-0.5">Версия клиента синхронизирована</p>
+            </div>
+          </div>
+
+          <!-- Play Action Controls -->
+          <div class="flex items-center space-x-4 w-full sm:w-auto">
+            
+            <!-- Launch Progress Bar (Hidden by default) -->
+            <div id="launchProgressContainer" class="hidden flex-1 sm:w-64 space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-zinc-400" id="launchStatusText">Запуск игры...</span>
+                <span class="text-white font-mono" id="launchPercent">0%</span>
+              </div>
+              <div class="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <div id="launchProgressBar" class="h-full bg-white transition-all duration-150 w-0"></div>
+              </div>
+            </div>
+
+            <!-- Big Main Play Button -->
+            <button id="btnPlay" onclick="startGameLaunch()" class="btn-play-glow w-full sm:w-56 h-14 bg-white hover:bg-zinc-100 text-black font-black text-lg tracking-wider uppercase rounded-xl flex items-center justify-center space-x-3 transition-all active:scale-95">
+              <i data-lucide="play" class="w-6 h-6 fill-black"></i>
+              <span>ИГРАТЬ</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-zinc-900 border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 z-50">
+    <div id="toastIcon" class="p-1 rounded-full bg-emerald-500/10 text-emerald-400">
+      <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+    </div>
+    <div>
+      <h4 id="toastTitle" class="text-xs font-semibold">Успешно</h4>
+      <p id="toastMessage" class="text-xs text-zinc-400">Авторизация выполнена успешно.</p>
+    </div>
+  </div>
+
+  <script>
+    // App State Management
+    let authMode = 'login'; // 'login' or 'register'
+    let currentUser = null;
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Toggle between Login & Register tabs inside Auth screen
+    function switchAuthTab(mode) {
+      if (authMode === mode) return;
+      authMode = mode;
+
+      const container = document.getElementById('formContainer');
+      const tabLogin = document.getElementById('tabLogin');
+      const tabRegister = document.getElementById('tabRegister');
+      const usernameGroup = document.getElementById('usernameGroup');
+      const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+      const submitBtn = document.getElementById('submitBtn');
+      const footerText = document.getElementById('footerText');
+      const footerLink = document.getElementById('footerLink');
+
+      container.style.opacity = '0';
+      container.style.transform = 'translateY(4px)';
+
+      setTimeout(() => {
+        if (mode === 'login') {
+          tabLogin.className = 'text-white border-b-2 border-white pb-1 transition-colors';
+          tabRegister.className = 'text-zinc-500 hover:text-zinc-300 pb-1 transition-colors';
+          usernameGroup.classList.add('hidden');
+          confirmPasswordGroup.classList.add('hidden');
+          submitBtn.textContent = 'Войти';
+          footerText.textContent = 'Ещё нет аккаунта?';
+          footerLink.textContent = 'Зарегистрироваться';
         } else {
-            Game.paused = false;
+          tabRegister.className = 'text-white border-b-2 border-white pb-1 transition-colors';
+          tabLogin.className = 'text-zinc-500 hover:text-zinc-300 pb-1 transition-colors';
+          usernameGroup.classList.remove('hidden');
+          confirmPasswordGroup.classList.remove('hidden');
+          submitBtn.textContent = 'Создать аккаунт';
+          footerText.textContent = 'Уже есть аккаунт?';
+          footerLink.textContent = 'Войти';
         }
-    },
-    closeModals() {
-        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-        Game.paused = false;
+
+        container.style.opacity = '1';
+        container.style.transform = 'translateY(0)';
+      }, 200);
     }
-};
 
-// Главный цикл Three.js
-let lastTime = performance.now();
-function animate(time) {
-    requestAnimationFrame(animate);
-    const dt = (time - lastTime) / 1000;
-    lastTime = time;
+    function toggleAuthMode() {
+      switchAuthTab(authMode === 'login' ? 'register' : 'login');
+    }
 
-    updateGame(dt);
-    renderer.render(scene, camera);
-}
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
 
-document.getElementById('btn-start').onclick = () => {
-    document.getElementById('main-menu').style.display = 'none';
-    init3D();
-    UI.renderHotbar();
-    Game.running = true;
-    animate(performance.now());
-};
-</script>
+    // Switch between Auth Screen and Launcher Dashboard
+    function showDashboard(username) {
+      currentUser = username || 'Player';
+      
+      const authScreen = document.getElementById('authScreen');
+      const dashboardScreen = document.getElementById('dashboardScreen');
+      const topNav = document.getElementById('topNav');
+      const userBadge = document.getElementById('userBadge');
+      const userDisplayName = document.getElementById('userDisplayName');
+      const avatarInitial = document.getElementById('avatarInitial');
+
+      userDisplayName.textContent = currentUser;
+      avatarInitial.textContent = currentUser.charAt(0).toUpperCase();
+
+      authScreen.style.opacity = '0';
+      authScreen.style.transform = 'scale(0.98)';
+
+      setTimeout(() => {
+        authScreen.classList.add('hidden');
+        dashboardScreen.classList.remove('hidden');
+        topNav.classList.remove('hidden');
+        userBadge.classList.remove('hidden');
+        userBadge.classList.add('flex');
+
+        setTimeout(() => {
+          dashboardScreen.style.opacity = '1';
+          dashboardScreen.style.transform = 'scale(1)';
+        }, 50);
+      }, 300);
+
+      showToast('Авторизация выполнена', `С возвращением, ${currentUser}!`);
+    }
+
+    function logout() {
+      const authScreen = document.getElementById('authScreen');
+      const dashboardScreen = document.getElementById('dashboardScreen');
+      const topNav = document.getElementById('topNav');
+      const userBadge = document.getElementById('userBadge');
+
+      dashboardScreen.style.opacity = '0';
+      dashboardScreen.style.transform = 'scale(0.98)';
+
+      setTimeout(() => {
+        dashboardScreen.classList.add('hidden');
+        authScreen.classList.remove('hidden');
+        topNav.classList.add('hidden');
+        userBadge.classList.add('hidden');
+        userBadge.classList.remove('flex');
+
+        setTimeout(() => {
+          authScreen.style.opacity = '1';
+          authScreen.style.transform = 'scale(1)';
+        }, 50);
+      }, 300);
+
+      showToast('Выход', 'Вы успешно вышли из системы');
+    }
+
+    // Navigation Tab Switcher (Inside Launcher)
+    function switchTab(tabName) {
+      const tabs = ['dashboard', 'news', 'store', 'settings'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`nav-${t}`);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = 'px-3 py-1.5 rounded-lg text-white bg-zinc-800/60 transition-colors';
+          } else {
+            btn.className = 'px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition-colors';
+          }
+        }
+      });
+      if (tabName !== 'dashboard') {
+        showToast('Раздел', `Раздел "${tabName.toUpperCase()}" в разработке`);
+      }
+    }
+
+    // Auth Form Submission
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (authMode === 'register') {
+        const username = document.getElementById('username').value || email.split('@')[0];
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (password !== confirmPassword) {
+          showToast('Ошибка', 'Пароли не совпадают!', true);
+          return;
+        }
+        showDashboard(username);
+      } else {
+        const defaultName = email.split('@')[0] || 'Player';
+        showDashboard(defaultName);
+      }
+    }
+
+    function handleGithubLogin() {
+      showDashboard('GitHubPlayer');
+    }
+
+    // Game Launch Process Simulation
+    let isLaunching = false;
+    function startGameLaunch() {
+      if (isLaunching) return;
+      isLaunching = true;
+
+      const btnPlay = document.getElementById('btnPlay');
+      const progressContainer = document.getElementById('launchProgressContainer');
+      const progressBar = document.getElementById('launchProgressBar');
+      const percentText = document.getElementById('launchPercent');
+      const statusText = document.getElementById('launchStatusText');
+
+      btnPlay.classList.add('opacity-50', 'pointer-events-none');
+      progressContainer.classList.remove('hidden');
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress > 100) progress = 100;
+
+        progressBar.style.width = `${progress}%`;
+        percentText.textContent = `${progress}%`;
+
+        if (progress < 40) {
+          statusText.textContent = 'Проверка файлов...';
+        } else if (progress < 85) {
+          statusText.textContent = 'Загрузка ресурсов...';
+        } else {
+          statusText.textContent = 'Запуск процесса игры...';
+        }
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            showToast('Игра запущена!', 'Приятной игры в Aethelgard');
+            btnPlay.classList.remove('opacity-50', 'pointer-events-none');
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+            isLaunching = false;
+          }, 800);
+        }
+      }, 180);
+    }
+
+    // Toast Alert system
+    function showToast(title, message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toastTitle');
+      const toastMsg = document.getElementById('toastMessage');
+      const toastIcon = document.getElementById('toastIcon');
+
+      toastTitle.textContent = title;
+      toastMsg.textContent = message;
+
+      if (isError) {
+        toastIcon.className = 'p-1 rounded-full bg-red-500/10 text-red-400';
+        toastIcon.innerHTML = '<i data-lucide="alert-circle" class="w-5 h-5"></i>';
+      } else {
+        toastIcon.className = 'p-1 rounded-full bg-emerald-500/10 text-emerald-400';
+        toastIcon.innerHTML = '<i data-lucide="check-circle-2" class="w-5 h-5"></i>';
+      }
+      lucide.createIcons();
+
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Canvas Dithered Corinthian Columns Graphics Logic
+    const canvas = document.getElementById('columnCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let dots = [];
+    let particles = [];
+    let mouse = { x: -1000, y: -1000, radius: 90 };
+
+    function resizeCanvas() {
+      if (!canvas.parentElement) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      width = canvas.width = rect.width;
+      height = canvas.height = rect.height;
+      generateColumnPoints();
+      generateDustParticles();
+    }
+
+    function generateColumnPoints() {
+      dots = [];
+      const columnCount = 3;
+      const columnSpacing = width / (columnCount + 0.5);
+
+      for (let c = 0; c < columnCount; c++) {
+        const colX = (c + 0.75) * columnSpacing;
+        const colWidth = 50 + (c % 2 === 0 ? 10 : 0);
+        const startY = height * 0.05;
+        const endY = height * 0.95;
+
+        // Top Capital
+        for (let y = startY; y < startY + 60; y += 3.5) {
+          const factor = (y - startY) / 60;
+          const currentW = colWidth * (1.65 - factor * 0.65);
+          for (let x = colX - currentW / 2; x <= colX + currentW / 2; x += 3) {
+            if (Math.random() > 0.25) {
+              dots.push({
+                baseX: x, baseY: y, x: x, y: y,
+                size: Math.random() > 0.85 ? 1.5 : 1,
+                alpha: 0.25 + Math.random() * 0.5
+              });
+            }
+          }
+        }
+
+        // Shaft
+        const flutes = 5;
+        for (let y = startY + 60; y < endY - 45; y += 3) {
+          for (let x = colX - colWidth / 2; x <= colX + colWidth / 2; x += 2.8) {
+            const normX = (x - (colX - colWidth / 2)) / colWidth;
+            const shadow = Math.sin(normX * Math.PI);
+            const flutePattern = Math.abs(Math.sin(normX * Math.PI * flutes));
+            const density = shadow * (0.3 + flutePattern * 0.7);
+
+            if (Math.random() < density) {
+              dots.push({
+                baseX: x, baseY: y, x: x, y: y, size: 1,
+                alpha: Math.max(0.12, shadow * 0.8 * (0.35 + flutePattern * 0.65))
+              });
+            }
+          }
+        }
+
+        // Base
+        for (let y = endY - 45; y <= endY; y += 3.5) {
+          const factor = (y - (endY - 45)) / 45;
+          const currentW = colWidth * (1.0 + factor * 0.55);
+          for (let x = colX - currentW / 2; x <= colX + currentW / 2; x += 3) {
+            if (Math.random() > 0.3) {
+              dots.push({
+                baseX: x, baseY: y, x: x, y: y, size: 1,
+                alpha: 0.25 + Math.random() * 0.4
+              });
+            }
+          }
+        }
+      }
+    }
+
+    function generateDustParticles() {
+      particles = [];
+      for (let i = 0; i < 50; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: -Math.random() * 0.35 - 0.08,
+          size: Math.random() * 1.5 + 0.5,
+          alpha: Math.random() * 0.4 + 0.15
+        });
+      }
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+
+    function animateCanvas() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Render Floating Dust Particles
+      ctx.fillStyle = '#ffffff';
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y < 0) p.y = height;
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+
+        ctx.globalAlpha = p.alpha * 0.5;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      });
+
+      // Render Column Dots with Physics Interaction
+      dots.forEach(d => {
+        const dx = mouse.x - d.baseX;
+        const dy = mouse.y - d.baseY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < mouse.radius) {
+          const force = (1 - dist / mouse.radius) * 14;
+          const angle = Math.atan2(dy, dx);
+          d.x = d.baseX - Math.cos(angle) * force;
+          d.y = d.baseY - Math.sin(angle) * force;
+        } else {
+          d.x += (d.baseX - d.x) * 0.08;
+          d.y += (d.baseY - d.y) * 0.08;
+        }
+
+        ctx.globalAlpha = d.alpha;
+        ctx.fillRect(d.x, d.y, d.size, d.size);
+      });
+
+      requestAnimationFrame(animateCanvas);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    window.onload = () => {
+      resizeCanvas();
+      animateCanvas();
+    };
+  </script>
 </body>
 </html>
